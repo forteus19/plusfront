@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import net.fabricmc.tinyremapper.OutputConsumerPath;
 import net.fabricmc.tinyremapper.TinyRemapper;
@@ -58,6 +59,12 @@ public abstract class Remap extends DefaultTask {
 		}
 
 		TinyRemapper remapper = builder.build();
+
+		try {
+			Files.deleteIfExists(output);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 
 		try (OutputConsumerPath outputConsumer = new OutputConsumerPath.Builder(output).build()) {
 			if (nonClassFiles) {

@@ -12,7 +12,6 @@ val loaderVersionRange = "[1,)"
 val neoforgeVersion = "21.1.233"
 val minecraftVersionRange = "[1.21.1]"
 val blockfrontVersion = "0.9.0.0b"
-val blockfrontLibraryVersion = "6.0.2"
 
 val tinyRemapperVersion = "0.13.1"
 
@@ -32,7 +31,6 @@ repositories {
             includeGroup("maven.modrinth")
         }
     }
-
 }
 
 neoForge {
@@ -52,35 +50,46 @@ dependencies {
 }
 
 // https://github.com/ThatCuteOne/bfapi/blob/docker/build.gradle.kts
-val extractBlockfrontLibraryTask = tasks.register<Copy>("extractBlockfrontLibrary") {
+val extractBlockfrontLibrariesTask = tasks.register<Copy>("extractBlockfrontLibraries") {
     dependsOn(blockfrontOriginal)
 
-    outputs.file("build/extracted/bf-library.jar")
-
     from(zipTree(blockfrontOriginal.resolve().first()))
-    include("META-INF/jarjar/com.boehmod.blockfront.BlockFrontLibrary-$blockfrontLibraryVersion.jar")
-    into("build/extracted")
+    include("META-INF/jarjar/*.jar")
+    into("build/extracted/bf-jarjar")
     eachFile {
         path = name
     }
-    rename(".*", "bf-library.jar")
 }
 
+val blockfrontLibraries = files(
+    extractBlockfrontLibrariesTask.map {
+        fileTree(it.destinationDir) {
+            include("*.jar")
+        }
+    }
+)
+
 val remapBlockfrontTask = tasks.register<Remap>("remapBlockfront") {
-    dependsOn(blockfrontOriginal, extractBlockfrontLibraryTask)
+    dependsOn(blockfrontOriginal, extractBlockfrontLibrariesTask)
 
     input = blockfrontOriginal.resolve().first()
     output = file("build/generated/bf-remapped.jar")
     mappings = file("bf-mappings.tiny")
-    classpath.from(extractBlockfrontLibraryTask)
+    classpath.from(extractBlockfrontLibrariesTask)
     from = "official"
     to = "named"
     nonClassFiles = false
     mixinExtension = false
 }
 
+neoForge {
+    ideSyncTask(extractBlockfrontLibrariesTask)
+    ideSyncTask(remapBlockfrontTask)
+}
+
 dependencies {
-    implementation(files(extractBlockfrontLibraryTask, remapBlockfrontTask))
+    compileOnly(files(remapBlockfrontTask))
+    compileOnly(blockfrontLibraries)
 }
 
 val generateModMetadataTask = tasks.register<ProcessResources>("generateModMetadata") {

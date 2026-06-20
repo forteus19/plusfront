@@ -8560,7 +8560,7 @@ c	com/boehmod/blockfront/jL	com/boehmod/blockfront/unnamed/BF_466	com/boehmod/bl
 	m	(Lcom/boehmod/blockfront/jb;Lcom/boehmod/blockfront/qJ;)Lcom/boehmod/blockfront/oo;	a	method_6275	method_6275
 		p	1			data
 	m	(ZLcom/boehmod/blockfront/jb;Ljava/lang/String;Ljava/lang/String;)Lcom/boehmod/blockfront/oo;	a	method_1669	create
-c	com/boehmod/blockfront/jM	com/boehmod/blockfront/unnamed/BF_1351	com/boehmod/blockfront/unnamed/BF_1351
+c	com/boehmod/blockfront/jM	com/boehmod/blockfront/unnamed/BF_1351	com/boehmod/blockfront/assets/impl/TemplateAssetFactory
 	m	(ZLcom/boehmod/blockfront/jb;Ljava/lang/String;Ljava/lang/String;)Lcom/boehmod/blockfront/jO;	a	method_7140	create
 c	com/boehmod/blockfront/jN	com/boehmod/blockfront/unnamed/BF_467	com/boehmod/blockfront/assets/impl/MapAssetFactory
 	m	(Lcom/boehmod/blockfront/ju;Lcom/boehmod/blockfront/sl;)Lcom/boehmod/blockfront/sl;	a	method_7141	method_7141
@@ -15601,7 +15601,7 @@ c	com/boehmod/blockfront/qZ	com/boehmod/blockfront/unnamed/BF_802	com/boehmod/bl
 	f	Ljava/util/List;	aZ	field_3388	capturePoints
 	f	Lcom/boehmod/blockfront/lN;	b	field_3390	introSequence
 	f	Ljava/util/List;	ba	field_3389	ammoPoints
-	f	Ljava/util/List;	bb	field_7329	field_7329
+	f	Ljava/util/List;	bb	field_7329	vehiclePoints
 	f	Lcom/boehmod/blockfront/lN;	c	field_3391	outroSequence
 	f	Lcom/boehmod/blockfront/jH;	d	field_3392	command
 	f	Z	gt	field_3393	field_3393
@@ -16116,7 +16116,7 @@ c	com/boehmod/blockfront/rO	com/boehmod/blockfront/unnamed/BF_849	com/boehmod/bl
 	f	Lit/unimi/dsi/fastutil/objects/ObjectList;	U	field_3468	field_3468
 	f	Lit/unimi/dsi/fastutil/objects/ObjectList;	V	field_3470	activeRandomatEvents
 	f	Ljava/util/List;	bm	field_3464	weaponSpawns
-	f	Ljava/util/List;	bn	field_3465	ITEM_DROPS
+	f	Ljava/util/List;	bn	field_3465	itemDrops
 	f	Lcom/boehmod/blockfront/oG;	c	field_3466	LOADOUT
 	f	Ljava/lang/String;	cv	field_3463	field_3463
 	f	Lcom/boehmod/blockfront/jH;	i	field_3467	command
@@ -16144,7 +16144,7 @@ c	com/boehmod/blockfront/rO	com/boehmod/blockfront/unnamed/BF_849	com/boehmod/bl
 	m	(Lcom/mojang/brigadier/context/CommandContext;[Ljava/lang/String;)V	d	method_3523	method_3523
 	m	(Lcom/mojang/brigadier/context/CommandContext;[Ljava/lang/String;)V	e	method_3524	method_3524
 	m	(Lcom/mojang/brigadier/context/CommandContext;[Ljava/lang/String;)V	f	method_3525	method_3525
-	m	(Lnet/minecraft/server/level/ServerLevel;)V	h	method_3526	method_3526
+	m	(Lnet/minecraft/server/level/ServerLevel;)V	h	method_3526	spawnRandomDrop
 	m	(Lnet/minecraft/server/level/ServerPlayer;)V	h	method_3527	method_3527
 	m	(Ljava/util/UUID;)Z	j	method_3528	isPlayerInnocent
 		p	1			palyer

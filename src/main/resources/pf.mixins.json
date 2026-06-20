@@ -4,6 +4,9 @@
   "package": "dev.vuis.plusfront.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "bf.GameTypeCodecMixin",
+    "bf.GameTypeCodecMixin$TroubleTownMixin",
+    "bf.TroubleTownGameMixin"
   ],
   "client": [
   ],
