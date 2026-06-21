@@ -6,9 +6,13 @@
   "mixins": [
     "bf.GameTypeCodecMixin",
     "bf.GameTypeCodecMixin$TroubleTownMixin",
+    "bf.MapEffectCodecsMixin",
+    "bf.MapEffectRegistryMixin",
+    "bf.MapEnvironmentMixin",
     "bf.TroubleTownGameMixin"
   ],
   "client": [
+    "minecraft.client.LightTextureMixin"
   ],
   "injectors": {
     "defaultRequire": 1

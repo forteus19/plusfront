@@ -2,6 +2,7 @@ package dev.vuis.plusfront;
 
 import com.boehmod.blockfront.game.GameType;
 import com.mojang.logging.LogUtils;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.common.Mod;
 import org.slf4j.Logger;
 
@@ -12,5 +13,9 @@ public final class PlusFront {
 
 	public PlusFront() {
 		LOGGER.info("dom icon: {}", GameType.DOMINATION.getIconTexture());
+	}
+
+	public static ResourceLocation res(String path) {
+		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
 	}
 }
