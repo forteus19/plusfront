@@ -1,5 +1,6 @@
 plugins {
     id("net.neoforged.moddev") version "2.0.141"
+    id("idea")
 }
 
 group = "dev.vuis"
@@ -10,10 +11,17 @@ val modName = "PlusFront"
 
 val loaderVersionRange = "[1,)"
 val neoforgeVersion = "21.1.233"
-val minecraftVersionRange = "[1.21.1]"
-val blockfrontVersion = "0.9.0.0b"
 
-val tinyRemapperVersion = "0.13.1"
+val minecraftVersion = "1.21.1"
+
+val parchmentMappingsVersion = "2024.11.17"
+val parchmentMinecraftVersion = "1.21.1"
+
+val blockfrontVersion = "0.9.0.0b"
+val blockfrontModrinthVersion = "2E135yl0"
+
+val geckolibVersion = "4.7.3"
+val veilVersion = "4.2.1"
 
 val blockfrontOriginal by configurations.creating
 
@@ -31,12 +39,41 @@ repositories {
             includeGroup("maven.modrinth")
         }
     }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "GeckoLib"
+                url = uri("https://dl.cloudsmith.io/public/geckolib3/geckolib/maven")
+            }
+        }
+        filter {
+            includeGroup("software.bernie.geckolib")
+        }
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "BlameJared"
+                url = uri("https://maven.blamejared.com")
+            }
+        }
+        filter {
+            includeGroup("foundry.veil")
+            includeGroup("gg.moonflower")
+            includeGroup("io.github.ocelot")
+        }
+    }
 }
 
 neoForge {
     version = neoforgeVersion
 
     validateAccessTransformers = true
+
+    parchment {
+        mappingsVersion = parchmentMappingsVersion
+        minecraftVersion = parchmentMinecraftVersion
+    }
 
     mods {
         create(modId) {
@@ -46,7 +83,13 @@ neoForge {
 }
 
 dependencies {
-    blockfrontOriginal("maven.modrinth:blockfront:$blockfrontVersion")
+    blockfrontOriginal("maven.modrinth:blockfront:$blockfrontModrinthVersion")
+
+    compileOnly("software.bernie.geckolib:geckolib-neoforge-$minecraftVersion:$geckolibVersion")
+    compileOnly("foundry.veil:veil-neoforge-$minecraftVersion:$veilVersion") {
+        exclude(group = "maven.modrinth")
+        exclude(group = "me.fallenbreath")
+    }
 }
 
 // https://github.com/ThatCuteOne/bfapi/blob/docker/build.gradle.kts
@@ -55,6 +98,10 @@ val extractBlockfrontLibrariesTask = tasks.register<Copy>("extractBlockfrontLibr
 
     from(zipTree(blockfrontOriginal.resolve().first()))
     include("META-INF/jarjar/*.jar")
+    exclude(
+        "META-INF/jarjar/geckolib*.jar",
+        "META-INF/jarjar/veil*.jar"
+    )
     into("build/extracted/bf-jarjar")
     eachFile {
         path = name
@@ -82,14 +129,14 @@ val remapBlockfrontTask = tasks.register<Remap>("remapBlockfront") {
     mixinExtension = false
 }
 
-neoForge {
-    ideSyncTask(extractBlockfrontLibrariesTask)
-    ideSyncTask(remapBlockfrontTask)
-}
-
 dependencies {
     compileOnly(files(remapBlockfrontTask))
     compileOnly(blockfrontLibraries)
+}
+
+neoForge {
+    ideSyncTask(extractBlockfrontLibrariesTask)
+    ideSyncTask(remapBlockfrontTask)
 }
 
 val generateModMetadataTask = tasks.register<ProcessResources>("generateModMetadata") {
@@ -99,7 +146,7 @@ val generateModMetadataTask = tasks.register<ProcessResources>("generateModMetad
         "mod_version" to project.version,
         "mod_name" to modName,
         "neoforge_version" to neoforgeVersion,
-        "minecraft_version_range" to minecraftVersionRange,
+        "minecraft_version" to minecraftVersion,
         "blockfront_version" to blockfrontVersion
     )
 
@@ -133,4 +180,10 @@ val remapModTask = tasks.register<Remap>("remapMod") {
 
 tasks.build {
     dependsOn(remapModTask)
+}
+
+idea {
+    module {
+        isDownloadSources = true
+    }
 }
