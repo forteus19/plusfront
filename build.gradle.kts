@@ -17,8 +17,8 @@ val minecraftVersion = "1.21.1"
 val parchmentMappingsVersion = "2024.11.17"
 val parchmentMinecraftVersion = "1.21.1"
 
-val blockfrontVersion = "0.9.0.0b"
-val blockfrontModrinthVersion = "2E135yl0"
+val blockfrontVersion = "0.9.0.2b"
+val blockfrontModrinthVersion = "oHU5IMNu"
 
 val geckolibVersion = "4.7.3"
 val veilVersion = "4.2.1"
