@@ -22,6 +22,7 @@ val blockfrontModrinthVersion = "oHU5IMNu"
 
 val geckolibVersion = "4.7.3"
 val veilVersion = "4.2.1"
+val voicechatApiVersion = "2.6.20"
 
 val blockfrontOriginal by configurations.creating
 
@@ -63,6 +64,17 @@ repositories {
             includeGroup("io.github.ocelot")
         }
     }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "maxhenkel"
+                url = uri("https://maven.maxhenkel.de/releases")
+            }
+        }
+        filter {
+            includeGroup("de.maxhenkel.voicechat")
+        }
+    }
 }
 
 neoForge {
@@ -85,11 +97,15 @@ neoForge {
 dependencies {
     blockfrontOriginal("maven.modrinth:blockfront:$blockfrontModrinthVersion")
 
+    // declared manually for sources
     compileOnly("software.bernie.geckolib:geckolib-neoforge-$minecraftVersion:$geckolibVersion")
     compileOnly("foundry.veil:veil-neoforge-$minecraftVersion:$veilVersion") {
         exclude(group = "maven.modrinth")
         exclude(group = "me.fallenbreath")
     }
+
+    // optional dependencies
+    compileOnly("de.maxhenkel.voicechat:voicechat-api:$voicechatApiVersion")
 }
 
 // https://github.com/ThatCuteOne/bfapi/blob/docker/build.gradle.kts
@@ -147,7 +163,8 @@ val generateModMetadataTask = tasks.register<ProcessResources>("generateModMetad
         "mod_name" to modName,
         "neoforge_version" to neoforgeVersion,
         "minecraft_version" to minecraftVersion,
-        "blockfront_version" to blockfrontVersion
+        "blockfront_version" to blockfrontVersion,
+        "voicechat_api_version" to voicechatApiVersion
     )
 
     inputs.properties(replaceProperties)

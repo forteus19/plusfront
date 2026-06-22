@@ -4,12 +4,17 @@
   "package": "dev.vuis.plusfront.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "bf.AbstractGameMixin",
+    "bf.AbstractGamePlayerManagerMixin",
     "bf.GameTypeCodecMixin",
     "bf.GameTypeCodecMixin$TroubleTownMixin",
+    "bf.IdleGameStageMixin",
     "bf.MapEffectCodecsMixin",
     "bf.MapEffectRegistryMixin",
     "bf.MapEnvironmentMixin",
-    "bf.TroubleTownGameMixin"
+    "bf.TroubleTownGameMixin",
+    "bf.TroubleTownPlayerManagerMixin",
+    "bf.TroubleTownWaitingStageMixin"
   ],
   "client": [
     "minecraft.client.LightTextureMixin"

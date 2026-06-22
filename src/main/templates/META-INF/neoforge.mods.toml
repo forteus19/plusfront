@@ -32,3 +32,10 @@ type = "required"
 versionRange = "[${blockfront_version}]"
 ordering = "AFTER"
 side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "voicechat_api"
+type = "optional"
+versionRange = "[${voicechat_api_version},)"
+ordering = "AFTER"
+side = "BOTH"
