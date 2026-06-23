@@ -17,6 +17,7 @@
     "bf.TroubleTownWaitingStageMixin"
   ],
   "client": [
+    "bf.client.TroubleTownGameClientMixin",
     "minecraft.client.LightTextureMixin"
   ],
   "injectors": {

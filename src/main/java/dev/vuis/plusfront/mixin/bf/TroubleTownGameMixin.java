@@ -10,10 +10,11 @@ import com.boehmod.blockfront.util.RandomUtils;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.vuis.plusfront.data.PFTroubleTownData;
 import dev.vuis.plusfront.ex.TroubleTownCodecEx;
-import dev.vuis.plusfront.util.PFAssetCommandValidators;
+import dev.vuis.plusfront.ex.TroubleTownGameEx;
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
-import net.minecraft.commands.CommandSource;
+import java.util.Optional;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -30,8 +31,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static dev.vuis.plusfront.util.AssetCommandUtil.addExecutor;
+
 @Mixin(TroubleTownGame.class)
-public abstract class TroubleTownGameMixin {
+public abstract class TroubleTownGameMixin implements TroubleTownGameEx {
 	@Shadow
 	@Final
 	private List<DeferredHolder<Item, ? extends GunItem>> itemDrops;
@@ -40,7 +43,14 @@ public abstract class TroubleTownGameMixin {
 	private AssetCommandBuilder command;
 
 	@Unique
-	private final List<ItemStack> pf$itemDrops = new ObjectArrayList<>();
+	private List<ItemStack> pf$itemDrops;
+	@Unique
+	private Optional<Float> pf$playerInfoDistance;
+
+	@Override
+	public Optional<Float> pf$getPlayerInfoDistance() {
+		return pf$playerInfoDistance;
+	}
 
 	@Inject(
 		method = "<init>",
@@ -51,41 +61,34 @@ public abstract class TroubleTownGameMixin {
 
 		AssetCommandBuilder dropCommand = new AssetCommandBuilder();
 
-		dropCommand.subCommand(
-			"add",
-			new AssetCommandBuilder((context, args) -> {
-				CommandSource source = context.getSource().source;
-
+		addExecutor(
+			dropCommand, "add",
+			new String[]{"item"}, (context, source, args) -> {
 				ResourceLocation itemLocation = ResourceLocation.tryParse(args[0]);
 				if (itemLocation == null) {
 					return;
 				}
 
 				if (!BuiltInRegistries.ITEM.containsKey(itemLocation)) {
-					CommandUtils.sendBfaWarn(source, Component.literal("Invalid item"));
+					CommandUtils.sendBfaWarn(source, Component.literal("Invalid item."));
 					return;
 				}
 
 				pf$itemDrops.add(new ItemStack(BuiltInRegistries.ITEM.get(itemLocation)));
-				CommandUtils.sendBfa(source, Component.literal("Added item to drop pool. (" + pf$itemDrops.size() + ")"));
-			}).validator(
-				PFAssetCommandValidators.count("item")
-			)
-		);
-		dropCommand.subCommand(
-			"clear",
-			new AssetCommandBuilder((context, args) -> {
-				CommandSource source = context.getSource().source;
 
+				CommandUtils.sendBfa(source, Component.literal("Added item to drop pool. (" + pf$itemDrops.size() + ")"));
+			}
+		);
+		addExecutor(
+			dropCommand, "clear",
+			(context, source, args) -> {
 				pf$itemDrops.clear();
 				CommandUtils.sendBfa(source, Component.literal("Cleared custom drop pool."));
-			})
+			}
 		);
-		dropCommand.subCommand(
-			"list",
-			new AssetCommandBuilder((context, args) -> {
-				CommandSource source = context.getSource().source;
-
+		addExecutor(
+			dropCommand, "list",
+			(context, source, args) -> {
 				if (pf$itemDrops.isEmpty()) {
 					CommandUtils.sendBfa(source, Component.literal("No custom drop pool."));
 					return;
@@ -96,12 +99,63 @@ public abstract class TroubleTownGameMixin {
 						BuiltInRegistries.ITEM.getKey(stack.getItem()).toString()
 					));
 				}
-			})
+			}
 		);
 
 		pfCommand.subCommand("drop", dropCommand);
 
+		AssetCommandBuilder pidCommand = new AssetCommandBuilder();
+
+		addExecutor(
+			pidCommand, "set",
+			new String[]{"distance"}, (context, source, args) -> {
+				float value;
+				try {
+					value = Float.parseFloat(args[0]);
+				} catch (NumberFormatException e) {
+					CommandUtils.sendBfaWarn(source, Component.literal("Invalid value."));
+					return;
+				}
+
+				pf$playerInfoDistance = Optional.of(value);
+
+				CommandUtils.sendBfa(source, Component.literal(
+					String.format("Set player info distance to %.1f.", value)
+				));
+			}
+		);
+		addExecutor(
+			pidCommand, "clear",
+			(context, source, args) -> {
+				pf$playerInfoDistance = Optional.empty();
+
+				CommandUtils.sendBfa(source, Component.literal("Cleared custom player info distance."));
+			}
+		);
+
+		pfCommand.subCommand("pid", pidCommand);
+
 		command.subCommand("pf", pfCommand);
+	}
+
+	@Inject(
+		method = "writeAll",
+		at = @At("TAIL")
+	)
+	private void writeCustom(ByteBuf buf, boolean writeMap, CallbackInfo ci) {
+		boolean pidExists = pf$playerInfoDistance != null && pf$playerInfoDistance.isPresent();
+		buf.writeBoolean(pidExists);
+		if (pidExists) {
+			buf.writeFloat(pf$playerInfoDistance.orElseThrow());
+		}
+	}
+
+	@Inject(
+		method = "readAll",
+		at = @At("TAIL")
+	)
+	private void readCustom(ByteBuf buf, CallbackInfo ci) {
+		pf$playerInfoDistance = buf.readBoolean() ? Optional.of(buf.readFloat()) : Optional.empty();
 	}
 
 	@Redirect(
@@ -127,7 +181,8 @@ public abstract class TroubleTownGameMixin {
 	)
 	private GameTypeCodec addCustomCodecData(GameTypeCodec original) {
 		TroubleTownCodecEx.cast((GameTypeCodec.TroubleTown) original).pf$setCustomData(new PFTroubleTownData(
-			List.copyOf(pf$itemDrops)
+			List.copyOf(pf$itemDrops),
+			pf$playerInfoDistance
 		));
 
 		return original;
@@ -144,7 +199,7 @@ public abstract class TroubleTownGameMixin {
 
 		PFTroubleTownData data = TroubleTownCodecEx.cast(tttCodec).pf$getCustomData();
 
-		pf$itemDrops.clear();
-		pf$itemDrops.addAll(data.droppedItems());
+		pf$itemDrops = new ObjectArrayList<>(data.droppedItems());
+		pf$playerInfoDistance = data.playerInfoDistance();
 	}
 }
