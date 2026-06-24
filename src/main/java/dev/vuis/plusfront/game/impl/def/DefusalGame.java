@@ -27,14 +27,13 @@ import com.boehmod.blockfront.game.tag.IHasConsumables;
 import com.boehmod.blockfront.game.tag.IHasDominations;
 import com.boehmod.blockfront.game.tag.IUseKillIcons;
 import com.boehmod.blockfront.registry.BFEntityTypes;
-import com.boehmod.blockfront.registry.BFItems;
 import com.boehmod.blockfront.registry.BFSounds;
 import com.boehmod.blockfront.util.CommandUtils;
-import com.boehmod.blockfront.util.RandomUtils;
 import com.boehmod.blockfront.util.math.BFPose;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.data.PFDefusalData;
 import dev.vuis.plusfront.ex.TeamDeathmatchCodecEx;
+import dev.vuis.plusfront.util.PFUtil;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.IOException;
@@ -66,12 +65,21 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	private final AssetCommandBuilder command = new AssetCommandBuilder()
 		.subCommand("bombsite", new AssetCommandBuilder()
-			.subCommand("add", executorPlayers(new String[]{"name"}, (context, source, args) -> {
+			.subCommand("add", executorPlayers(new String[]{"name", "radius"}, (context, source, args) -> {
 				String name = args[0];
 
+				float radius;
+				try {
+					radius = Float.parseFloat(args[1]);
+				} catch (NumberFormatException e) {
+					CommandUtils.sendBfa(source, Component.literal("Invalid radius."));
+					return;
+				}
+
 				bombSites.add(new BombSite(
-					new BFPose((Player) source),
-					name
+					PFUtil.copyVec3(((Player) source).position()),
+					name,
+					radius
 				));
 
 				CommandUtils.sendBfa(source, Component.literal("Added bombsite " + name + "."));
@@ -202,6 +210,8 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		for (BombSite site : bombSites) {
 			site.write(buf);
 		}
+
+		buf.writeBoolean(isBombPlanted);
 	}
 
 	@Override
@@ -213,6 +223,8 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		for (int i = 0; i < numBombSites; i++) {
 			bombSites.add(BombSite.read(buf));
 		}
+
+		isBombPlanted = buf.readBoolean();
 	}
 
 	@Override
@@ -280,6 +292,10 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		return isBombPlanted;
 	}
 
+	public void resetBombPlanted() {
+		isBombPlanted = false;
+	}
+
 	@Override
 	public void onBombExplode(@NotNull BombEntity bomb, @NotNull Level level) {
 		isBombPlanted = false;
@@ -343,6 +359,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 		level.addFreshEntity(bomb);
 
+		playerManager.clearBombPlayer();
 		player.getInventory().removeItem(heldStack);
 
 		Set<UUID> players = playerManager.getPlayers();
@@ -363,7 +380,9 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	private boolean checkBombSiteDistance(Vec3 playerPos) {
 		for (BombSite site : bombSites) {
-			if (playerPos.distanceToSqr(site.position().position) <= 3 * 3) {
+			float radius = site.radius();
+
+			if (playerPos.distanceToSqr(site.position()) <= radius * radius) {
 				return true;
 			}
 		}
@@ -372,6 +391,11 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	}
 
 	public void onRoundWin(Set<UUID> players, boolean ctWin) {
+		if (!(stageManager.getCurrentStage() instanceof DefusalGameStage gameStage) || gameStage.isFinished) {
+			return;
+		}
+		gameStage.isFinished = true;
+
 		GameTeam ctTeam = playerManager.getTeamByName(DefusalPlayerManager.CT_NAME);
 		assert ctTeam != null;
 		GameTeam tTeam = playerManager.getTeamByName(DefusalPlayerManager.T_NAME);
@@ -384,10 +408,6 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 		playerManager.clearBombPlayer();
 
-		if (stageManager.getCurrentStage() instanceof DefusalGameStage gameStage) {
-			gameStage.isFinished = true;
-		}
-
 		GameUtils.sendNotification(
 			players,
 			Component.translatable(
@@ -395,7 +415,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 				Component.literal(winningTeam.getName()).withStyle(winningTeam.getStyleText())
 			),
 			90,
-			"round.win"
+			"round.end"
 		);
 
 		GameUtils.playSound(
@@ -405,6 +425,29 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		);
 		GameUtils.playSound(
 			losingTeam.getPlayers(),
+			BFSounds.MATCH_GAMEMODE_DOM_POINT_LOST.value(),
+			SoundSource.NEUTRAL
+		);
+	}
+
+	public void onRoundDraw(Set<UUID> players) {
+		if (!(stageManager.getCurrentStage() instanceof DefusalGameStage gameStage) || gameStage.isFinished) {
+			return;
+		}
+		gameStage.isFinished = true;
+
+		playerManager.clearBombPlayer();
+
+		GameUtils.sendNotification(
+			players,
+			Component.translatable("pf.message.gamemode.notification.round.draw")
+				.withStyle(ChatFormatting.GOLD),
+			90,
+			"round.end"
+		);
+
+		GameUtils.playSound(
+			players,
 			BFSounds.MATCH_GAMEMODE_DOM_POINT_LOST.value(),
 			SoundSource.NEUTRAL
 		);

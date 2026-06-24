@@ -40,10 +40,6 @@ public class DefusalWaitingStage extends AbstractGameStage<DefusalGame, DefusalP
 
 		for (GameTeam team : playerManager.getTeams()) {
 			GameUtils.giveClassLoadout(level, game, team);
-
-			if (team.isAllies()) {
-				playerManager.giveDefuseKits(team.getPlayers());
-			}
 		}
 
 		playerManager.refreshTerroristBomb();
@@ -51,10 +47,15 @@ public class DefusalWaitingStage extends AbstractGameStage<DefusalGame, DefusalP
 
 	@Override
 	public void onSecond(@NotNull GameStageContext<DefusalGame, DefusalPlayerManager> context) {
-		DefusalGame game = context.game();
+		DefusalPlayerManager playerManager = context.playerHandler();
 		Set<UUID> players = context.players();
 
-		if (game.hasMinimumPlayers(players)) {
+		GameTeam ctTeam = playerManager.getTeamByName(DefusalPlayerManager.CT_NAME);
+		assert ctTeam != null;
+		GameTeam tTeam = playerManager.getTeamByName(DefusalPlayerManager.T_NAME);
+		assert tTeam != null;
+
+		if (ctTeam.numPlayers() > 0 && tTeam.numPlayers() > 0) {
 			timer.update(players);
 		} else {
 			timer.restart();

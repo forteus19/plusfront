@@ -24,7 +24,11 @@ public class DefusalGameStage extends AbstractGameStage<DefusalGame, DefusalPlay
 
 	@Override
 	public void onStageEnd(@NotNull GameStageContext<DefusalGame, DefusalPlayerManager> context) {
-		GameUtils.discardMatchEntities(context.serverLevel(), context.game(), context.playerHandler());
+		DefusalGame game = context.game();
+
+		game.resetBombPlanted();
+
+		GameUtils.discardMatchEntities(context.serverLevel(), game, context.playerHandler());
 	}
 
 	@Override
@@ -32,13 +36,9 @@ public class DefusalGameStage extends AbstractGameStage<DefusalGame, DefusalPlay
 		DefusalGame game = context.game();
 		Set<UUID> players = context.players();
 
-		if (game.isBombPlanted()) {
-			return;
-		}
-
 		if (isFinished) {
 			finishedTimer.update(players);
-		} else {
+		} else if (!game.isBombPlanted()) {
 			playingTimer.update(players);
 
 			if (playingTimer.isDone()) {
@@ -64,10 +64,10 @@ public class DefusalGameStage extends AbstractGameStage<DefusalGame, DefusalPlay
 
 	@Override
 	public @Nullable GameStageTimer getStageTimer(@NotNull DefusalGame game) {
-		if (!game.isBombPlanted()) {
-			return isFinished ? finishedTimer : playingTimer;
+		if (isFinished) {
+			return finishedTimer;
 		} else {
-			return null;
+			return !game.isBombPlanted() ? playingTimer : null;
 		}
 	}
 }
