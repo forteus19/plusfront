@@ -1,7 +1,6 @@
 package dev.vuis.plusfront.util;
 
 import com.boehmod.blockfront.assets.AssetCommandBuilder;
-import com.boehmod.blockfront.assets.AssetCommandValidator;
 import com.boehmod.blockfront.assets.AssetCommandValidators;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSource;
@@ -18,19 +17,23 @@ public final class AssetCommandUtil {
 	}
 
 	public static void addExecutor(AssetCommandBuilder parent, String name, String[] requiredArgs, Executor executor) {
-		parent.subCommand(name, executor(executor, requiredArgs));
+		parent.subCommand(name, executor(requiredArgs, executor));
 	}
 
 	public static AssetCommandBuilder executor(Executor executor) {
 		return new AssetCommandBuilder((context, args) -> executor.execute(context, context.getSource().source, args));
 	}
 
-	public static AssetCommandBuilder executor(Executor executor, String... requiredArgs) {
-		return executor(executor).validator(countValidator(requiredArgs));
+	public static AssetCommandBuilder executor(String[] requiredArgs, Executor executor) {
+		return executor(executor).validator(AssetCommandValidators.count(requiredArgs));
 	}
 
-	public static @NotNull AssetCommandValidator countValidator(String... args) {
-		return AssetCommandValidators.count(args);
+	public static AssetCommandBuilder executorPlayers(Executor executor) {
+		return executor(executor).validator(AssetCommandValidators.ONLY_PLAYERS);
+	}
+
+	public static AssetCommandBuilder executorPlayers(String[] requiredArgs, Executor executor) {
+		return executor(requiredArgs, executor).validator(AssetCommandValidators.ONLY_PLAYERS);
 	}
 
 	@FunctionalInterface

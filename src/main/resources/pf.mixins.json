@@ -6,8 +6,12 @@
   "mixins": [
     "bf.AbstractGameMixin",
     "bf.AbstractGamePlayerManagerMixin",
+    "bf.GameAssetMixin",
+    "bf.GameTeamMixin",
     "bf.GameTypeCodecMixin",
+    "bf.GameTypeCodecMixin$TeamDeathmatchMixin",
     "bf.GameTypeCodecMixin$TroubleTownMixin",
+    "bf.GameTypeMixin",
     "bf.IdleGameStageMixin",
     "bf.MapEffectCodecsMixin",
     "bf.MapEffectRegistryMixin",

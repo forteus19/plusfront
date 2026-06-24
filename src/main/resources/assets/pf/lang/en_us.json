@@ -1,0 +1,6 @@
+{
+  "pf.gamemode.def": "Defusal",
+  "pf.message.gamemode.notification.bomb.defused": "The bomb has been defused!",
+  "pf.message.gamemode.notification.bomb.planted": "The bomb has been planted!",
+  "pf.message.gamemode.notification.round.win": "%s won the round!"
+}
