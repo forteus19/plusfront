@@ -12,6 +12,7 @@
     "bf.GameTypeCodecMixin$TeamDeathmatchMixin",
     "bf.GameTypeCodecMixin$TroubleTownMixin",
     "bf.GameTypeMixin",
+    "bf.GameUtilsMixin",
     "bf.IdleGameStageMixin",
     "bf.MapEffectCodecsMixin",
     "bf.MapEffectRegistryMixin",

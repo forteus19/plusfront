@@ -1,6 +1,7 @@
 package dev.vuis.plusfront.game.impl.def;
 
 import com.boehmod.blockfront.common.BFAbstractManager;
+import com.boehmod.blockfront.common.item.BombItem;
 import com.boehmod.blockfront.common.player.BFAbstractPlayerData;
 import com.boehmod.blockfront.common.player.PlayerDataHandler;
 import com.boehmod.blockfront.common.stat.BFStats;
@@ -9,20 +10,25 @@ import com.boehmod.blockfront.game.GameStageTimer;
 import com.boehmod.blockfront.game.GameTeam;
 import com.boehmod.blockfront.game.GameUtils;
 import com.boehmod.blockfront.game.WinningTeamData;
+import com.boehmod.blockfront.registry.BFItems;
+import com.boehmod.blockfront.registry.BFSounds;
 import com.boehmod.blockfront.util.RandomUtils;
 import com.boehmod.blockfront.util.math.BFPose;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
@@ -35,6 +41,8 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	public static final String CT_NAME = "Counter-Terrorists";
 	public static final String T_NAME = "Terrorists";
 
+	private UUID bombPlayer = null;
+
 	public DefusalPlayerManager(@NotNull DefusalGame game, @NotNull PlayerDataHandler<?> dataHandler) {
 		super(game, dataHandler);
 
@@ -45,6 +53,10 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 
 		addTeam(new GameTeam(game, CT_NAME, ctStyle, ctTextStyle, 8));
 		addTeam(new GameTeam(game, T_NAME, tStyle, tTextStyle, 8));
+	}
+
+	public void clearBombPlayer() {
+		bombPlayer = null;
 	}
 
 	@Override
@@ -74,12 +86,18 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 
 	@Override
 	public List<ItemEntity> filterDroppedItems(@NotNull Player player, @NotNull List<ItemEntity> items) {
+		for (ItemEntity item : items) {
+			if (item.getItem().getItem() instanceof BombItem) {
+				return List.of(item);
+			}
+		}
+
 		return null;
 	}
 
 	@Override
 	public boolean canPickupItem(@NotNull Player player, @NotNull ItemEntity itemEntity, @NotNull ItemStack stack) {
-		return false;
+		return stack.getItem() instanceof BombItem;
 	}
 
 	@Override
@@ -134,6 +152,9 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 
 	@Override
 	public void onRemovePlayer(@NotNull ServerPlayer player) {
+		if (player.getUUID().equals(bombPlayer)) {
+			refreshTerroristBomb();
+		}
 	}
 
 	@Override
@@ -209,5 +230,74 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	@Override
 	public boolean isAcceptingPlayers() {
 		return true;
+	}
+
+	public void giveDefuseKits(Set<UUID> players) {
+		for (UUID playerUuid : players) {
+			ServerPlayer player = GameUtils.getPlayerByUUID(playerUuid);
+
+			if (player != null) {
+				player.getInventory().add(new ItemStack(BFItems.BOMB_DEFUSE_KIT.value()));
+				player.containerMenu.broadcastChanges();
+			}
+		}
+	}
+
+	public void refreshTerroristBomb() {
+		if (game.isBombPlanted()) {
+			return;
+		}
+
+		GameTeam terroristsTeam = getTeamByName(DefusalPlayerManager.T_NAME);
+		assert terroristsTeam != null;
+
+		if (terroristsTeam.numPlayers() == 0) {
+			bombPlayer = null;
+			return;
+		}
+
+		Set<UUID> terrorists = terroristsTeam.getPlayers();
+
+		UUID randomUuid = RandomUtils.randomFromSet(terrorists);
+		ServerPlayer randomPlayer = GameUtils.getPlayerByUUID(randomUuid);
+
+		if (randomPlayer == null) {
+			return;
+		}
+
+		bombPlayer = randomUuid;
+
+		randomPlayer.getInventory().add(new ItemStack(BFItems.BOMB.value()));
+		randomPlayer.containerMenu.broadcastChanges();
+
+		GameUtils.sendNotification(
+			terrorists,
+			Component.translatable(
+				"pf.message.gamemode.notification.bomb.give",
+				Component.literal(randomPlayer.getScoreboardName()).withStyle(terroristsTeam.getStyleIcon())
+			).withStyle(terroristsTeam.getStyleText()),
+			100,
+			"bomb.give"
+		);
+		GameUtils.playSound(
+			terrorists,
+			BFSounds.ITEM_BOMB_PLANT.value(),
+			SoundSource.NEUTRAL
+		);
+	}
+
+	public void onGiveLoadout(ServerPlayer player) {
+		if (player.getUUID().equals(bombPlayer)) {
+			Inventory inventory = player.getInventory();
+
+			for (ItemStack stack : inventory.items) {
+				if (stack.getItem() instanceof BombItem) {
+					return;
+				}
+			}
+
+			inventory.add(new ItemStack(BFItems.BOMB.value()));
+			player.containerMenu.broadcastChanges();
+		}
 	}
 }

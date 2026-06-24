@@ -40,7 +40,13 @@ public class DefusalWaitingStage extends AbstractGameStage<DefusalGame, DefusalP
 
 		for (GameTeam team : playerManager.getTeams()) {
 			GameUtils.giveClassLoadout(level, game, team);
+
+			if (team.isAllies()) {
+				playerManager.giveDefuseKits(team.getPlayers());
+			}
 		}
+
+		playerManager.refreshTerroristBomb();
 	}
 
 	@Override

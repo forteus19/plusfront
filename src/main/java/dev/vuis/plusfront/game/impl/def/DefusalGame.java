@@ -27,8 +27,10 @@ import com.boehmod.blockfront.game.tag.IHasConsumables;
 import com.boehmod.blockfront.game.tag.IHasDominations;
 import com.boehmod.blockfront.game.tag.IUseKillIcons;
 import com.boehmod.blockfront.registry.BFEntityTypes;
+import com.boehmod.blockfront.registry.BFItems;
 import com.boehmod.blockfront.registry.BFSounds;
 import com.boehmod.blockfront.util.CommandUtils;
+import com.boehmod.blockfront.util.RandomUtils;
 import com.boehmod.blockfront.util.math.BFPose;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.data.PFDefusalData;
@@ -282,7 +284,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	public void onBombExplode(@NotNull BombEntity bomb, @NotNull Level level) {
 		isBombPlanted = false;
 
-		onTeamWinRound(playerManager.getPlayers(), false);
+		onRoundWin(playerManager.getPlayers(), false);
 	}
 
 	@Override
@@ -300,11 +302,11 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 			players,
 			Component.translatable("pf.message.gamemode.notification.bomb.defused")
 				.withStyle(ChatFormatting.BLUE),
-			80,
+			90,
 			"bomb.defused"
 		);
 
-		onTeamWinRound(players, true);
+		onRoundWin(players, true);
 	}
 
 	@Override
@@ -354,7 +356,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 			players,
 			Component.translatable("pf.message.gamemode.notification.bomb.planted")
 				.withStyle(ChatFormatting.RED),
-			80,
+			100,
 			"bomb.planted"
 		);
 	}
@@ -369,7 +371,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		return false;
 	}
 
-	public void onTeamWinRound(Set<UUID> players, boolean ctWin) {
+	public void onRoundWin(Set<UUID> players, boolean ctWin) {
 		GameTeam ctTeam = playerManager.getTeamByName(DefusalPlayerManager.CT_NAME);
 		assert ctTeam != null;
 		GameTeam tTeam = playerManager.getTeamByName(DefusalPlayerManager.T_NAME);
@@ -380,13 +382,19 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 		winningTeam.putStatInt(BFStats.SCORE, winningTeam.getStatInt(BFStats.SCORE) + 1);
 
+		playerManager.clearBombPlayer();
+
+		if (stageManager.getCurrentStage() instanceof DefusalGameStage gameStage) {
+			gameStage.isFinished = true;
+		}
+
 		GameUtils.sendNotification(
 			players,
 			Component.translatable(
 				"pf.message.gamemode.notification.round.win",
 				Component.literal(winningTeam.getName()).withStyle(winningTeam.getStyleText())
 			),
-			80,
+			90,
 			"round.win"
 		);
 
@@ -400,10 +408,6 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 			BFSounds.MATCH_GAMEMODE_DOM_POINT_LOST.value(),
 			SoundSource.NEUTRAL
 		);
-
-		if (stageManager.getCurrentStage() instanceof DefusalGameStage gameStage) {
-			gameStage.isFinished = true;
-		}
 	}
 
 	@Override

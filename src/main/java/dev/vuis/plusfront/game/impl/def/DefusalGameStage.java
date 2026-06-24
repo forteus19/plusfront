@@ -42,7 +42,7 @@ public class DefusalGameStage extends AbstractGameStage<DefusalGame, DefusalPlay
 			playingTimer.update(players);
 
 			if (playingTimer.isDone()) {
-				game.onTeamWinRound(players, true);
+				game.onRoundWin(players, true);
 			}
 		}
 	}
