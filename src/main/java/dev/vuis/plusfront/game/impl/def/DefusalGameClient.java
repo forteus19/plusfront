@@ -1,6 +1,7 @@
 package dev.vuis.plusfront.game.impl.def;
 
 import com.boehmod.blockfront.client.BFClientManager;
+import com.boehmod.blockfront.client.match.ping.AbstractPing;
 import com.boehmod.blockfront.client.player.BFClientPlayerData;
 import com.boehmod.blockfront.client.player.ClientPlayerDataHandler;
 import com.boehmod.blockfront.client.render.game.element.ClientGameElement;
@@ -10,13 +11,18 @@ import com.boehmod.blockfront.client.render.game.element.TimeGameElement;
 import com.boehmod.blockfront.client.render.minimap.MinimapWaypoint;
 import com.boehmod.blockfront.client.screen.match.summary.MatchSummaryScreen;
 import com.boehmod.blockfront.client.settings.BFClientSettings;
+import com.boehmod.blockfront.common.net.packet.BFRegularPingRequestPacket;
+import com.boehmod.blockfront.common.net.packet.BFRegularPingTriggerRequestPacket;
 import com.boehmod.blockfront.common.stat.BFStat;
 import com.boehmod.blockfront.common.stat.BFStats;
 import com.boehmod.blockfront.game.AbstractGameClient;
 import com.boehmod.blockfront.game.AbstractGamePlayerManager;
 import com.boehmod.blockfront.game.GameStatus;
 import com.boehmod.blockfront.game.GameTeam;
+import com.boehmod.blockfront.game.tag.client.IAllowsPingsClient;
 import com.boehmod.blockfront.unnamed.BF_552;
+import com.boehmod.blockfront.util.CollisionUtils;
+import com.boehmod.blockfront.util.PacketUtils;
 import com.boehmod.blockfront.util.StringUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -36,12 +42,14 @@ import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderNameTagEvent;
 import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.NotNull;
 
-public final class DefusalGameClient extends AbstractGameClient<DefusalGame, DefusalPlayerManager> {
+public final class DefusalGameClient extends AbstractGameClient<DefusalGame, DefusalPlayerManager> implements IAllowsPingsClient {
 	public DefusalGameClient(@NotNull BFClientManager manager, @NotNull DefusalGame game, @NotNull ClientPlayerDataHandler dataHandler) {
 		super(manager, game, dataHandler);
 
@@ -210,5 +218,35 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	@Override
 	protected @NotNull BFStat getTopPlayersStat() {
 		return BFStats.KILLS;
+	}
+
+	@Override
+	public void onPing(@NotNull Minecraft minecraft, @NotNull BFClientManager manager) {
+		LocalPlayer localPlayer = minecraft.player;
+		if (localPlayer == null) {
+			return;
+		}
+
+		HitResult hit = CollisionUtils.hitBlock(localPlayer, 64.0, minecraft.getTimer().getGameTimeDeltaPartialTick(false));
+		if (hit.getType() == HitResult.Type.MISS) {
+			return;
+		}
+		Vec3 hitPosition = hit.getLocation();
+
+		AbstractPing existingPing = getNearestPing(hitPosition, 2.0);
+		if (existingPing != null && existingPing.getPlayerUuid().equals(localPlayer.getUUID())) {
+			PacketUtils.sendToServer(new BFRegularPingTriggerRequestPacket(
+				existingPing.getUuid(), hitPosition
+			));
+		} else {
+			PacketUtils.sendToServer(new BFRegularPingRequestPacket(
+				hitPosition
+			));
+		}
+	}
+
+	@Override
+	public boolean shouldMovePing(@NotNull AbstractPing ping, @NotNull UUID playerUuid, @NotNull Vec3 newPosition) {
+		return ping.getPlayerUuid().equals(playerUuid) && ping.getPosition().distanceToSqr(newPosition) <= (2.0 * 2.0);
 	}
 }

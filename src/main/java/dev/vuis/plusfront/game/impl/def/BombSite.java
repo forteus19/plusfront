@@ -40,13 +40,13 @@ public record BombSite(
 			poseStack, font, camera, graphics,
 			Component.literal(name),
 			position.x, position.y + 2.4f, position.z,
-			2.0f, 0xFFF0F0F0, true
+			2.0f, 0xFFFFFFFF, true
 		);
 		BFRendering.component(
 			poseStack, font, camera, graphics,
 			Component.literal(String.format("%.2fm", Mth.sqrt((float) player.distanceToSqr(position)))),
 			position.x, position.y + 1.65f, position.z,
-			1.0f, 0xFFF0F0F0, true
+			1.0f, 0xFFFFFFFF, true
 		);
 	}
 

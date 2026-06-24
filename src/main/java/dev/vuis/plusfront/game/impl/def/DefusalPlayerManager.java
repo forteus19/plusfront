@@ -46,7 +46,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	public DefusalPlayerManager(@NotNull DefusalGame game, @NotNull PlayerDataHandler<?> dataHandler) {
 		super(game, dataHandler);
 
-		Style ctStyle = Style.EMPTY.withColor(0x475D82);
+		Style ctStyle = Style.EMPTY.withColor(0x546A91);
 		Style ctTextStyle = Style.EMPTY.withColor(0xDCE2EA);
 		Style tStyle = Style.EMPTY.withColor(0x7E3831);
 		Style tTextStyle = Style.EMPTY.withColor(0xE4D5D4);
@@ -385,7 +385,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 				Component.literal(randomPlayer.getScoreboardName()).withStyle(terroristsTeam.getStyleIcon())
 			).withStyle(terroristsTeam.getStyleText()),
 			100,
-			"bomb.give"
+			"bomb.transfer"
 		);
 		GameUtils.playSound(
 			terrorists,

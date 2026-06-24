@@ -8340,9 +8340,9 @@ c	com/boehmod/blockfront/iv	com/boehmod/blockfront/unnamed/BF_414	com/boehmod/bl
 	f	Z	cT	field_6924	serverShotValidationSpread
 	f	Z	cU	field_6834	serverShotValidationKick
 	f	Z	cV	field_6832	serverShotValidationReport
-	f	Z	cW	field_8759	field_8759
+	f	Z	cW	field_8759	serverGrenadeCookDropOnDeath
 	f	Z	cX	field_7091	clientFancyBulletEffects
-	f	Z	cY	field_7964	field_7964
+	f	Z	cY	field_7964	clientVeilFancyGunLight
 	m	()V	aJ	method_1469	updateFeatureFlags
 	m	()V	featureFlagsChanged	featureFlagsChanged	featureFlagsChanged
 c	com/boehmod/blockfront/iw	com/boehmod/blockfront/unnamed/BF_470	com/boehmod/blockfront/cloud/PlayerCloudInventory
@@ -13323,7 +13323,9 @@ c	com/boehmod/blockfront/on	com/boehmod/blockfront/unnamed/BF_679	com/boehmod/bl
 		p	1			message
 		p	2			time
 		p	3			key
-	m	(Lnet/minecraft/world/phys/Vec3;D)Lcom/boehmod/blockfront/sk;	a	method_6046	method_6046
+	m	(Lnet/minecraft/world/phys/Vec3;D)Lcom/boehmod/blockfront/sk;	a	method_6046	getNearestPing
+		p	1			position
+		p	2			maxDistance
 	m	(Z)Ljava/util/Collection;	a	method_2716	getSummaryScreens
 		p	1			onlyVote
 	m	()Z	aY	method_2718	canOpenInventory
@@ -13703,7 +13705,8 @@ c	com/boehmod/blockfront/ou	com/boehmod/blockfront/unnamed/BF_686	com/boehmod/bl
 	m	(Lcom/boehmod/blockfront/sG;I)V	a	method_6746	putStatInt
 		p	1			stat
 		p	2			value
-	m	(Lnet/minecraft/network/protocol/common/custom/CustomPacketPayload;)V	a	method_6047	method_6047
+	m	(Lnet/minecraft/network/protocol/common/custom/CustomPacketPayload;)V	a	method_6047	sendPacket
+		p	1			payload
 	m	()I	aQ	method_2820	getMaxPlayers
 	m	()I	aR	method_2821	getIconColor
 	m	()I	aS	method_2822	numPlayers
@@ -15457,8 +15460,15 @@ c	com/boehmod/blockfront/qC	com/boehmod/blockfront/unnamed/BF_824	com/boehmod/bl
 	m	()Z	br	method_3430	shouldAddKillFeedEntries
 c	com/boehmod/blockfront/qD	com/boehmod/blockfront/unnamed/BF_825	com/boehmod/blockfront/game/tag/IHasKillStreaks
 c	com/boehmod/blockfront/qE	com/boehmod/blockfront/unnamed/BF_1228	com/boehmod/blockfront/game/tag/IAllowsPings
-	m	(Lcom/boehmod/blockfront/jd;Lnet/minecraft/server/level/ServerPlayer;Ljava/util/UUID;Lnet/minecraft/world/phys/Vec3;)V	a	method_6052	method_6052
-	m	(Lcom/boehmod/blockfront/jd;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/world/phys/Vec3;)V	a	method_6053	method_6053
+	m	(Lcom/boehmod/blockfront/jd;Lnet/minecraft/server/level/ServerPlayer;Ljava/util/UUID;Lnet/minecraft/world/phys/Vec3;)V	a	method_6052	onPingTriggerRequest
+		p	1			manager
+		p	2			player
+		p	3			pingUuid
+		p	4			position
+	m	(Lcom/boehmod/blockfront/jd;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/world/phys/Vec3;)V	a	method_6053	onPingRequest
+		p	1			manager
+		p	2			player
+		p	3			position
 c	com/boehmod/blockfront/qF	com/boehmod/blockfront/unnamed/BF_826	com/boehmod/blockfront/game/tag/IAllowsSoundboard
 	m	(Lnet/minecraft/server/level/ServerPlayer;)I	b	method_3432	getMaximumPlayerSounds
 	m	()I	bm	method_3431	getSoundboardCooldown
@@ -16140,9 +16150,14 @@ c	com/boehmod/blockfront/qk	com/boehmod/blockfront/unnamed/BF_807	com/boehmod/bl
 	m	(F)V	n	method_3377	setSpeed
 	m	()Lnet/minecraft/world/phys/Vec3;	s	method_3375	method_3375
 	m	()Lnet/minecraft/world/phys/Vec3;	t	method_3376	method_3376
-c	com/boehmod/blockfront/ql	com/boehmod/blockfront/unnamed/BF_1227	com/boehmod/blockfront/unnamed/BF_1227
-	m	(Lcom/boehmod/blockfront/sk;Ljava/util/UUID;Lnet/minecraft/world/phys/Vec3;)Z	a	method_6050	method_6050
-	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/l;)V	e	method_6051	method_6051
+c	com/boehmod/blockfront/ql	com/boehmod/blockfront/unnamed/BF_1227	com/boehmod/blockfront/game/tag/client/IAllowsPingsClient
+	m	(Lcom/boehmod/blockfront/sk;Ljava/util/UUID;Lnet/minecraft/world/phys/Vec3;)Z	a	method_6050	shouldMovePing
+		p	1			ping
+		p	2			playerUuid
+		p	3			newPosition
+	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/l;)V	e	method_6051	onPing
+		p	1			minecraft
+		p	2			manager
 c	com/boehmod/blockfront/qm	com/boehmod/blockfront/unnamed/BF_808	com/boehmod/blockfront/game/tag/ISendBattleReports
 c	com/boehmod/blockfront/qn	com/boehmod/blockfront/unnamed/BF_809	com/boehmod/blockfront/game/tag/IHasBombs
 	m	(Lcom/boehmod/blockfront/mj;Lnet/minecraft/server/level/ServerPlayer;Ljava/util/UUID;)V	a	method_3381	onBombDefused
@@ -16180,8 +16195,14 @@ c	com/boehmod/blockfront/qo	com/boehmod/blockfront/unnamed/BF_810	com/boehmod/bl
 	m	(Lcom/boehmod/blockfront/ou;)I	b	method_3393	method_3393
 	m	(Lnet/minecraft/server/level/ServerLevel;)V	d	method_3394	method_3394
 c	com/boehmod/blockfront/qp	com/boehmod/blockfront/unnamed/BF_811	com/boehmod/blockfront/game/tag/IAllowsCallouts
-	m	(Lcom/boehmod/blockfront/om;Ljava/util/UUID;Lcom/boehmod/blockfront/oD;)V	a	method_3395	method_3395
-	m	(Lnet/minecraft/server/level/ServerPlayer;Ljava/util/UUID;Lcom/boehmod/blockfront/oD;)V	a	method_3396	method_3396
+	m	(Lcom/boehmod/blockfront/om;Ljava/util/UUID;Lcom/boehmod/blockfront/oD;)V	a	method_3395	handleCallout
+		p	1			game
+		p	2			uuid
+		p	3			callout
+	m	(Lnet/minecraft/server/level/ServerPlayer;Ljava/util/UUID;Lcom/boehmod/blockfront/oD;)V	a	method_3396	onCallout
+		p	1			player
+		p	2			uuid
+		p	3			callout
 c	com/boehmod/blockfront/qq	com/boehmod/blockfront/unnamed/BF_812	com/boehmod/blockfront/game/tag/IHasCapturePoints
 	m	()Ljava/util/List;	M	method_3399	getCapturePoints
 	m	(Lcom/boehmod/blockfront/jd;Lnet/minecraft/world/level/Level;Lcom/boehmod/blockfront/oz;Ljava/lang/String;Ljava/lang/String;Ljava/util/Set;)V	a	method_3397	method_3397
@@ -18739,8 +18760,11 @@ c	com/boehmod/blockfront/td	com/boehmod/blockfront/unnamed/BF_1185	com/boehmod/b
 	m	()[Lcom/boehmod/blockfront/td;	$values	$values	$values
 	m	(Ljava/lang/String;)Lcom/boehmod/blockfront/td;	valueOf	valueOf	valueOf
 	m	()[Lcom/boehmod/blockfront/td;	values	values	values
-c	com/boehmod/blockfront/te	com/boehmod/blockfront/unnamed/BF_905	com/boehmod/blockfront/unnamed/BF_905
-	m	(Lnet/minecraft/world/entity/Entity;DF)Lnet/minecraft/world/phys/HitResult;	a	method_3753	method_3753
+c	com/boehmod/blockfront/te	com/boehmod/blockfront/unnamed/BF_905	com/boehmod/blockfront/util/CollisionUtils
+	m	(Lnet/minecraft/world/entity/Entity;DF)Lnet/minecraft/world/phys/HitResult;	a	method_3753	hitBlock
+		p	0			entity
+		p	1			maxDistance
+		p	3			partialTick
 	m	(Lnet/minecraft/world/level/ClipContext;)Lnet/minecraft/world/phys/BlockHitResult;	a	method_3754	method_3754
 	m	(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/level/ClipContext;)Lnet/minecraft/world/phys/BlockHitResult;	a	method_3755	method_3755
 	m	(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/level/ClipContext;Lnet/minecraft/world/level/ClipContext;Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/phys/BlockHitResult;	a	method_3756	method_3756

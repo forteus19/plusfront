@@ -7,7 +7,10 @@ import com.boehmod.blockfront.client.player.ClientPlayerDataHandler;
 import com.boehmod.blockfront.common.BFAbstractManager;
 import com.boehmod.blockfront.common.entity.BombEntity;
 import com.boehmod.blockfront.common.item.BFConsumableItem;
+import com.boehmod.blockfront.common.match.MatchCallout;
 import com.boehmod.blockfront.common.match.MatchClass;
+import com.boehmod.blockfront.common.net.packet.BFRegularPingPacket;
+import com.boehmod.blockfront.common.net.packet.BFRegularPingTriggerPacket;
 import com.boehmod.blockfront.common.player.PlayerDataHandler;
 import com.boehmod.blockfront.common.stat.BFStats;
 import com.boehmod.blockfront.game.AbstractGame;
@@ -19,6 +22,8 @@ import com.boehmod.blockfront.game.GameTypeCodec;
 import com.boehmod.blockfront.game.GameUtils;
 import com.boehmod.blockfront.game.IdleGameStage;
 import com.boehmod.blockfront.game.TeamJoinType;
+import com.boehmod.blockfront.game.tag.IAllowsCallouts;
+import com.boehmod.blockfront.game.tag.IAllowsPings;
 import com.boehmod.blockfront.game.tag.IAllowsSoundboard;
 import com.boehmod.blockfront.game.tag.ICanSwitchTeams;
 import com.boehmod.blockfront.game.tag.IHasBombs;
@@ -45,6 +50,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -57,7 +63,7 @@ import static dev.vuis.plusfront.util.AssetCommandUtil.executor;
 import static dev.vuis.plusfront.util.AssetCommandUtil.executorPlayers;
 
 public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerManager, GameStageManager<DefusalGame, DefusalPlayerManager>>
-	implements IAllowsSoundboard, ICanSwitchTeams, IHasBombs, IHasClasses, IHasConsumables, IHasDominations, IUseKillIcons {
+	implements IAllowsCallouts<DefusalGame>, IAllowsPings, IAllowsSoundboard, ICanSwitchTeams, IHasBombs, IHasClasses, IHasConsumables, IHasDominations, IUseKillIcons {
 
 	public static final int SCORE_TO_WIN = 8;
 
@@ -253,6 +259,39 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	}
 
 	@Override
+	public void onCallout(@NotNull ServerPlayer player, @NotNull UUID uuid, @NotNull MatchCallout callout) {
+		handleCallout(this, uuid, callout);
+	}
+
+	@Override
+	public void onPingRequest(@NotNull BFAbstractManager<?, ?, ?> manager, @NotNull ServerPlayer player, @NotNull Vec3 position) {
+		UUID playerUuid = player.getUUID();
+
+		GameTeam team = playerManager.getPlayerTeam(playerUuid);
+		if (team == null) {
+			return;
+		}
+
+		team.sendPacket(new BFRegularPingPacket(
+			playerUuid, UUID.randomUUID(), position
+		));
+	}
+
+	@Override
+	public void onPingTriggerRequest(@NotNull BFAbstractManager<?, ?, ?> manager, @NotNull ServerPlayer player, @NotNull UUID pingUuid, @NotNull Vec3 position) {
+		UUID playerUuid = player.getUUID();
+
+		GameTeam team = playerManager.getPlayerTeam(playerUuid);
+		if (team == null) {
+			return;
+		}
+
+		team.sendPacket(new BFRegularPingTriggerPacket(
+			playerUuid, pingUuid, position
+		));
+	}
+
+	@Override
 	public int getMaximumPlayerSounds(@NotNull ServerPlayer serverPlayer) {
 		return Integer.MAX_VALUE;
 	}
@@ -364,11 +403,6 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 		Set<UUID> players = playerManager.getPlayers();
 
-		GameUtils.playSound(
-			players,
-			BFSounds.ITEM_BOMB_PLANT.value(),
-			SoundSource.NEUTRAL
-		);
 		GameUtils.sendNotification(
 			players,
 			Component.translatable("pf.message.gamemode.notification.bomb.planted")
@@ -376,6 +410,22 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 			100,
 			"bomb.planted"
 		);
+
+		GameUtils.playSound(
+			players,
+			BFSounds.ITEM_BOMB_PLANT.value(),
+			SoundSource.NEUTRAL
+		);
+		for (UUID playerUuid : players) {
+			if (!playerUuid.equals(player.getUUID())) {
+				GameUtils.playSound(
+					playerUuid,
+					SoundEvents.ENDER_DRAGON_FLAP,
+					SoundSource.NEUTRAL,
+					1.0f, 1.5f
+				);
+			}
+		}
 	}
 
 	private boolean checkBombSiteDistance(Vec3 playerPos) {
