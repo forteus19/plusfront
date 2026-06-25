@@ -34,7 +34,7 @@ public final class PFStartConsumablePayload implements CustomPacketPayload {
 		PacketDistributor.sendToServer(INSTANCE);
 	}
 
-	public static void handleServer(PFStartConsumablePayload payload, IPayloadContext context) {
+	private static void handleServer(PFStartConsumablePayload payload, IPayloadContext context) {
 		Player player = context.player();
 
 		if (PFUtil.getPlayerGame(player) instanceof DefusalGame defusalGame) {

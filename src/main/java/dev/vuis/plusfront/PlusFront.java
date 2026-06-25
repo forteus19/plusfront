@@ -1,6 +1,5 @@
 package dev.vuis.plusfront;
 
-import com.boehmod.blockfront.game.GameType;
 import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.common.Mod;
@@ -19,7 +18,7 @@ public final class PlusFront {
 	public static boolean voicechatLoaded = false;
 
 	public PlusFront() {
-		LOGGER.info("dom icon: {}", GameType.DOMINATION.getIconTexture());
+		PlusFront.LOGGER.info("PlusFront initialized!");
 	}
 
 	public static ResourceLocation res(String path) {
