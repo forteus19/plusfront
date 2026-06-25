@@ -3,6 +3,9 @@
   "minVersion": "0.8",
   "package": "dev.vuis.plusfront.mixin",
   "compatibilityLevel": "JAVA_21",
+  "mixinextras": {
+    "minVersion": "0.5"
+  },
   "mixins": [
     "bf.AbstractGameMixin",
     "bf.AbstractGamePlayerManagerMixin",
@@ -23,6 +26,7 @@
     "bf.TroubleTownWaitingStageMixin"
   ],
   "client": [
+    "bf.client.BFConsumableItemMixin",
     "bf.client.BFVersionCheckerMixin",
     "bf.client.TeamScoreGameElementMixin",
     "bf.client.TroubleTownGameClientMixin",

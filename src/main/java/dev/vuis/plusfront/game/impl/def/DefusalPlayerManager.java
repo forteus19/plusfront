@@ -22,6 +22,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
@@ -34,6 +36,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -419,5 +422,36 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		}
 
 		giveAndSync(player, item);
+	}
+
+	public void onStartConsumable(Level level, Player player, ItemStack stack) {
+		Vec3 position = player.position();
+
+		if (!game.checkBombSiteDistance(position)) {
+			return;
+		}
+
+		Item item = stack.getItem();
+
+		SoundEvent sound;
+		float pitch;
+
+		if (item == BFItems.BOMB.value()) {
+			sound = BFSounds.ITEM_BOMB_PLANT.value();
+			pitch = 0.75f;
+		} else if (item == BFItems.BOMB_DEFUSE_KIT.value()) {
+			sound = SoundEvents.ENDER_DRAGON_FLAP;
+			pitch = 1.5f;
+		} else {
+			return;
+		}
+
+		level.playSound(
+			player,
+			position.x, position.y, position.z,
+			sound,
+			SoundSource.NEUTRAL,
+			2f, pitch
+		);
 	}
 }

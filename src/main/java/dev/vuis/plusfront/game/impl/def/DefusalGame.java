@@ -348,11 +348,11 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 		Set<UUID> players = playerManager.getPlayers();
 
-		GameUtils.playSound(
-			players,
-			BFSounds.ITEM_BOMB_DEFUSE.value(),
-			SoundSource.NEUTRAL
-		);
+//		GameUtils.playSound(
+//			players,
+//			BFSounds.ITEM_BOMB_DEFUSE.value(),
+//			SoundSource.NEUTRAL
+//		);
 		GameUtils.sendNotification(
 			players,
 			Component.translatable("pf.message.gamemode.notification.bomb.defused")
@@ -428,7 +428,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		}
 	}
 
-	private boolean checkBombSiteDistance(Vec3 playerPos) {
+	public boolean checkBombSiteDistance(Vec3 playerPos) {
 		for (BombSite site : bombSites) {
 			float radius = site.radius();
 
