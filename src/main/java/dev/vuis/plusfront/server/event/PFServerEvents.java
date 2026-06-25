@@ -3,13 +3,17 @@ package dev.vuis.plusfront.server.event;
 import com.boehmod.blockfront.BlockFront;
 import com.boehmod.blockfront.common.BFAbstractManager;
 import com.boehmod.blockfront.game.AbstractGame;
+import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.game.impl.def.DefusalGame;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 
-@EventBusSubscriber(Dist.DEDICATED_SERVER)
+@EventBusSubscriber(
+	value = Dist.DEDICATED_SERVER,
+	modid = PlusFront.MOD_ID
+)
 public final class PFServerEvents {
 	private PFServerEvents() {
 		throw new AssertionError();

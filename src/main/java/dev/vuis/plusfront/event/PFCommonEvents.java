@@ -1,12 +1,15 @@
 package dev.vuis.plusfront.event;
 
+import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.net.payload.PFStartConsumablePayload;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
-@EventBusSubscriber
+@EventBusSubscriber(
+	modid = PlusFront.MOD_ID
+)
 public final class PFCommonEvents {
 	private PFCommonEvents() {
 		throw new AssertionError();
