@@ -46,6 +46,14 @@ public class BrightnessMapEffect extends AbstractMapEffect {
 		this.brightness = brightness;
 	}
 
+	public float getBrightness() {
+		return brightness;
+	}
+
+	public void setBrightness(float brightness) {
+		this.brightness = brightness;
+	}
+
 	@Override
 	public void onInitEnvironment(@NotNull Minecraft minecraft, @NotNull MapEnvironment environment) {
 		super.onInitEnvironment(minecraft, environment);
@@ -65,8 +73,8 @@ public class BrightnessMapEffect extends AbstractMapEffect {
 
 		fields.add(new BoundedFloatPromptField(
 			Component.literal("Brightness"),
-			() -> this.brightness,
-			(brightness) -> this.brightness = brightness
+			this::getBrightness, this::setBrightness,
+			0f, 1f
 		));
 
 		return fields;
