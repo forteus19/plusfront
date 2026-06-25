@@ -24,6 +24,7 @@
   ],
   "client": [
     "bf.client.BFVersionCheckerMixin",
+    "bf.client.TeamScoreGameElementMixin",
     "bf.client.TroubleTownGameClientMixin",
     "minecraft.client.LightTextureMixin"
   ],

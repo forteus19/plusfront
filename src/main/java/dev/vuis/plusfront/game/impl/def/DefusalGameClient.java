@@ -5,9 +5,7 @@ import com.boehmod.blockfront.client.match.ping.AbstractPing;
 import com.boehmod.blockfront.client.player.BFClientPlayerData;
 import com.boehmod.blockfront.client.player.ClientPlayerDataHandler;
 import com.boehmod.blockfront.client.render.game.element.ClientGameElement;
-import com.boehmod.blockfront.client.render.game.element.TeamGameElement;
 import com.boehmod.blockfront.client.render.game.element.TeamScoreGameElement;
-import com.boehmod.blockfront.client.render.game.element.TimeGameElement;
 import com.boehmod.blockfront.client.render.minimap.MinimapWaypoint;
 import com.boehmod.blockfront.client.screen.match.summary.MatchSummaryScreen;
 import com.boehmod.blockfront.client.settings.BFClientSettings;
@@ -25,6 +23,8 @@ import com.boehmod.blockfront.util.CollisionUtils;
 import com.boehmod.blockfront.util.PacketUtils;
 import com.boehmod.blockfront.util.StringUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.vuis.plusfront.client.def.DefusalTeamGameElement;
+import dev.vuis.plusfront.client.def.DefusalTimeGameElement;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -64,9 +64,9 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	@Override
 	protected @NotNull List<ClientGameElement<DefusalGame, DefusalPlayerManager>> getGameElements() {
 		return List.of(
-			new TeamGameElement<>(),
+			new DefusalTeamGameElement(),
 			new TeamScoreGameElement<>(),
-			new TimeGameElement<>()
+			new DefusalTimeGameElement()
 		);
 	}
 
@@ -124,7 +124,9 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 
 	@Override
 	public boolean canChangePerspective(@NotNull Player player) {
-		return game.getStatus() != GameStatus.GAME || player.getVehicle() != null;
+		return game.getStatus() != GameStatus.GAME
+			|| game.getStageManager().getCurrentStage().getClass() == DefusalWaitingStage.class
+			|| player.getVehicle() != null;
 	}
 
 	@Override
