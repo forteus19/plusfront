@@ -14,6 +14,7 @@ import com.boehmod.blockfront.registry.BFItems;
 import com.boehmod.blockfront.registry.BFSounds;
 import com.boehmod.blockfront.util.RandomUtils;
 import com.boehmod.blockfront.util.math.BFPose;
+import dev.vuis.plusfront.util.PFUtil;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -22,7 +23,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
@@ -33,7 +33,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
@@ -101,8 +100,8 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		GameTeam tTeam = getTeamByName(DefusalPlayerManager.T_NAME);
 		assert tTeam != null;
 
-		int ctDead = getNumUnavailablePlayers(ctTeam, dataHandler);
-		int tDead = getNumUnavailablePlayers(tTeam, dataHandler);
+		int ctDead = PFUtil.getNumUnavailable(dataHandler, ctTeam.getPlayers());
+		int tDead = PFUtil.getNumUnavailable(dataHandler, tTeam.getPlayers());
 
 		boolean ctOut = ctDead >= ctTeam.numPlayers();
 		boolean tOut = tDead >= tTeam.numPlayers();
@@ -122,23 +121,6 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		if (tOut && !game.isBombPlanted()) {
 			game.onRoundWin(players, true);
 		}
-	}
-
-	private static int getNumUnavailablePlayers(GameTeam team, PlayerDataHandler<?> dataHandler) {
-		int count = 0;
-
-		for (UUID uuid : team.getPlayers()) {
-			ServerPlayer player = GameUtils.getPlayerByUUID(uuid);
-			if (player == null) {
-				continue;
-			}
-
-			if (GameUtils.isPlayerUnavailable(player, dataHandler.getPlayerData(player))) {
-				count++;
-			}
-		}
-
-		return count;
 	}
 
 	@Override
@@ -205,7 +187,8 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 
 	@Override
 	protected boolean shouldPlayerRespawnInGame(@NotNull ServerPlayer player) {
-		return false;
+		GameTeam team = getPlayerTeam(player.getUUID());
+		return team != null && team.numPlayers() <= 1;
 	}
 
 	@Override
@@ -314,7 +297,6 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		@NotNull UUID uuid
 	) {
 		GameUtils.initPlayerForGame(dataHandler, level, player);
-		player.setGameMode(GameType.SPECTATOR);
 
 		BFPose spawnPos = lobbySpawn;
 

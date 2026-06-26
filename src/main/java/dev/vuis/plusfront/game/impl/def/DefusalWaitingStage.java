@@ -21,7 +21,18 @@ public class DefusalWaitingStage extends AbstractGameStage<DefusalGame, DefusalP
 	private final GameStageTimer timer = new GameStageTimer(0, 5).warningTime(5);
 
 	@Override
-	public void onPlayerInit(@NotNull GameStageContext<DefusalGame, DefusalPlayerManager> context, @NotNull TeamJoinType joinTyoe, @NotNull ServerPlayer player) {
+	public void onPlayerInit(@NotNull GameStageContext<DefusalGame, DefusalPlayerManager> context, @NotNull TeamJoinType joinType, @NotNull ServerPlayer player) {
+		GameTeam joinedTeam = context.playerHandler().getPlayerTeam(player.getUUID());
+
+		if (joinedTeam != null && joinedTeam.numPlayers() <= 1) {
+			player.setGameMode(GameType.ADVENTURE);
+			GameUtils.freezePlayer(context.playerDataHandler(), player);
+
+			timer.setSecondsRemaining(10);
+
+			return;
+		}
+
 		player.setGameMode(GameType.SPECTATOR);
 	}
 
