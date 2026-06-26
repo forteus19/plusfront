@@ -1,5 +1,6 @@
 package dev.vuis.plusfront.game.impl.def;
 
+import com.boehmod.blockfront.common.player.PlayerDataHandler;
 import com.boehmod.blockfront.game.AbstractGameStage;
 import com.boehmod.blockfront.game.GameStageContext;
 import com.boehmod.blockfront.game.GameStageTimer;
@@ -25,8 +26,12 @@ public class DefusalGameStage extends AbstractGameStage<DefusalGame, DefusalPlay
 	@Override
 	public void onStageEnd(@NotNull GameStageContext<DefusalGame, DefusalPlayerManager> context) {
 		DefusalGame game = context.game();
+		PlayerDataHandler<?> dataHandler = context.playerDataHandler();
 
 		game.resetBombPlanted();
+		for (UUID playerUuid : context.players()) {
+			dataHandler.getPlayerData(playerUuid).clearPlayerDamage();
+		}
 
 		GameUtils.discardMatchEntities(context.serverLevel(), game, context.playerHandler());
 	}

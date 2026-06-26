@@ -4280,7 +4280,7 @@ c	com/boehmod/blockfront/common/player/b	com/boehmod/blockfront/common/player/b	
 	f	Ljava/util/UUID;	X	field_7824	field_7824
 	f	Lcom/boehmod/bflib/cloud/common/player/PlayerDataType;	a	field_1151	field_1151
 	f	Lcom/boehmod/blockfront/common/player/a;	a	field_1152	field_1152
-	f	Lit/unimi/dsi/fastutil/objects/Object2FloatMap;	a	field_1153	field_1153
+	f	Lit/unimi/dsi/fastutil/objects/Object2FloatMap;	a	field_1153	playerDamage
 	f	Ljava/time/format/DateTimeFormatter;	a	field_1154	field_1154
 	f	Ljava/lang/String;	dz	field_1156	lastMessage
 	f	Lit/unimi/dsi/fastutil/ints/IntSet;	e	field_8757	field_8757
@@ -4342,7 +4342,7 @@ c	com/boehmod/blockfront/common/player/b	com/boehmod/blockfront/common/player/b	
 	m	()I	bZ	method_851	getRespawnTimer
 	m	(J)V	c	method_844	method_844
 	m	()V	cQ	method_846	method_846
-	m	()V	cR	method_847	reset
+	m	()V	cR	method_847	clearPlayerDamage
 	m	()Z	cR	method_848	isOutOfGame
 	m	()V	cS	method_6983	method_6983
 	m	()Z	cS	method_849	isFrozen
@@ -4358,7 +4358,7 @@ c	com/boehmod/blockfront/common/player/b	com/boehmod/blockfront/common/player/b	
 	m	()Ljava/util/UUID;	getUUID	getUUID	getUUID
 	m	()J	h	method_854	getLastChatTime
 	m	()Lcom/boehmod/blockfront/oB;	k	method_858	getFreezePose
-	m	()Ljava/util/Map;	t	method_857	method_857
+	m	()Ljava/util/Map;	t	method_857	getPlayerDamage
 	m	(Ljava/util/UUID;)V	<init>	<init>	<init>
 		p	1			uuid
 c	com/boehmod/blockfront/common/player/c	com/boehmod/blockfront/common/player/c	com/boehmod/blockfront/common/player/PlayerDataHandler
@@ -7241,7 +7241,7 @@ c	com/boehmod/blockfront/hF	com/boehmod/blockfront/unnamed/BF_433	com/boehmod/bl
 	f	Lcom/boehmod/blockfront/hG;	g	field_2006	EXPERIMENTAL
 	f	Lcom/boehmod/blockfront/hG;	h	field_2007	DEBUG
 	f	Lcom/boehmod/blockfront/hG;	i	field_2008	RULES
-	f	Lcom/boehmod/blockfront/hG;	j	field_7928	field_7928
+	f	Lcom/boehmod/blockfront/hG;	j	field_7928	INTERNAL
 	m	(Lcom/boehmod/blockfront/hG;)Lcom/boehmod/blockfront/hG;	a	method_1516	register
 		p	0			category
 c	com/boehmod/blockfront/hG	com/boehmod/blockfront/unnamed/BF_434	com/boehmod/blockfront/client/settings/BFClientSettingCategory
@@ -12744,7 +12744,7 @@ c	com/boehmod/blockfront/oW	com/boehmod/blockfront/unnamed/BF_777	com/boehmod/bl
 	f	Lnet/minecraft/world/item/ItemStack;	c	field_3314	field_3314
 	f	F	jD	field_3316	field_3316
 	f	F	jE	field_3315	field_3315
-c	com/boehmod/blockfront/oX	com/boehmod/blockfront/unnamed/BF_778	com/boehmod/blockfront/common/match/kill/KillSectionDistance
+c	com/boehmod/blockfront/oX	com/boehmod/blockfront/unnamed/BF_778	com/boehmod/blockfront/common/match/kill/KillSectionText
 	f	Lnet/minecraft/network/chat/Component;	A	field_3317	field_3317
 	f	I	mw	field_8106	field_8106
 	f	Lnet/minecraft/util/FormattedCharSequence;	v	field_8107	field_8107
@@ -16970,7 +16970,7 @@ c	com/boehmod/blockfront/sH	com/boehmod/blockfront/unnamed/BF_943	com/boehmod/bl
 	f	Lcom/boehmod/blockfront/sG;	u	field_3829	SOUNDBOARD_SOUNDS
 	f	Lcom/boehmod/blockfront/sG;	v	field_3830	ROUND_WINS
 	f	Lcom/boehmod/blockfront/sG;	w	field_3831	RADIO_DELAY
-	f	Lcom/boehmod/blockfront/sG;	x	field_8360	field_8360
+	f	Lcom/boehmod/blockfront/sG;	x	field_8360	WAYPOINT_DELAY
 	f	Lcom/boehmod/blockfront/sG;	y	field_3832	TEAM_SWITCH
 	f	Lcom/boehmod/blockfront/sG;	z	field_3833	WAR_CRY
 	m	(Lcom/boehmod/blockfront/jd;Lcom/boehmod/blockfront/sG;Lcom/boehmod/blockfront/om;Ljava/util/UUID;ILnet/minecraft/world/item/ItemStack;I)V	a	method_3924	method_3924
