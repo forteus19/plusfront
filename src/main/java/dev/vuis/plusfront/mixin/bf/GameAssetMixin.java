@@ -2,6 +2,7 @@ package dev.vuis.plusfront.mixin.bf;
 
 import com.boehmod.blockfront.assets.impl.GameAsset;
 import com.boehmod.blockfront.game.GameTypeCodec;
+import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.ex.TeamDeathmatchCodecEx;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,6 +25,8 @@ public abstract class GameAssetMixin {
 			TeamDeathmatchCodecEx ex = TeamDeathmatchCodecEx.cast(tdmCodec);
 
 			if (ex.pf$getDefusalData().isPresent()) {
+				PlusFront.LOGGER.info("Overriding TDM key with DEF.");
+
 				key = "def";
 			}
 		}

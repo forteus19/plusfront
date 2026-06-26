@@ -36,6 +36,8 @@ public final class PFStopMusicPayload implements CustomPacketPayload {
 			return;
 		}
 
+		PlusFront.LOGGER.info("Stopping current music.");
+
 		manager.getMusicManager().method_1532();
 	}
 }

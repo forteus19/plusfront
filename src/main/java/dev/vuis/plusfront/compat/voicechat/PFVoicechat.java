@@ -32,7 +32,7 @@ public final class PFVoicechat implements VoicechatPlugin {
 		instance = this;
 		PlusFront.voicechatLoaded = true;
 
-		PlusFront.LOGGER.info("Voicechat initialized!");
+		PlusFront.LOGGER.info("Voicechat plugin initialized!");
 	}
 
 	public static PFVoicechat getInstance() {

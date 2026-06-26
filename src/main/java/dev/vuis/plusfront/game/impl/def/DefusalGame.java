@@ -387,6 +387,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	@Override
 	public void onBombPlanted(@NotNull Level level, @NotNull Player player, @NotNull ItemStack heldStack) {
 		if (!checkBombSiteDistance(player.position())) {
+			PlusFront.LOGGER.warn("Player {} tried to plant outside of bombsite radius!", player.getScoreboardName());
 			return;
 		}
 
