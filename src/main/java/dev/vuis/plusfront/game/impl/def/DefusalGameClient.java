@@ -18,6 +18,7 @@ import com.boehmod.blockfront.game.AbstractGamePlayerManager;
 import com.boehmod.blockfront.game.GameStatus;
 import com.boehmod.blockfront.game.GameTeam;
 import com.boehmod.blockfront.game.tag.client.IAllowsPingsClient;
+import com.boehmod.blockfront.registry.BFItems;
 import com.boehmod.blockfront.unnamed.BF_552;
 import com.boehmod.blockfront.util.CollisionUtils;
 import com.boehmod.blockfront.util.PacketUtils;
@@ -28,6 +29,7 @@ import dev.vuis.plusfront.client.def.DefusalTimeGameElement;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import net.minecraft.client.Camera;
@@ -39,7 +41,9 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.HitResult;
@@ -50,8 +54,15 @@ import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.NotNull;
 
 public final class DefusalGameClient extends AbstractGameClient<DefusalGame, DefusalPlayerManager> implements IAllowsPingsClient {
+	private final List<BombSiteClient> bombSites;
+
 	public DefusalGameClient(@NotNull BFClientManager manager, @NotNull DefusalGame game, @NotNull ClientPlayerDataHandler dataHandler) {
 		super(manager, game, dataHandler);
+
+		bombSites = new ObjectArrayList<>(game.getBombSites().size());
+		for (BombSite data : game.getBombSites()) {
+			bombSites.add(new BombSiteClient(data));
+		}
 
 		manager.getCinematics().method_2205(new BF_552(game));
 	}
@@ -76,6 +87,36 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	}
 
 	@Override
+	public void update(
+		@NotNull Minecraft minecraft,
+		@NotNull Random random,
+		@NotNull RandomSource randomSource,
+		@NotNull LocalPlayer player,
+		@NotNull ClientLevel level,
+		@NotNull BFClientManager manager,
+		@NotNull BFClientPlayerData playerData,
+		@NotNull Set<UUID> players,
+		float renderTime,
+		@NotNull Vec3 cameraPos,
+		@NotNull BlockPos cameraBlockPos
+	) {
+		super.update(minecraft, random, randomSource, player, level, manager, playerData, players, renderTime, cameraPos, cameraBlockPos);
+
+		GameTeam terroristTeam = game.getPlayerManager().getTeamByName(DefusalPlayerManager.T_NAME);
+		assert terroristTeam != null;
+
+		boolean highlightInRadius =
+			player.getMainHandItem().getItem() == BFItems.BOMB.value() &&
+				terroristTeam.hasPlayer(player.getUUID());
+
+		if (BFClientSettings.UI_RENDER_WAYPOINTS.isEnabled()) {
+			for (BombSiteClient site : bombSites) {
+				site.update(player, highlightInRadius);
+			}
+		}
+	}
+
+	@Override
 	public void render(
 		@NotNull AbstractGamePlayerManager<?> playerManager,
 		@NotNull Minecraft minecraft,
@@ -95,8 +136,8 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		super.render(playerManager, minecraft, level, player, renderEvent, bufferSource, poseStack, frustum, font, graphics, camera, renderGameInfo, renderTime, partialTick);
 
 		if (BFClientSettings.UI_RENDER_WAYPOINTS.isEnabled()) {
-			for (BombSite site : game.getBombSites()) {
-				site.render(player, poseStack, font, graphics, camera);
+			for (BombSiteClient site : bombSites) {
+				site.render(poseStack, font, graphics, camera);
 			}
 		}
 	}
