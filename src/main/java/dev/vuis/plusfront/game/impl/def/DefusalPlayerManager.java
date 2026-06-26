@@ -63,6 +63,13 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	}
 
 	@Override
+	public void reset() {
+		super.reset();
+
+		clearBombPlayer();
+	}
+
+	@Override
 	public @Nullable GameTeam getTeamByName(@NotNull String name) {
 		// workaround for hardcoded team names
 		return super.getTeamByName(switch (name) {
@@ -433,25 +440,29 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 
 		Item item = stack.getItem();
 
-		SoundEvent sound;
-		float pitch;
-
 		if (item == BFItems.BOMB.value()) {
-			sound = BFSounds.ITEM_BOMB_PLANT.value();
-			pitch = 0.75f;
+			level.playSound(
+				player,
+				position.x, position.y, position.z,
+				BFSounds.ITEM_BOMB_PLANT.value(),
+				SoundSource.NEUTRAL,
+				1.75f, 0.75f
+			);
+			level.playSound(
+				player,
+				position.x, position.y, position.z,
+				SoundEvents.ENDER_DRAGON_FLAP,
+				SoundSource.NEUTRAL,
+				1.5f, 2f
+			);
 		} else if (item == BFItems.BOMB_DEFUSE_KIT.value()) {
-			sound = SoundEvents.ENDER_DRAGON_FLAP;
-			pitch = 1.5f;
-		} else {
-			return;
+			level.playSound(
+				player,
+				position.x, position.y, position.z,
+				SoundEvents.ENDER_DRAGON_FLAP,
+				SoundSource.NEUTRAL,
+				1.75f, 1.5f
+			);
 		}
-
-		level.playSound(
-			player,
-			position.x, position.y, position.z,
-			sound,
-			SoundSource.NEUTRAL,
-			2f, pitch
-		);
 	}
 }
