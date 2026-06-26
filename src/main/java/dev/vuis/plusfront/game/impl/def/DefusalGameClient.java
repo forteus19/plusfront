@@ -190,12 +190,12 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		}
 
 		graphics.drawString(font, CT_LABEL, 12 - font.width(CT_LABEL) / 2, playerHeadsY + 4, 0xFFFFFFFF, true);
-		renderPlayerHeadList(minecraft, connection, manager, graphics, playerManager, ctTeam.getPlayers(), 20, playerHeadsY);
+		renderPlayerHeadList(minecraft, connection, manager, graphics, playerManager, ctTeam.getPlayers(), 20, playerHeadsY, false);
 
 		playerHeadsY += 17;
 
 		graphics.drawString(font, T_LABEL, 12 - font.width(T_LABEL) / 2, playerHeadsY + 4, 0xFFFFFFFF, true);
-		renderPlayerHeadList(minecraft, connection, manager, graphics, playerManager, tTeam.getPlayers(), 20, playerHeadsY);
+		renderPlayerHeadList(minecraft, connection, manager, graphics, playerManager, tTeam.getPlayers(), 20, playerHeadsY, tTeam.hasPlayer(player.getUUID()));
 	}
 
 	private void renderPlayerHeadList(
@@ -206,7 +206,8 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		DefusalPlayerManager playerManager,
 		Set<UUID> players,
 		int x,
-		int y
+		int y,
+		boolean showBombIndicator
 	) {
 		int numPlayers = players.size();
 
@@ -251,7 +252,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 					8, 8, 64, 64
 				);
 
-				if (playerManager.isBombPlayer(playerUuid)) {
+				if (showBombIndicator && playerManager.isBombPlayer(playerUuid)) {
 					RenderSystem.setShaderColor(1f, 0f, 0f, 1f);
 					graphics.blit(
 						INDICATOR_TEXTURE,
