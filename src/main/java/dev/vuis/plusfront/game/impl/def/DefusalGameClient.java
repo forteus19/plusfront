@@ -4,6 +4,7 @@ import com.boehmod.blockfront.client.BFClientManager;
 import com.boehmod.blockfront.client.match.ping.AbstractPing;
 import com.boehmod.blockfront.client.player.BFClientPlayerData;
 import com.boehmod.blockfront.client.player.ClientPlayerDataHandler;
+import com.boehmod.blockfront.client.render.BFRendering;
 import com.boehmod.blockfront.client.render.game.element.ClientGameElement;
 import com.boehmod.blockfront.client.render.game.element.TeamScoreGameElement;
 import com.boehmod.blockfront.client.render.minimap.MinimapWaypoint;
@@ -20,9 +21,11 @@ import com.boehmod.blockfront.game.GameTeam;
 import com.boehmod.blockfront.game.tag.client.IAllowsPingsClient;
 import com.boehmod.blockfront.registry.BFItems;
 import com.boehmod.blockfront.unnamed.BF_552;
+import com.boehmod.blockfront.util.BFRes;
 import com.boehmod.blockfront.util.CollisionUtils;
 import com.boehmod.blockfront.util.PacketUtils;
 import com.boehmod.blockfront.util.StringUtils;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.vuis.plusfront.client.def.DefusalTeamGameElement;
 import dev.vuis.plusfront.client.def.DefusalTimeGameElement;
@@ -37,15 +40,19 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
@@ -54,6 +61,12 @@ import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.NotNull;
 
 public final class DefusalGameClient extends AbstractGameClient<DefusalGame, DefusalPlayerManager> implements IAllowsPingsClient {
+	private static final Component CT_LABEL = Component.literal("CT").withStyle(DefusalPlayerManager.CT_STYLE);
+	private static final Component T_LABEL = Component.literal("T").withStyle(DefusalPlayerManager.T_STYLE);
+
+	private static final ResourceLocation DEAD_TEXTURE = BFRes.loc("textures/gui/dead.png");
+	private static final ResourceLocation INDICATOR_TEXTURE = BFRes.loc("textures/gui/indicator.png");
+
 	private final List<BombSiteClient> bombSites;
 
 	public DefusalGameClient(@NotNull BFClientManager manager, @NotNull DefusalGame game, @NotNull ClientPlayerDataHandler dataHandler) {
@@ -159,6 +172,98 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		float renderTime,
 		float partialTick
 	) {
+		ClientPacketListener connection = minecraft.getConnection();
+		if (connection == null) {
+			return;
+		}
+
+		DefusalPlayerManager playerManager = game.getPlayerManager();
+
+		GameTeam ctTeam = playerManager.getTeamByName(DefusalPlayerManager.CT_NAME);
+		assert ctTeam != null;
+		GameTeam tTeam = playerManager.getTeamByName(DefusalPlayerManager.T_NAME);
+		assert tTeam != null;
+
+		int playerHeadsY = 25;
+		if (BFClientSettings.UI_RENDER_GAME_MINIMAP.isEnabled()) {
+			playerHeadsY += 104;
+		}
+
+		graphics.drawString(font, CT_LABEL, 12 - font.width(CT_LABEL) / 2, playerHeadsY + 4, 0xFFFFFFFF, true);
+		renderPlayerHeadList(minecraft, connection, manager, graphics, playerManager, ctTeam.getPlayers(), 20, playerHeadsY);
+
+		playerHeadsY += 17;
+
+		graphics.drawString(font, T_LABEL, 12 - font.width(T_LABEL) / 2, playerHeadsY + 4, 0xFFFFFFFF, true);
+		renderPlayerHeadList(minecraft, connection, manager, graphics, playerManager, tTeam.getPlayers(), 20, playerHeadsY);
+	}
+
+	private void renderPlayerHeadList(
+		Minecraft minecraft,
+		ClientPacketListener connection,
+		BFClientManager manager,
+		GuiGraphics graphics,
+		DefusalPlayerManager playerManager,
+		Set<UUID> players,
+		int x,
+		int y
+	) {
+		int numPlayers = players.size();
+
+		BFRendering.rectangleWithDarkShadow(
+			graphics,
+			x + 1, y + 1,
+			2 + Math.max(1, numPlayers) * 11 + Math.max(0, numPlayers - 1), 13,
+			BFRendering.translucentBlack(), 0.5f
+		);
+
+		int headX = x + 2;
+		int headY = y + 2;
+
+		for (UUID playerUuid : players) {
+			PlayerInfo playerInfo = connection.getPlayerInfo(playerUuid);
+			if (playerInfo == null) {
+				headX += 12;
+				continue;
+			}
+
+			BFClientPlayerData playerData = dataHandler.getPlayerData(playerUuid);
+
+			if (playerData.isOutOfGame() || playerInfo.getGameMode() == GameType.SPECTATOR) {
+				graphics.blit(
+					DEAD_TEXTURE,
+					headX, headY, 0f, 0f,
+					11, 11, 11, 11
+				);
+			} else {
+				ResourceLocation skinTexture = BFRendering.getSkinTexture(minecraft, manager, playerUuid);
+
+				graphics.blit(
+					skinTexture,
+					headX, headY, 11, 11,
+					8f, 8f,
+					8, 8, 64, 64
+				);
+				graphics.blit(
+					skinTexture,
+					headX, headY, 11, 11,
+					40f, 8f,
+					8, 8, 64, 64
+				);
+
+				if (playerManager.isBombPlayer(playerUuid)) {
+					RenderSystem.setShaderColor(1f, 0f, 0f, 1f);
+					graphics.blit(
+						INDICATOR_TEXTURE,
+						headX - 1, headY - 1, 0f, 0f,
+						3, 3, 3, 3
+					);
+					BFRendering.resetShaderColor();
+				}
+			}
+
+			headX += 12;
+		}
 	}
 
 	@Override

@@ -29,6 +29,7 @@
     "bf.client.AbstractGameClientMixin",
     "bf.client.BFConsumableItemMixin",
     "bf.client.BFVersionCheckerMixin",
+    "bf.client.MatchGuiLayerMixin",
     "bf.client.TeamScoreGameElementMixin",
     "bf.client.TroubleTownGameClientMixin",
     "minecraft.client.LightTextureMixin"

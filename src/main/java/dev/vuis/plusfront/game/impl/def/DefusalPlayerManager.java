@@ -1,5 +1,6 @@
 package dev.vuis.plusfront.game.impl.def;
 
+import com.boehmod.bflib.cloud.packet.IPacket;
 import com.boehmod.blockfront.BlockFront;
 import com.boehmod.blockfront.common.BFAbstractManager;
 import com.boehmod.blockfront.common.player.BFAbstractPlayerData;
@@ -15,6 +16,8 @@ import com.boehmod.blockfront.registry.BFSounds;
 import com.boehmod.blockfront.util.RandomUtils;
 import com.boehmod.blockfront.util.math.BFPose;
 import dev.vuis.plusfront.util.PFUtil;
+import io.netty.buffer.ByteBuf;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -43,22 +46,26 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	public static final String CT_NAME = "Counter-Terrorists";
 	public static final String T_NAME = "Terrorists";
 
+	public static final Style CT_STYLE = Style.EMPTY.withColor(0x546A91);
+	public static final Style CT_ICON_STYLE = Style.EMPTY.withColor(0xDCE2EA);
+	public static final Style T_STYLE = Style.EMPTY.withColor(0x7E3831);
+	public static final Style T_ICON_STYLE = Style.EMPTY.withColor(0xE4D5D4);
+
 	private UUID bombPlayer = null;
 
 	public DefusalPlayerManager(@NotNull DefusalGame game, @NotNull PlayerDataHandler<?> dataHandler) {
 		super(game, dataHandler);
 
-		Style ctStyle = Style.EMPTY.withColor(0x546A91);
-		Style ctTextStyle = Style.EMPTY.withColor(0xDCE2EA);
-		Style tStyle = Style.EMPTY.withColor(0x7E3831);
-		Style tTextStyle = Style.EMPTY.withColor(0xE4D5D4);
-
-		addTeam(new GameTeam(game, CT_NAME, ctStyle, ctTextStyle, 8));
-		addTeam(new GameTeam(game, T_NAME, tStyle, tTextStyle, 8));
+		addTeam(new GameTeam(game, CT_NAME, CT_STYLE, CT_ICON_STYLE, 8));
+		addTeam(new GameTeam(game, T_NAME, T_STYLE, T_ICON_STYLE, 8));
 	}
 
 	public void clearBombPlayer() {
 		bombPlayer = null;
+	}
+
+	public boolean isBombPlayer(UUID uuid) {
+		return uuid.equals(bombPlayer);
 	}
 
 	@Override
@@ -120,6 +127,26 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		}
 		if (tOut && !game.isBombPlanted()) {
 			game.onRoundWin(players, true);
+		}
+	}
+
+	@Override
+	protected void write(@NotNull ByteBuf buf) throws IOException {
+		super.write(buf);
+
+		buf.writeBoolean(bombPlayer != null);
+		if (bombPlayer != null) {
+			IPacket.writeUUID(buf, bombPlayer);
+		}
+	}
+
+	@Override
+	protected void read(@NotNull ByteBuf buf) throws IOException {
+		super.read(buf);
+
+		bombPlayer = null;
+		if (buf.readBoolean()) {
+			bombPlayer = IPacket.readUUID(buf);
 		}
 	}
 
