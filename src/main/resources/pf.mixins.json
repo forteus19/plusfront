@@ -26,6 +26,7 @@
     "bf.TroubleTownWaitingStageMixin"
   ],
   "client": [
+    "bf.client.AbstractGameClientMixin",
     "bf.client.BFConsumableItemMixin",
     "bf.client.BFVersionCheckerMixin",
     "bf.client.TeamScoreGameElementMixin",
