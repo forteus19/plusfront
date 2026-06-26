@@ -105,9 +105,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		GameTeam terroristTeam = game.getPlayerManager().getTeamByName(DefusalPlayerManager.T_NAME);
 		assert terroristTeam != null;
 
-		boolean highlightInRadius =
-			player.getMainHandItem().getItem() == BFItems.BOMB.value() &&
-				terroristTeam.hasPlayer(player.getUUID());
+		boolean highlightInRadius = player.getMainHandItem().getItem() == BFItems.BOMB.value();
 
 		if (BFClientSettings.UI_RENDER_WAYPOINTS.isEnabled()) {
 			for (BombSiteClient site : bombSites) {
