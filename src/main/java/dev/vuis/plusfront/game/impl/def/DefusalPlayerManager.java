@@ -292,10 +292,16 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 			return;
 		}
 
-		bombPlayer = player.getUUID();
+		UUID playerUuid = player.getUUID();
 
 		GameTeam terroristsTeam = getTeamByName(T_NAME);
 		assert terroristsTeam != null;
+
+		if (!terroristsTeam.hasPlayer(playerUuid)) {
+			return;
+		}
+
+		bombPlayer = playerUuid;
 
 		Set<UUID> terrorists = terroristsTeam.getPlayers();
 
