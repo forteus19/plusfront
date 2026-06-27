@@ -32,6 +32,7 @@ import com.boehmod.blockfront.game.tag.IHasConsumables;
 import com.boehmod.blockfront.game.tag.IHasDominations;
 import com.boehmod.blockfront.game.tag.IUseKillIcons;
 import com.boehmod.blockfront.registry.BFEntityTypes;
+import com.boehmod.blockfront.registry.BFItems;
 import com.boehmod.blockfront.registry.BFSounds;
 import com.boehmod.blockfront.util.CommandUtils;
 import com.boehmod.blockfront.util.math.BFPose;
@@ -47,11 +48,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.VarInt;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -124,6 +128,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 			})));
 
 	private boolean isBombPlanted = false;
+	private @Nullable Integer bombItemId = null;
 
 	public DefusalGame(@NotNull BFAbstractManager<?, ?, ?> manager) {
 		super(manager, "def", "Defusal");
@@ -131,6 +136,32 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	public List<BombSite> getBombSites() {
 		return bombSites;
+	}
+
+	public @Nullable ItemEntity getBombItem(Level level) {
+		if (bombItemId != null) {
+			Entity entity = level.getEntity(bombItemId);
+
+			if (entity instanceof ItemEntity itemEntity && itemEntity.getItem().getItem() == BFItems.BOMB.value()) {
+				return itemEntity;
+			} else {
+				bombItemId = null;
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	public void setBombItem(@Nullable ItemEntity bombItem) {
+		if (bombItem != null) {
+			if (bombItem.getItem().getItem() != BFItems.BOMB.value()) {
+				throw new IllegalArgumentException("bf:bomb expected");
+			}
+			bombItemId = bombItem.getId();
+		} else {
+			bombItemId = null;
+		}
 	}
 
 	@Override
@@ -180,6 +211,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	@Override
 	public void specificReset(@Nullable Level level) {
 		isBombPlanted = false;
+		bombItemId = null;
 	}
 
 	@Override
@@ -212,12 +244,17 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	public void writeAll(@NotNull ByteBuf buf, boolean writeMap) throws IOException {
 		super.writeAll(buf, writeMap);
 
-		buf.writeInt(bombSites.size());
+		VarInt.write(buf, bombSites.size());
 		for (BombSite site : bombSites) {
 			site.write(buf);
 		}
 
 		buf.writeBoolean(isBombPlanted);
+
+		buf.writeBoolean(bombItemId != null);
+		if (bombItemId != null) {
+			VarInt.write(buf, bombItemId);
+		}
 	}
 
 	@Override
@@ -225,12 +262,17 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		super.readAll(buf);
 
 		bombSites.clear();
-		int numBombSites = buf.readInt();
+		int numBombSites = VarInt.read(buf);
 		for (int i = 0; i < numBombSites; i++) {
 			bombSites.add(BombSite.read(buf));
 		}
 
 		isBombPlanted = buf.readBoolean();
+
+		bombItemId = null;
+		if (buf.readBoolean()) {
+			bombItemId = VarInt.read(buf);
+		}
 	}
 
 	@Override

@@ -27,6 +27,7 @@ import com.boehmod.blockfront.util.PacketUtils;
 import com.boehmod.blockfront.util.StringUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.client.def.DefusalTeamGameElement;
 import dev.vuis.plusfront.client.def.DefusalTimeGameElement;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -51,6 +52,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.HitResult;
@@ -64,10 +66,14 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	private static final Component CT_LABEL = Component.literal("CT").withStyle(DefusalPlayerManager.CT_STYLE);
 	private static final Component T_LABEL = Component.literal("T").withStyle(DefusalPlayerManager.T_STYLE);
 
+	public static final ResourceLocation BOMB_TEXTURE = PlusFront.res("textures/gui/defusal/bomb.png");
+	public static final ResourceLocation BOMB_BLINK_TEXTURE = PlusFront.res("textures/gui/defusal/bomb_blink.png");
 	private static final ResourceLocation DEAD_TEXTURE = BFRes.loc("textures/gui/dead.png");
 	private static final ResourceLocation INDICATOR_TEXTURE = BFRes.loc("textures/gui/indicator.png");
 
 	private final List<BombSiteClient> bombSites;
+
+	private int bombBlinkTimer = 0;
 
 	public DefusalGameClient(@NotNull BFClientManager manager, @NotNull DefusalGame game, @NotNull ClientPlayerDataHandler dataHandler) {
 		super(manager, game, dataHandler);
@@ -115,6 +121,8 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	) {
 		super.update(minecraft, random, randomSource, player, level, manager, playerData, players, renderTime, cameraPos, cameraBlockPos);
 
+		bombBlinkTimer = ++bombBlinkTimer % 20;
+
 		GameTeam terroristTeam = game.getPlayerManager().getTeamByName(DefusalPlayerManager.T_NAME);
 		assert terroristTeam != null;
 
@@ -146,12 +154,16 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	) {
 		super.render(playerManager, minecraft, level, player, renderEvent, bufferSource, poseStack, frustum, font, graphics, camera, renderGameInfo, renderTime, partialTick);
 
-		if (BFClientSettings.UI_RENDER_WAYPOINTS.isEnabled()) {
-			for (BombSiteClient site : bombSites) {
-				site.render(poseStack, font, graphics, camera);
-			}
+		if (!BFClientSettings.UI_RENDER_WAYPOINTS.isEnabled()) {
+			return;
+		}
+
+		for (BombSiteClient site : bombSites) {
+			site.render(poseStack, font, graphics, camera);
 		}
 	}
+
+
 
 	@Override
 	public void renderSpecific(
@@ -172,17 +184,30 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		float renderTime,
 		float partialTick
 	) {
-		ClientPacketListener connection = minecraft.getConnection();
-		if (connection == null) {
-			return;
-		}
-
 		DefusalPlayerManager playerManager = game.getPlayerManager();
 
 		GameTeam ctTeam = playerManager.getTeamByName(DefusalPlayerManager.CT_NAME);
 		assert ctTeam != null;
 		GameTeam tTeam = playerManager.getTeamByName(DefusalPlayerManager.T_NAME);
 		assert tTeam != null;
+
+		boolean isTerrorist = tTeam.hasPlayer(player.getUUID());
+
+		if (isTerrorist) {
+			ItemEntity bombItem = game.getBombItem(level);
+
+			if (bombItem != null) {
+				renderBombWaypoint(
+					graphics, minecraft.gameRenderer.getMainCamera(), width, height, partialTick,
+					bombItem.getPosition(partialTick).add(0.0, 0.5, 0.0)
+				);
+			}
+		}
+
+		ClientPacketListener connection = minecraft.getConnection();
+		if (connection == null) {
+			return;
+		}
 
 		int playerHeadsY = 25;
 		if (BFClientSettings.UI_RENDER_GAME_MINIMAP.isEnabled()) {
@@ -195,7 +220,25 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		playerHeadsY += 17;
 
 		graphics.drawString(font, T_LABEL, 12 - font.width(T_LABEL) / 2, playerHeadsY + 4, 0xFFFFFFFF, true);
-		renderPlayerHeadList(minecraft, connection, manager, graphics, playerManager, tTeam.getPlayers(), 20, playerHeadsY, tTeam.hasPlayer(player.getUUID()));
+		renderPlayerHeadList(minecraft, connection, manager, graphics, playerManager, tTeam.getPlayers(), 20, playerHeadsY, isTerrorist);
+	}
+
+	private void renderBombWaypoint(
+		GuiGraphics graphics,
+		Camera camera,
+		int width,
+		int height,
+		float partialTick,
+		Vec3 bombPosition
+	) {
+		BFRendering.BF_1225 screenClampedData = BFRendering.method_6025(bombPosition, camera, width, height, 32, partialTick);
+
+		graphics.blit(
+			bombBlinkTimer < 10 ? BOMB_TEXTURE : BOMB_BLINK_TEXTURE,
+			(int) (screenClampedData.screenX() - 16f), (int) (screenClampedData.screenY() - 8f),
+			0f, 0f,
+			32, 16, 32, 16
+		);
 	}
 
 	private void renderPlayerHeadList(

@@ -15,6 +15,7 @@ import com.boehmod.blockfront.registry.BFItems;
 import com.boehmod.blockfront.registry.BFSounds;
 import com.boehmod.blockfront.util.RandomUtils;
 import com.boehmod.blockfront.util.math.BFPose;
+import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.util.PFUtil;
 import io.netty.buffer.ByteBuf;
 import java.io.IOException;
@@ -178,6 +179,11 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	}
 
 	@Override
+	public boolean canPlayerDropItem(@NotNull Player player, @NotNull ItemStack stack) {
+		return stack.getItem() == BFItems.BOMB.value();
+	}
+
+	@Override
 	public boolean canPickupItem(@NotNull Player player, @NotNull ItemEntity itemEntity, @NotNull ItemStack stack) {
 		if (stack.getItem() != BFItems.BOMB.value()) {
 			return false;
@@ -261,47 +267,50 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		@NotNull DamageSource source,
 		@NotNull Set<UUID> players
 	) {
-		if (killedUuid.equals(bombPlayer)) {
-			clearBombPlayer();
-
-			GameTeam terroristsTeam = getTeamByName(T_NAME);
-			assert terroristsTeam != null;
-
-			Set<UUID> terrorists = terroristsTeam.getPlayers();
-
-			GameUtils.sendNotification(
-				terrorists,
-				Component.translatable(
-					"pf.message.gamemode.notification.bomb.drop",
-					Component.literal(killedPlayer.getScoreboardName())
-						.withStyle(terroristsTeam.getStyleIcon())
-				).withStyle(terroristsTeam.getStyleText()),
-				100,
-				"bomb.transfer"
-			);
-			GameUtils.playSound(
-				terrorists,
-				BFSounds.ITEM_BOMB_PLANT.value(),
-				SoundSource.NEUTRAL
-			);
-		}
-	}
-
-	public void onItemPickup(Player player, ItemEntity item) {
-		if (item.getItem().getItem() != BFItems.BOMB.value()) {
+		if (!killedUuid.equals(bombPlayer)) {
 			return;
 		}
 
+		onBombDrop(killedPlayer);
+	}
+
+	public void onBombDrop(Player previousPlayer) {
+		clearBombPlayer();
+
+		GameTeam terroristsTeam = getTeamByName(T_NAME);
+		assert terroristsTeam != null;
+
+		Set<UUID> terrorists = terroristsTeam.getPlayers();
+
+		GameUtils.sendNotification(
+			terrorists,
+			Component.translatable(
+				"pf.message.gamemode.notification.bomb.drop",
+				Component.literal(previousPlayer.getScoreboardName())
+					.withStyle(T_ICON_STYLE)
+			).withStyle(T_STYLE),
+			100,
+			"bomb.transfer"
+		);
+		GameUtils.playSound(
+			terrorists,
+			BFSounds.ITEM_BOMB_PLANT.value(),
+			SoundSource.NEUTRAL
+		);
+	}
+
+	public void onBombPickup(Player player) {
 		UUID playerUuid = player.getUUID();
 
 		GameTeam terroristsTeam = getTeamByName(T_NAME);
 		assert terroristsTeam != null;
 
 		if (!terroristsTeam.hasPlayer(playerUuid)) {
-			return;
+			PlusFront.LOGGER.error("Non-terrorist player picked up the bomb! ({})", player.getScoreboardName());
 		}
 
 		bombPlayer = playerUuid;
+		game.setBombItem(null);
 
 		Set<UUID> terrorists = terroristsTeam.getPlayers();
 
@@ -310,8 +319,8 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 			Component.translatable(
 				"pf.message.gamemode.notification.bomb.pickup",
 				Component.literal(player.getScoreboardName())
-					.withStyle(terroristsTeam.getStyleIcon())
-			).withStyle(terroristsTeam.getStyleText()),
+					.withStyle(T_ICON_STYLE)
+			).withStyle(T_STYLE),
 			100,
 			"bomb.transfer"
 		);
@@ -409,8 +418,9 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 			terrorists,
 			Component.translatable(
 				"pf.message.gamemode.notification.bomb.give",
-				Component.literal(randomPlayer.getScoreboardName()).withStyle(terroristsTeam.getStyleIcon())
-			).withStyle(terroristsTeam.getStyleText()),
+				Component.literal(randomPlayer.getScoreboardName())
+					.withStyle(T_ICON_STYLE)
+			).withStyle(T_STYLE),
 			100,
 			"bomb.transfer"
 		);

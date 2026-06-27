@@ -29,6 +29,8 @@ public class DefusalGameStage extends AbstractGameStage<DefusalGame, DefusalPlay
 		PlayerDataHandler<?> dataHandler = context.playerDataHandler();
 
 		game.resetBombPlanted();
+		game.setBombItem(null);
+
 		for (UUID playerUuid : context.players()) {
 			dataHandler.getPlayerData(playerUuid).clearPlayerDamage();
 		}

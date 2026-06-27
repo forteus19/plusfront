@@ -4,8 +4,8 @@ import com.boehmod.blockfront.client.render.game.element.ClientGameElement;
 import com.boehmod.blockfront.game.AbstractGameClient;
 import com.boehmod.blockfront.util.BFRes;
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.game.impl.def.DefusalGame;
+import dev.vuis.plusfront.game.impl.def.DefusalGameClient;
 import dev.vuis.plusfront.game.impl.def.DefusalPlayerManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -17,8 +17,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class DefusalTimeGameElement extends ClientGameElement<DefusalGame, DefusalPlayerManager> {
 	private static final ResourceLocation STOPWATCH_TEXTURE = BFRes.loc("textures/gui/stopwatch.png");
-	private static final ResourceLocation BOMB_TEXTURE = PlusFront.res("textures/gui/defusal/bomb.png");
-	private static final ResourceLocation BOMB_BLINK_TEXTURE = PlusFront.res("textures/gui/defusal/bomb_blink.png");
 
 	private FormattedCharSequence timerText = FormattedCharSequence.EMPTY;
 	private boolean isBombPlanted = false;
@@ -64,7 +62,7 @@ public class DefusalTimeGameElement extends ClientGameElement<DefusalGame, Defus
 
 		if (isBombPlanted) {
 			graphics.blit(
-				blinkTimer < 10 ? BOMB_TEXTURE : BOMB_BLINK_TEXTURE,
+				blinkTimer < 10 ? DefusalGameClient.BOMB_TEXTURE : DefusalGameClient.BOMB_BLINK_TEXTURE,
 				x + 22 - 16, y, 0f, 0f,
 				32, 16, 32, 16
 			);
