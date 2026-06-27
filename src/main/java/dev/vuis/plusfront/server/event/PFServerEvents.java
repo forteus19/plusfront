@@ -1,9 +1,12 @@
 package dev.vuis.plusfront.server.event;
 
+import com.boehmod.blockfront.BlockFront;
+import com.boehmod.blockfront.common.BFAbstractManager;
 import com.boehmod.blockfront.game.AbstractGame;
+import com.boehmod.blockfront.game.GameUtils;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.game.impl.def.DefusalGame;
-import dev.vuis.plusfront.util.PFUtil;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -20,14 +23,25 @@ public final class PFServerEvents {
 
 	@SubscribeEvent
 	public static void onItemEntityPickupPre(ItemEntityPickupEvent.Pre event) {
-		AbstractGame<?, ?, ?> game = PFUtil.getPlayerGame(event.getPlayer());
+		BFAbstractManager<?, ?, ?> manager = BlockFront.getInstance().getManager();
+		if (manager == null) {
+			return;
+		}
+
+		Player player = event.getPlayer();
+
+		if (GameUtils.isPlayerUnavailable(player, manager.getPlayerDataHandler().getPlayerData(player))) {
+			return;
+		}
+
+		AbstractGame<?, ?, ?> game = manager.getPlayerGame(player);
 		if (game == null) {
 			return;
 		}
 
 		if (game instanceof DefusalGame defusalGame) {
 			defusalGame.getPlayerManager().onItemPickup(
-				event.getPlayer(), event.getItemEntity()
+				player, event.getItemEntity()
 			);
 		}
 	}
