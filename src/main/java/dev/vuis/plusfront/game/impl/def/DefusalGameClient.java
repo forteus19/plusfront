@@ -211,11 +211,15 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	) {
 		int numPlayers = players.size();
 
-		BFRendering.rectangleWithDarkShadow(
-			graphics,
-			x + 1, y + 1,
-			2 + Math.max(1, numPlayers) * 11 + Math.max(0, numPlayers - 1), 13,
-			BFRendering.translucentBlack(), 0.5f
+		int headsWidth = Math.max(1, numPlayers) * 11 + Math.max(0, numPlayers - 1);
+
+		graphics.fill(
+			x, y, x + headsWidth + 4, y + 15,
+			0x4C000000
+		);
+		graphics.fill(
+			x + 1, y + 1, x + headsWidth + 3, y + 14,
+			0x7F000000
 		);
 
 		int headX = x + 2;
@@ -233,8 +237,9 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 			if (playerData.isOutOfGame() || playerInfo.getGameMode() == GameType.SPECTATOR) {
 				graphics.blit(
 					DEAD_TEXTURE,
-					headX, headY, 0f, 0f,
-					11, 11, 11, 11
+					headX, headY, 11, 11,
+					0f, 0f,
+					8, 8, 8, 8
 				);
 			} else {
 				ResourceLocation skinTexture = BFRendering.getSkinTexture(minecraft, manager, playerUuid);
@@ -256,7 +261,8 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 					RenderSystem.setShaderColor(1f, 0f, 0f, 1f);
 					graphics.blit(
 						INDICATOR_TEXTURE,
-						headX - 1, headY - 1, 0f, 0f,
+						headX - 1, headY - 1,
+						0f, 0f,
 						3, 3, 3, 3
 					);
 					BFRendering.resetShaderColor();
