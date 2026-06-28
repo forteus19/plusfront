@@ -9,6 +9,7 @@
   "mixins": [
     "bf.AbstractGameMixin",
     "bf.AbstractGamePlayerManagerMixin",
+    "bf.BombEntityMixin",
     "bf.GameAssetMixin",
     "bf.GameTeamMixin",
     "bf.GameTypeCodecMixin",
