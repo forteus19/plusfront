@@ -9,7 +9,6 @@
   "mixins": [
     "bf.AbstractGameMixin",
     "bf.AbstractGamePlayerManagerMixin",
-    "bf.BFFeatureFlagsMixin",
     "bf.GameAssetMixin",
     "bf.GameTeamMixin",
     "bf.GameTypeCodecMixin",
@@ -33,6 +32,9 @@
     "bf.client.TeamScoreGameElementMixin",
     "bf.client.TroubleTownGameClientMixin",
     "minecraft.client.LightTextureMixin"
+  ],
+  "server": [
+    "bf.server.BFServerTickSubscriberMixin"
   ],
   "injectors": {
     "defaultRequire": 1
