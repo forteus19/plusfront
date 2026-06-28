@@ -14062,6 +14062,11 @@ c	com/boehmod/blockfront/ow	com/boehmod/blockfront/unnamed/BF_677	com/boehmod/bl
 	m	(Ljava/util/UUID;)Lcom/boehmod/blockfront/oC;	a	method_2629	getPlayerStatData
 		p	1			uuid
 	m	(Ljava/util/UUID;Lnet/minecraft/server/level/ServerPlayer;Ljava/util/UUID;ZZ)Z	a	method_2630	shouldShowPlayerMessage
+		p	1			senderUuid
+		p	2			receivingPlayer
+		p	3			receivingUuid
+		p	4			isTeamMessage
+		p	5			isUnavailable
 	m	(Lnet/minecraft/network/chat/Component;Ljava/util/UUID;)V	a	method_8395	method_8395
 	m	(Lnet/minecraft/server/level/ServerLevel;Lcom/boehmod/blockfront/jn;Lcom/boehmod/blockfront/sS;ZLcom/boehmod/blockfront/oS;Ljava/util/Set;)V	a	method_2631	finishMatch
 		p	1			level

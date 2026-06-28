@@ -302,7 +302,24 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	}
 
 	@Override
+	public boolean shouldShowPlayerMessage(@NotNull UUID senderUuid, @NotNull ServerPlayer receivingPlayer, @NotNull UUID receivingUuid, boolean isTeamMessage, boolean isSenderUnavailable) {
+		GameTeam senderTeam = playerManager.getPlayerTeam(senderUuid);
+		GameTeam receivingTeam = playerManager.getPlayerTeam(receivingUuid);
+		if (senderTeam == null || receivingTeam == null) {
+			return false;
+		}
+
+		AbstractGameStage<?, ?> currentStage = stageManager.getCurrentStage();
+		if (currentStage instanceof DefusalWaitingStage || (currentStage instanceof DefusalGameStage gameStage && !gameStage.isFinished)) {
+			return (!isSenderUnavailable && !isTeamMessage) || senderTeam == receivingTeam;
+		} else {
+			return !isTeamMessage || senderTeam == receivingTeam;
+		}
+	}
+
+	@Override
 	public boolean shouldShowDeadMessages() {
+		PlusFront.LOGGER.error("[Defusal] shouldShowDeadMessages called!");
 		return false;
 	}
 
