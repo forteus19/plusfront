@@ -510,8 +510,6 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 		winningTeam.putStatInt(BFStats.SCORE, winningTeam.getStatInt(BFStats.SCORE) + 1);
 
-		playerManager.clearBombPlayer();
-
 		GameUtils.sendNotification(
 			players,
 			Component.translatable(
@@ -539,8 +537,6 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 			return;
 		}
 		gameStage.isFinished = true;
-
-		playerManager.clearBombPlayer();
 
 		GameUtils.sendNotification(
 			players,

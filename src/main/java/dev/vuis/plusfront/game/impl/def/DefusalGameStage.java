@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class DefusalGameStage extends AbstractGameStage<DefusalGame, DefusalPlayerManager> implements TimedStage<DefusalGame, DefusalPlayerManager> {
 	private final GameStageTimer playingTimer = new GameStageTimer(1, 50).warningTime(15);
-	private final GameStageTimer finishedTimer = new GameStageTimer(0, 5);
+	private final GameStageTimer finishedTimer = new GameStageTimer(0, 10).warningTime(5);
 
 	boolean isFinished = false;
 
@@ -26,10 +26,12 @@ public class DefusalGameStage extends AbstractGameStage<DefusalGame, DefusalPlay
 	@Override
 	public void onStageEnd(@NotNull GameStageContext<DefusalGame, DefusalPlayerManager> context) {
 		DefusalGame game = context.game();
+		DefusalPlayerManager playerManager = context.playerHandler();
 		PlayerDataHandler<?> dataHandler = context.playerDataHandler();
 
 		game.resetBombPlanted();
 		game.setBombItem(null);
+		playerManager.clearBombPlayer();
 
 		for (UUID playerUuid : context.players()) {
 			dataHandler.getPlayerData(playerUuid).clearPlayerDamage();
