@@ -8054,7 +8054,7 @@ c	com/boehmod/blockfront/iF	com/boehmod/blockfront/unnamed/BF_414	com/boehmod/bl
 	f	Z	dc	field_8759	serverGrenadeCookDropOnDeath
 	f	Z	dd	field_7091	clientFancyBulletEffects
 	f	Z	de	field_7964	clientVeilFancyGunLight
-	f	Z	df	field_9029	field_9029
+	f	Z	df	field_9029	serverPlayerVoiceSounds
 	m	()V	aP	method_1469	updateFeatureFlags
 	m	()V	featureFlagsChanged	featureFlagsChanged	featureFlagsChanged
 c	com/boehmod/blockfront/iG	com/boehmod/blockfront/unnamed/BF_470	com/boehmod/blockfront/cloud/PlayerCloudInventory
@@ -24453,31 +24453,40 @@ c	com/boehmod/blockfront/xi	com/boehmod/blockfront/unnamed/BF_1498	com/boehmod/b
 	m	()V	dt	method_8437	method_8437
 	m	(Lnet/minecraft/server/level/ServerPlayer;Lcom/boehmod/blockfront/common/player/c;)V	e	method_8438	method_8438
 c	com/boehmod/blockfront/xj	com/boehmod/blockfront/unnamed/BF_1116	com/boehmod/blockfront/server/player/ServerFlamethrowerIgniteManager
-c	com/boehmod/blockfront/xk	com/boehmod/blockfront/unnamed/BF_1467	com/boehmod/blockfront/unnamed/BF_1467
-	f	J	B	field_8753	field_8753
-	f	Lcom/boehmod/blockfront/tL;	a	field_8749	field_8749
-	f	Lcom/boehmod/blockfront/xl;	b	field_8750	field_8750
-	f	Z	bX	field_8751	field_8751
-	f	Z	bY	field_8752	field_8752
-	m	()Z	K	method_8149	method_8149
-	m	()Lcom/boehmod/blockfront/tL;	a	method_8150	method_8150
-	m	(J)I	a	method_8151	method_8151
-	m	(Lcom/boehmod/blockfront/tL;ZJ)V	a	method_8152	method_8152
-	m	(Lcom/boehmod/blockfront/wU;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/server/level/ServerPlayer;)V	a	method_8153	method_8153
-	m	()V	e	method_8154	method_8154
+c	com/boehmod/blockfront/xk	com/boehmod/blockfront/unnamed/BF_1467	com/boehmod/blockfront/server/player/PlayerGrenadeState
+	f	J	B	field_8753	startTicks
+	f	Lcom/boehmod/blockfront/tL;	a	field_8749	item
+	f	Lcom/boehmod/blockfront/xl;	b	field_8750	playerData
+	f	Z	bX	field_8751	isCooking
+	f	Z	bY	field_8752	near
+	m	()Z	K	method_8149	isCooking
+	m	()Lcom/boehmod/blockfront/tL;	a	method_8150	getItem
+	m	(J)I	a	method_8151	getTicksSinceStart
+		p	1			ticksNow
+	m	(Lcom/boehmod/blockfront/tL;ZJ)V	a	method_8152	startCook
+		p	1			item
+		p	2			near
+		p	3			startTicks
+	m	(Lcom/boehmod/blockfront/wU;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/server/level/ServerPlayer;)V	a	method_8153	update
+		p	1			manager
+		p	2			level
+		p	3			player
+	m	()V	e	method_8154	endCook
+	m	(Lcom/boehmod/blockfront/xl;)V	<init>	<init>	<init>
+		p	1			playerData
 c	com/boehmod/blockfront/xl	com/boehmod/blockfront/unnamed/BF_1117	com/boehmod/blockfront/server/player/BFServerPlayerData
 	f	Lcom/boehmod/blockfront/jA;	a	field_6857	suspiciousShotManager
 	f	Lcom/boehmod/blockfront/jB;	a	field_6947	field_6947
 	f	Lcom/boehmod/blockfront/xh;	a	field_6271	afkTracker
 	f	Lcom/boehmod/blockfront/xi;	a	field_6272	field_6272
-	f	Lcom/boehmod/blockfront/xk;	a	field_8754	field_8754
+	f	Lcom/boehmod/blockfront/xk;	a	field_8754	grenadeState
 	f	Z	jt	field_7345	inDiscordVc
 	m	()Lcom/boehmod/blockfront/jA;	a	method_5813	getSuspiciousShotManager
 	m	()Lcom/boehmod/blockfront/jB;	a	method_5892	method_5892
 	m	()Lcom/boehmod/blockfront/xh;	a	method_5456	getAfkTracker
 	m	()Lcom/boehmod/blockfront/xi;	a	method_5457	method_5457
 	m	()Lcom/boehmod/blockfront/xj;	a	method_5458	method_836
-	m	()Lcom/boehmod/blockfront/xk;	a	method_8155	method_8155
+	m	()Lcom/boehmod/blockfront/xk;	a	method_8155	getGrenadeState
 	m	(Lcom/boehmod/blockfront/wU;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/server/level/ServerPlayer;Lcom/boehmod/blockfront/ow;)V	a	method_5459	update
 	m	(Z)V	ac	method_6192	setInDiscordVc
 		p	1			inDiscordVc
