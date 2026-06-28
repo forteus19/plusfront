@@ -278,7 +278,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	@Override
 	public boolean shouldUseStamina(@NotNull Player player) {
-		return true;
+		return false;
 	}
 
 	@Override
