@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(AbstractGameClient.class)
 public abstract class AbstractGameClientMixin {
 	@Redirect(
-		method = "method_2696",
+		method = "getUniformTexture",
 		at = @At(
 			value = "INVOKE",
 			target = "Lcom/boehmod/blockfront/game/GameTeam;getName()Ljava/lang/String;",

@@ -179,7 +179,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	}
 
 	@Override
-	public boolean canPlayerDropItem(@NotNull Player player, @NotNull ItemStack stack) {
+	public boolean canDropItem(@NotNull Player player, @NotNull ItemStack stack) {
 		return stack.getItem() == BFItems.BOMB.value();
 	}
 
@@ -220,13 +220,13 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	}
 
 	@Override
-	protected boolean shouldPlayerRespawnInGame(@NotNull ServerPlayer player) {
+	protected boolean shouldPlayerJoinInGame(@NotNull ServerPlayer player) {
 		GameTeam team = getPlayerTeam(player.getUUID());
 		return team != null && team.numPlayers() <= 1;
 	}
 
 	@Override
-	public void onInitPlayer(
+	public void onPlayerJoin(
 		@NotNull BFAbstractManager<?, ?, ?> manager,
 		@NotNull PlayerDataHandler<?> dataHandler,
 		@NotNull ServerLevel level,
@@ -332,14 +332,14 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	}
 
 	@Override
-	public void initPlayer(
+	public void onPlayerRespawn(
 		@NotNull BFAbstractManager<?, ?, ?> manager,
 		@NotNull PlayerDataHandler<?> dataHandler,
 		@NotNull ServerLevel level,
 		@NotNull ServerPlayer player,
 		@NotNull UUID uuid
 	) {
-		GameUtils.initPlayerForGame(dataHandler, level, player);
+		GameUtils.resetPlayer(dataHandler, level, player);
 		player.setGameMode(GameType.SPECTATOR);
 
 		BFPose spawnPos = lobbySpawn;

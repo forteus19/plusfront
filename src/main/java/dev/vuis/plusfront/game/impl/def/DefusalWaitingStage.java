@@ -47,7 +47,7 @@ public class DefusalWaitingStage extends AbstractGameStage<DefusalGame, DefusalP
 		GameUtils.clearClientRagdolls(players);
 		GameUtils.freezePlayers(dataHandler, players);
 		playerManager.teleportPlayersToRandomSpawn(dataHandler);
-		GameUtils.initPlayersForGame(level, players, dataHandler);
+		GameUtils.resetPlayers(level, players, dataHandler);
 
 		for (GameTeam team : playerManager.getTeams()) {
 			GameUtils.giveClassLoadout(level, game, team);

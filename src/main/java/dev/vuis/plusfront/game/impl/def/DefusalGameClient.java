@@ -136,7 +136,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	}
 
 	@Override
-	public void render(
+	public void renderWorld(
 		@NotNull AbstractGamePlayerManager<?> playerManager,
 		@NotNull Minecraft minecraft,
 		@NotNull ClientLevel level,
@@ -152,7 +152,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		float renderTime,
 		float partialTick
 	) {
-		super.render(playerManager, minecraft, level, player, renderEvent, bufferSource, poseStack, frustum, font, graphics, camera, renderGameInfo, renderTime, partialTick);
+		super.renderWorld(playerManager, minecraft, level, player, renderEvent, bufferSource, poseStack, frustum, font, graphics, camera, renderGameInfo, renderTime, partialTick);
 
 		if (!BFClientSettings.UI_RENDER_WAYPOINTS.isEnabled()) {
 			return;
@@ -163,10 +163,8 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		}
 	}
 
-
-
 	@Override
-	public void renderSpecific(
+	public void onRenderGui(
 		@NotNull Minecraft minecraft,
 		@NotNull BFClientManager manager,
 		@NotNull LocalPlayer player,
@@ -231,11 +229,11 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		float partialTick,
 		Vec3 bombPosition
 	) {
-		BFRendering.BF_1225 screenClampedData = BFRendering.method_6025(bombPosition, camera, width, height, 32, partialTick);
+		BFRendering.ScreenClampData screenClampData = BFRendering.screenClamp(bombPosition, camera, width, height, 32, partialTick);
 
 		graphics.blit(
 			bombBlinkTimer < 10 ? BOMB_TEXTURE : BOMB_BLINK_TEXTURE,
-			(int) (screenClampedData.screenX() - 16f), (int) (screenClampedData.screenY() - 8f),
+			(int) (screenClampData.screenX() - 16f), (int) (screenClampData.screenY() - 8f),
 			0f, 0f,
 			32, 16, 32, 16
 		);
@@ -338,7 +336,12 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	}
 
 	@Override
-	public boolean shouldRenderNameTag(@NotNull Minecraft minecraft, @NotNull LivingEntity target, @NotNull LocalPlayer localPlayer, @NotNull ClientLevel level) {
+	public boolean shouldRenderNameTag(
+		@NotNull Minecraft minecraft,
+		@NotNull LivingEntity target,
+		@NotNull Player localPlayer,
+		@NotNull ClientLevel level
+	) {
 		if (!(target instanceof Player targetPlayer)) {
 			return false;
 		}
@@ -388,7 +391,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 			if (localTeamPlayers.contains(playerUuid) && !playerUuid.equals(localUuid)) {
 				waypoints.add(
 					new MinimapWaypoint(MinimapWaypoint.TEXTURE_PLAYER, player.position())
-						.method_352(player.getYRot() - 180f)
+						.setRotation(player.getYRot() - 180f)
 				);
 			}
 		}
@@ -400,7 +403,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	public void setNameTagState(
 		@NotNull Minecraft minecraft,
 		@NotNull RenderNameTagEvent event,
-		@NotNull LocalPlayer player,
+		@NotNull Player player,
 		@NotNull ClientLevel level
 	) {
 		event.setCanRender(player.hasLineOfSight(event.getEntity()) ? TriState.TRUE : TriState.FALSE);

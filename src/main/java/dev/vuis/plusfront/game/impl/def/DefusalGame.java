@@ -21,6 +21,7 @@ import com.boehmod.blockfront.game.GameTeam;
 import com.boehmod.blockfront.game.GameTypeCodec;
 import com.boehmod.blockfront.game.GameUtils;
 import com.boehmod.blockfront.game.IdleGameStage;
+import com.boehmod.blockfront.game.SpectatorScope;
 import com.boehmod.blockfront.game.TeamJoinType;
 import com.boehmod.blockfront.game.tag.IAllowsCallouts;
 import com.boehmod.blockfront.game.tag.IAllowsPings;
@@ -282,6 +283,16 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	@Override
 	public boolean shouldRespawnAutomatically(@NotNull Player player) {
+		return true;
+	}
+
+	@Override
+	public @NotNull SpectatorScope getSpectatorScope() {
+		return SpectatorScope.SAME_TEAM;
+	}
+
+	@Override
+	public boolean shouldSpectateOnRespawn() {
 		return true;
 	}
 

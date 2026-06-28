@@ -23,7 +23,7 @@ public abstract class TroubleTownPlayerManagerMixin extends AbstractGamePlayerMa
 	}
 
 	@Inject(
-		method = "initPlayer",
+		method = "onPlayerRespawn",
 		at = @At("TAIL")
 	)
 	private void voicechatGroupInit(

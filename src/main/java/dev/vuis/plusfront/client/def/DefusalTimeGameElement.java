@@ -42,7 +42,7 @@ public class DefusalTimeGameElement extends ClientGameElement<DefusalGame, Defus
 			blinkTimer = ++blinkTimer % 20;
 		} else {
 			isBombPlanted = false;
-			timerText = gameClient.method_2678().getComponent().getVisualOrderText();
+			timerText = gameClient.getStageTimer().getComponent().getVisualOrderText();
 		}
 	}
 
