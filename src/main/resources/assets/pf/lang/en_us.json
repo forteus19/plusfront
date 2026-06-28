@@ -1,5 +1,9 @@
 {
   "pf.gamemode.def": "Defusal",
+  "pf.message.command.assets.backup.error.exists": "Target backup path already exists",
+  "pf.message.command.assets.backup.error.generic": "Failed to backup assets",
+  "pf.message.command.assets.backup.success": "Assets backed up successfully",
+  "pf.message.datapath.error": "Unable to save due to unset data path",
   "pf.message.gamemode.notification.bomb.defused": "The bomb has been defused!",
   "pf.message.gamemode.notification.bomb.drop": "%s dropped the bomb!",
   "pf.message.gamemode.notification.bomb.give": "The bomb was given to %s!",

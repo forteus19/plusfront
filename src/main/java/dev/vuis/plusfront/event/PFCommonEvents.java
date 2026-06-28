@@ -2,13 +2,17 @@ package dev.vuis.plusfront.event;
 
 import com.boehmod.blockfront.BlockFront;
 import com.boehmod.blockfront.common.BFAbstractManager;
+import com.mojang.brigadier.CommandDispatcher;
 import dev.vuis.plusfront.PlusFront;
+import dev.vuis.plusfront.command.PFCommand;
 import dev.vuis.plusfront.net.payload.PFStartConsumablePayload;
 import dev.vuis.plusfront.net.payload.PFStopMusicPayload;
 import java.util.stream.Collectors;
+import net.minecraft.commands.CommandSourceStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
@@ -41,6 +45,15 @@ public final class PFCommonEvents {
 			.getRequester()
 			.getFeatureFlagManager()
 			.setFeatureFlags(PlusFront.FEATURE_FLAGS);
+	}
+
+	@SubscribeEvent
+	public static void onRegisterCommands(RegisterCommandsEvent event) {
+		PlusFront.LOGGER.info("Registering commands...");
+
+		CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
+
+		PFCommand.register(dispatcher);
 	}
 
 	@SubscribeEvent
