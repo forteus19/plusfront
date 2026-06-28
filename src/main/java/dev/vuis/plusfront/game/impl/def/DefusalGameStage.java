@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class DefusalGameStage extends AbstractGameStage<DefusalGame, DefusalPlayerManager> implements TimedStage<DefusalGame, DefusalPlayerManager> {
 	private final GameStageTimer playingTimer = new GameStageTimer(1, 50).warningTime(15);
-	private final GameStageTimer finishedTimer = new GameStageTimer(0, 10).warningTime(5);
+	private final GameStageTimer finishedTimer = new GameStageTimer(0, 8).warningTime(5);
 
 	boolean isFinished = false;
 
