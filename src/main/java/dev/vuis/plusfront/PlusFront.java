@@ -23,6 +23,9 @@ public final class PlusFront {
 		"server_player_voice_sounds", false
 	);
 
+	/**
+	 * A flag that stores if the voicechat plugin has been loaded.
+	 */
 	public static boolean voicechatLoaded = false;
 
 	public PlusFront() {

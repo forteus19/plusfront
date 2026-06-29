@@ -1,11 +1,9 @@
 package dev.vuis.plusfront.mixin.bf;
 
-import com.boehmod.blockfront.BlockFront;
-import com.boehmod.blockfront.common.BFAbstractManager;
 import com.boehmod.blockfront.common.match.Loadout;
-import com.boehmod.blockfront.game.AbstractGame;
 import com.boehmod.blockfront.game.GameUtils;
 import dev.vuis.plusfront.game.impl.def.DefusalGame;
+import dev.vuis.plusfront.util.PFUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,13 +18,7 @@ public abstract class GameUtilsMixin {
 		at = @At("TAIL")
 	)
 	private static void addLoadoutGiveEvent(ServerLevel level, ServerPlayer player, Loadout loadout, boolean keepUnset, CallbackInfo ci) {
-		BFAbstractManager<?, ?, ?> manager = BlockFront.getInstance().getManager();
-		if (manager == null) {
-			return;
-		}
-
-		AbstractGame<?, ?, ?> game = manager.getPlayerGame(player);
-		if (game instanceof DefusalGame defusalGame) {
+		if (PFUtil.getPlayerGame(player) instanceof DefusalGame defusalGame) {
 			defusalGame.getPlayerManager().onGiveLoadout(player);
 		}
 	}

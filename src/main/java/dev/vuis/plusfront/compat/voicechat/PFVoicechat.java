@@ -35,6 +35,13 @@ public final class PFVoicechat implements VoicechatPlugin {
 		PlusFront.LOGGER.info("Voicechat plugin initialized!");
 	}
 
+	/**
+	 * Returns the current voicechat plugin instance. Check {@link PlusFront#voicechatLoaded} before calling.
+	 *
+	 * @return the voicechat plugin instance
+	 *
+	 * @see PlusFront#voicechatLoaded
+	 */
 	public static PFVoicechat getInstance() {
 		if (instance == null) {
 			throw new IllegalStateException("Voicechat not loaded");
@@ -86,6 +93,11 @@ public final class PFVoicechat implements VoicechatPlugin {
 		}
 	}
 
+	/**
+	 * Creates a new "Dead" voicechat group, removing the old group for the given game if it exists.
+	 *
+	 * @param gameUuid the uuid of the game
+	 */
 	public void onGameStart(UUID gameUuid) {
 		assert serverApi != null;
 
@@ -103,6 +115,11 @@ public final class PFVoicechat implements VoicechatPlugin {
 		}
 	}
 
+	/**
+	 * Removes the old "Dead" voicechat group for the given game if it exists.
+	 *
+	 * @param gameUuid the uuid of the game
+	 */
 	public void onGameEnd(UUID gameUuid) {
 		assert serverApi != null;
 
@@ -112,6 +129,12 @@ public final class PFVoicechat implements VoicechatPlugin {
 		}
 	}
 
+	/**
+	 * Adds the given player to the game's dead voicechat group.
+	 *
+	 * @param gameUuid the uuid of the player's game
+	 * @param playerUuid the player to add to the "Dead" group
+	 */
 	public void addToDeadGroup(UUID gameUuid, UUID playerUuid) {
 		assert serverApi != null;
 
@@ -128,6 +151,11 @@ public final class PFVoicechat implements VoicechatPlugin {
 		connection.setGroup(deadGroup);
 	}
 
+	/**
+	 * Removes the given player from the group they are currently in.
+	 *
+	 * @param playerUuid the player to add to the "Dead" group
+	 */
 	public void removeFromGroup(UUID playerUuid) {
 		assert serverApi != null;
 

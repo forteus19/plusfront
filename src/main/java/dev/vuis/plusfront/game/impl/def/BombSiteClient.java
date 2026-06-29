@@ -14,6 +14,12 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
+/**
+ * Stores the client state of a defusal bomb site.
+ *
+ * @see DefusalGame
+ * @see DefusalGameClient
+ */
 public class BombSiteClient {
 	private final Vec3 position;
 	private final float radius;
@@ -21,6 +27,9 @@ public class BombSiteClient {
 	private final Component nameComponent;
 	private Component distanceComponent = null;
 
+	/**
+	 * @param data the bomb site data given by {@link DefusalGame}
+	 */
 	public BombSiteClient(BombSite data) {
 		this.position = data.position();
 		this.radius = data.radius();
@@ -28,6 +37,12 @@ public class BombSiteClient {
 		this.nameComponent = Component.literal(data.name()).withStyle(BFStyles.BOLD);
 	}
 
+	/**
+	 * Called every client tick to update state used when rendering the waypoint.
+	 *
+	 * @param player the client player
+	 * @param highlightInRadius whether to highlight the distance component if within radius of the bomb site
+	 */
 	public void update(LocalPlayer player, boolean highlightInRadius) {
 		float siteDistance = Mth.sqrt((float) player.distanceToSqr(position));
 		MutableComponent mutableDistance = Component.literal(String.format("%.2fm", siteDistance));
@@ -39,6 +54,14 @@ public class BombSiteClient {
 		distanceComponent = mutableDistance;
 	}
 
+	/**
+	 * Renders a waypoint showing info about this bomb site into the world.
+	 *
+	 * @param poseStack the current pose stack
+	 * @param font used when rendering components
+	 * @param graphics the current graphics context
+	 * @param camera the current camera
+	 */
 	public void render(
 		PoseStack poseStack,
 		Font font,

@@ -132,7 +132,7 @@ val blockfrontLibraries = files(
     }
 )
 
-val remapBlockfrontTask = tasks.register<Remap>("remapBlockfront") {
+val remapBlockfrontTask = tasks.register<RemapTask>("remapBlockfront") {
     dependsOn(blockfrontOriginal, extractBlockfrontLibrariesTask)
 
     input = blockfrontOriginal.resolve().first()
@@ -180,13 +180,13 @@ sourceSets.main {
     }
 }
 
-val remapModTask = tasks.register<Remap>("remapMod") {
+val remapModTask = tasks.register<RemapTask>("remapMod") {
     group = "build"
 
     dependsOn(tasks["jar"], remapBlockfrontTask)
 
     input = tasks["jar"].outputs.files.first()
-    output = file("build/libs/${base.archivesName.get()}-${project.version}-bfobf.jar")
+    output = layout.buildDirectory.file("libs/${base.archivesName.get()}-${project.version}-bfobf.jar")
     mappings = file("bf-mappings.tiny")
     classpath.from(remapBlockfrontTask.get().outputs.files.first())
     from = "named"
@@ -195,8 +195,15 @@ val remapModTask = tasks.register<Remap>("remapMod") {
     mixinExtension = true
 }
 
-tasks.build {
+val createLatestJarSymlinkTask = tasks.register<SymlinkTask>("createLatestJarSymlink") {
     dependsOn(remapModTask)
+
+    target.set(remapModTask.get().outputs.files.first().absolutePath)
+    link.set(layout.buildDirectory.file("libs/${base.archivesName.get()}-latest-bfobf.jar"))
+}
+
+tasks.build {
+    dependsOn(remapModTask, createLatestJarSymlinkTask)
 }
 
 idea {

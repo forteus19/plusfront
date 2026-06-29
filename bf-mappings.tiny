@@ -12677,9 +12677,11 @@ c	com/boehmod/blockfront/oF	com/boehmod/blockfront/unnamed/BF_687	com/boehmod/bl
 		p	1			seconds
 	m	()I	aY	method_2844	secondsPassed
 	m	()I	aZ	method_2845	getSecondsRemaining
-	m	(Lio/netty/buffer/ByteBuf;)V	b	method_6747	method_6747
+	m	(Lio/netty/buffer/ByteBuf;)V	b	method_6747	read
+		p	1			buf
 	m	()Z	bs	method_2846	isRunning
-	m	(Lio/netty/buffer/ByteBuf;)V	c	method_6748	method_6748
+	m	(Lio/netty/buffer/ByteBuf;)V	c	method_6748	write
+		p	1			buf
 	m	(Ljava/util/Set;)V	c	method_2847	update
 		p	1			players
 	m	()V	cl	method_2848	restart
@@ -14135,7 +14137,7 @@ c	com/boehmod/blockfront/ow	com/boehmod/blockfront/unnamed/BF_677	com/boehmod/bl
 		p	1			other
 	m	()Ljava/util/Set;	f	method_2665	getErrorTypes
 	m	(Lcom/mojang/brigadier/context/CommandContext;[Ljava/lang/String;)V	f	method_2668	method_2668
-	m	(Lio/netty/buffer/ByteBuf;)V	f	method_2659	writeForGamePacket
+	m	(Lio/netty/buffer/ByteBuf;)V	f	method_2659	writeForClient
 		p	1			buf
 	m	(Lio/netty/buffer/ByteBuf;)V	g	method_2664	readAll
 		p	1			buf
@@ -14374,7 +14376,8 @@ c	com/boehmod/blockfront/ox	com/boehmod/blockfront/unnamed/BF_679	com/boehmod/bl
 	m	()F	aJ	method_8250	method_8250
 	m	()Lcom/boehmod/blockfront/sS;	b	method_2721	getTopPlayersStat
 	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;)V	b	method_7270	renderFpsDisplay
-	m	(Lio/netty/buffer/ByteBuf;)V	b	method_6737	method_6737
+	m	(Lio/netty/buffer/ByteBuf;)V	b	method_6737	read
+		p	1			buf
 	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/l;Lnet/minecraft/client/player/LocalPlayer;Lnet/minecraft/client/multiplayer/ClientLevel;Lcom/boehmod/blockfront/fO;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Ljava/util/Set;IIIIFF)V	b	method_2722	onRenderGui
 		p	1			minecraft
 		p	2			manager
@@ -17768,7 +17771,7 @@ c	com/boehmod/blockfront/sW	com/boehmod/blockfront/unnamed/BF_892	com/boehmod/bl
 	m	()V	aW	method_3718	reset
 	m	()Ljava/util/List;	az	method_3715	getEntries
 	m	(Lio/netty/buffer/ByteBuf;)V	b	method_6765	method_6765
-	m	(Lio/netty/buffer/ByteBuf;)V	c	method_6766	method_6766
+	m	(Lio/netty/buffer/ByteBuf;)V	c	method_6766	write
 	m	()Z	cb	method_6110	method_6110
 	m	(Lcom/boehmod/blockfront/jn;)V	d	method_3719	startVoteSequence
 	m	(Ljava/lang/String;)Z	l	method_3720	isEntry
@@ -22497,59 +22500,59 @@ c	com/boehmod/blockfront/wi	com/boehmod/blockfront/unnamed/BF_1465	com/boehmod/b
 c	com/boehmod/blockfront/wj	com/boehmod/blockfront/unnamed/BF_1087	com/boehmod/blockfront/registry/BFBlockEntityTypes
 	f	Lnet/neoforged/neoforge/registries/DeferredRegister;	a	field_4389	DR
 	f	Ljava/util/Map;	as	field_4435	CRATES
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bH	field_4390	field_4390
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bI	field_4391	field_4391
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bJ	field_4392	field_4392
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bK	field_4393	field_4393
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bL	field_4394	field_4394
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bM	field_4395	field_4395
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bN	field_4396	field_4396
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bO	field_4409	field_4409
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bP	field_4410	field_4410
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bQ	field_4411	field_4411
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bR	field_4412	field_4412
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bS	field_7335	field_7335
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bT	field_4413	field_4413
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bU	field_8598	field_8598
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bV	field_8599	field_8599
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bW	field_8600	field_8600
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bX	field_4414	field_4414
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bY	field_4415	field_4415
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bZ	field_4416	field_4416
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cA	field_4403	field_4403
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cB	field_8601	field_8601
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cC	field_4404	field_4404
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cD	field_4405	field_4405
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cE	field_4406	field_4406
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cF	field_4407	field_4407
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cG	field_4408	field_4408
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cH	field_8602	field_8602
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	ca	field_4417	field_4417
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cb	field_4418	field_4418
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cc	field_4419	field_4419
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cd	field_4420	field_4420
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	ce	field_6959	field_6959
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cf	field_4421	field_4421
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cg	field_4422	field_4422
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	ch	field_4423	field_4423
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	ci	field_4424	field_4424
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cj	field_4425	field_4425
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	ck	field_4426	field_4426
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cl	field_4427	field_4427
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cm	field_4428	field_4428
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cn	field_4429	field_4429
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	co	field_4430	field_4430
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cp	field_4431	field_4431
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cq	field_4432	field_4432
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cr	field_4433	field_4433
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cs	field_4397	field_4397
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	ct	field_4398	field_4398
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cu	field_4399	field_4399
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cv	field_4400	field_4400
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cw	field_4401	field_4401
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cx	field_7333	field_7333
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cy	field_7334	field_7334
-	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cz	field_4402	field_4402
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bH	field_4390	DECORATION_BLOCK
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bI	field_4391	CONFIGURABLE_GEO_BLOCK
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bJ	field_4392	SWINGING_LOG
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bK	field_4393	FLAK88_SHIELD
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bL	field_4394	FLAK88_SHIELD_DESTROYED
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bM	field_4395	FLAK88_NOSHIELD
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bN	field_4396	FLAK88_NOSHIELD_DESTROYED
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bO	field_4409	TYPE96_SHIELD
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bP	field_4410	TYPE96_SHIELD_DESTROYED
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bQ	field_4411	TYPE96_NOSHIELD
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bR	field_4412	TYPE96_NOSHIELD_DESTROYED
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bS	field_7335	FLAK38
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bT	field_4413	BICYCLE
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bU	field_8598	WALL_WIRE_ALARM
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bV	field_8599	CEILING_ALARM
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bW	field_8600	WALL_ALARM
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bX	field_4414	P51_MUSTANG
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bY	field_4415	PZL11C
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	bZ	field_4416	JUNKERS_JU87
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cA	field_4403	_150MM_TBTSK_C36_GUN
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cB	field_8601	_150CM_FLAKSCHEINWERFER
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cC	field_4404	LCVP
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cD	field_4405	LCVP_OPEN
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cE	field_4406	_7TP_PELICAN
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cF	field_4407	_7TP_PELICAN_DESTROYED
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cG	field_4408	WALL_FLAG_TALL
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cH	field_8602	JU52
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	ca	field_4417	A6M_ZERO
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cb	field_4418	A6M_ZERO_PARKED
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cc	field_4419	REGGIANE_RE2005
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cd	field_4420	SHERMAN_TANK
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	ce	field_6959	RENAULT_FT_TANK
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cf	field_4421	SHERMAN_TANK_DESTROYED
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cg	field_4422	SHERMAN_TANK_SNORKEL
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	ch	field_4423	SHERMAN_TANK_SNORKEL_DESTROYED
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	ci	field_4424	TIGER_AUSF_H_TANK
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cj	field_4425	T34_TANK
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	ck	field_4426	T34_TANK_DESTROYED
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cl	field_4427	PANZERIV_TANK
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cm	field_4428	PANZERIV_TANK_DESTROYED
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cn	field_4429	CHIHA_TANK
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	co	field_4430	CHIHA_TANK_DESTROYED
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cp	field_4431	KUROGANE
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cq	field_4432	KUBEL
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cr	field_4433	RENAULT_AHN
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cs	field_4397	CITROEN_11CV_TRACTION_AVANT
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	ct	field_4398	CITROEN_11CV_TRACTION_AVANT_DESTROYED
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cu	field_4399	LANCIA_1ZM
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cv	field_4400	LANCIA_1ZM_DESTROYED
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cw	field_4401	WILLYS_JEEP
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cx	field_7333	OPEL_BLITZ
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cy	field_7334	OPEL_BLITZ_DESTROYED
+	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	cz	field_4402	WILLYS_JEEP_DESTROYED
 	m	()Lnet/minecraft/world/level/block/entity/BlockEntityType;	A	method_4719	method_4719
 	m	(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Lcom/boehmod/blockfront/lF;	A	method_4718	method_4718
 	m	()Lnet/minecraft/world/level/block/entity/BlockEntityType;	B	method_4721	method_4721

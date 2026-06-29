@@ -16,7 +16,7 @@ import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
-public abstract class Remap extends DefaultTask {
+public abstract class RemapTask extends DefaultTask {
 	@InputFile
 	public abstract RegularFileProperty getInput();
 	@OutputFile
@@ -34,7 +34,7 @@ public abstract class Remap extends DefaultTask {
 	@Input
 	public abstract Property<Boolean> getMixinExtension();
 
-	public Remap() {
+	public RemapTask() {
 		getNonClassFiles().convention(true);
 		getMixinExtension().convention(true);
 	}

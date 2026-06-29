@@ -30,7 +30,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.client.def.DefusalTeamGameElement;
 import dev.vuis.plusfront.client.def.DefusalTimeGameElement;
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
@@ -73,6 +75,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 
 	private final List<BombSiteClient> bombSites;
 
+	private boolean isRoundFinished = false;
 	private int bombBlinkTimer = 0;
 
 	public DefusalGameClient(@NotNull BFClientManager manager, @NotNull DefusalGame game, @NotNull ClientPlayerDataHandler dataHandler) {
@@ -195,7 +198,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 			ItemEntity bombItem = game.getBombItem(level);
 
 			if (bombItem != null) {
-				renderBombWaypoint(
+				renderBombItemWaypoint(
 					graphics, minecraft.gameRenderer.getMainCamera(), width, height, partialTick,
 					bombItem.getPosition(partialTick).add(0.0, 0.5, 0.0)
 				);
@@ -221,7 +224,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		renderPlayerHeadList(minecraft, connection, manager, graphics, playerManager, tTeam.getPlayers(), 20, playerHeadsY, isTerrorist);
 	}
 
-	private void renderBombWaypoint(
+	private void renderBombItemWaypoint(
 		GuiGraphics graphics,
 		Camera camera,
 		int width,
@@ -312,6 +315,17 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 
 			headX += 12;
 		}
+	}
+
+	@Override
+	public void read(@NotNull ByteBuf buf) throws IOException {
+		super.read(buf);
+
+		isRoundFinished = buf.readBoolean();
+	}
+
+	public boolean isRoundFinished() {
+		return isRoundFinished;
 	}
 
 	@Override

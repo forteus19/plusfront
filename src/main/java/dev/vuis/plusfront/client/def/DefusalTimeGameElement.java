@@ -19,7 +19,7 @@ public class DefusalTimeGameElement extends ClientGameElement<DefusalGame, Defus
 	private static final ResourceLocation STOPWATCH_TEXTURE = BFRes.loc("textures/gui/stopwatch.png");
 
 	private FormattedCharSequence timerText = FormattedCharSequence.EMPTY;
-	private boolean isBombPlanted = false;
+	private boolean showBombPlanted = false;
 	private int blinkTimer = 0;
 
 	public DefusalTimeGameElement() {
@@ -34,14 +34,14 @@ public class DefusalTimeGameElement extends ClientGameElement<DefusalGame, Defus
 		@NotNull AbstractGameClient<DefusalGame, DefusalPlayerManager> gameClient,
 		@NotNull LocalPlayer player
 	) {
-		if (game.isBombPlanted()) {
-			if (!isBombPlanted) {
+		if (game.isBombPlanted() && !((DefusalGameClient) gameClient).isRoundFinished()) {
+			if (!showBombPlanted) {
 				blinkTimer = 0;
 			}
-			isBombPlanted = true;
+			showBombPlanted = true;
 			blinkTimer = ++blinkTimer % 20;
 		} else {
-			isBombPlanted = false;
+			showBombPlanted = false;
 			timerText = gameClient.getStageTimer().getComponent().getVisualOrderText();
 		}
 	}
@@ -60,7 +60,7 @@ public class DefusalTimeGameElement extends ClientGameElement<DefusalGame, Defus
 		int baseX = x + 3;
 		int baseY = y + 2;
 
-		if (isBombPlanted) {
+		if (showBombPlanted) {
 			graphics.blit(
 				blinkTimer < 10 ? DefusalGameClient.BOMB_TEXTURE : DefusalGameClient.BOMB_BLINK_TEXTURE,
 				x + 22 - 16, y, 0f, 0f,

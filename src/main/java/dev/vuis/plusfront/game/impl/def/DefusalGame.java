@@ -190,6 +190,20 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		stageManager.update(manager, dataHandler, level);
 	}
 
+	public boolean isRoundInProgress() {
+		return stageManager.getCurrentStage() instanceof DefusalGameStage gameStage && !gameStage.isFinished;
+	}
+
+	public boolean isRoundFinished() {
+		return stageManager.getCurrentStage() instanceof DefusalGameStage gameStage && gameStage.isFinished;
+	}
+
+	public void finishRound() {
+		if (stageManager.getCurrentStage() instanceof DefusalGameStage gameStage) {
+			gameStage.isFinished = true;
+		}
+	}
+
 	@Override
 	protected boolean isMatchSuccess() {
 		return true;
@@ -274,6 +288,13 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		if (buf.readBoolean()) {
 			bombItemId = VarInt.read(buf);
 		}
+	}
+
+	@Override
+	public void writeForClient(@NotNull ByteBuf buf) throws IOException {
+		super.writeForClient(buf);
+
+		buf.writeBoolean(isRoundFinished());
 	}
 
 	@Override
@@ -499,6 +520,12 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		}
 	}
 
+	/**
+	 * Checks if the given position is within radius of any bomb site.
+	 *
+	 * @param playerPos the position to check against
+	 * @return if the given position is within radius of any bomb site
+	 */
 	public boolean checkBombSiteDistance(Vec3 playerPos) {
 		for (BombSite site : bombSites) {
 			float radius = site.radius();
@@ -511,11 +538,17 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		return false;
 	}
 
+	/**
+	 * Called when a team wins the current round. Marks the current round as finished, and does nothing if a round is not in progress.
+	 *
+	 * @param players all players in the match
+	 * @param ctWin {@code true} if the Counter-Terrorists won, {@code false} if the Terrorists won
+	 */
 	public void onRoundWin(Set<UUID> players, boolean ctWin) {
-		if (!(stageManager.getCurrentStage() instanceof DefusalGameStage gameStage) || gameStage.isFinished) {
+		if (!isRoundInProgress()) {
 			return;
 		}
-		gameStage.isFinished = true;
+		finishRound();
 
 		GameTeam ctTeam = playerManager.getTeamByName(DefusalPlayerManager.CT_NAME);
 		assert ctTeam != null;
@@ -549,11 +582,16 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		);
 	}
 
+	/**
+	 * Called when the current round ends in a draw. Marks the current round as finished, and does nothing if a round is not in progress.
+	 *
+	 * @param players all players in the match
+	 */
 	public void onRoundDraw(Set<UUID> players) {
-		if (!(stageManager.getCurrentStage() instanceof DefusalGameStage gameStage) || gameStage.isFinished) {
+		if (!isRoundInProgress()) {
 			return;
 		}
-		gameStage.isFinished = true;
+		finishRound();
 
 		GameUtils.sendNotification(
 			players,

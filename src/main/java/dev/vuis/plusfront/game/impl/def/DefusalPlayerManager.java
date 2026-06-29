@@ -97,10 +97,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		}
 		PlayerDataHandler<?> dataHandler = manager.getPlayerDataHandler();
 
-		if (!(game.getStageManager().getCurrentStage() instanceof DefusalGameStage gameStage)) {
-			return;
-		}
-		if (gameStage.isFinished) {
+		if (!game.isRoundInProgress()) {
 			return;
 		}
 
@@ -117,9 +114,9 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 
 		if (ctOut && tOut) {
 			if (!game.isBombPlanted()) {
-				game.onRoundDraw(players);
-			} else {
 				game.onRoundWin(players, false);
+			} else {
+				game.onRoundDraw(players);
 			}
 			return;
 		}
@@ -200,7 +197,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	}
 
 	public @Nullable WinningTeamData getWinningTeam() {
-		if (game.getStageManager().getCurrentStage() instanceof DefusalGameStage gameStage && !gameStage.isFinished) {
+		if (!game.isRoundInProgress()) {
 			return null;
 		}
 
@@ -237,6 +234,11 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		GameUtils.teleportPlayer(dataHandler, player, team.randomSpawn(game));
 	}
 
+	/**
+	 * Teleports all players to random spawns for their respective team.
+	 *
+	 * @param dataHandler used to set freeze positions if players are currently frozen
+	 */
 	public void teleportPlayersToRandomSpawn(PlayerDataHandler<?> dataHandler) {
 		for (GameTeam team : getTeams()) {
 			for (UUID playerUuid : team.getPlayers()) {
@@ -389,6 +391,10 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		return true;
 	}
 
+	/**
+	 * Selects a random player from the Terrorists as the "bomb player", gives them a bomb item if they do not already have one, and notifies the players on their team.
+	 * Does nothing if the bomb is planted.
+	 */
 	public void refreshTerroristBomb() {
 		if (game.isBombPlanted()) {
 			return;
@@ -443,11 +449,23 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		}
 	}
 
+	/**
+	 * Adds an item stack of size 1 to the given player's inventory and broadcasts the changes.
+	 *
+	 * @param player the player to give the item to
+	 * @param item the item to give
+	 */
 	private static void giveAndSync(Player player, Item item) {
 		player.getInventory().add(new ItemStack(item));
 		player.containerMenu.broadcastChanges();
 	}
 
+	/**
+	 * Checks that the given player's inventory does not already have an item of the given item instance, then adds an item stack of size 1 and broadcasts the changes.
+	 *
+	 * @param player the player to give the item to
+	 * @param item the item to give
+	 */
 	private static void giveSingletonItem(Player player, Item item) {
 		for (ItemStack stack : player.getInventory().items) {
 			if (stack.getItem() == item) {
