@@ -136,13 +136,20 @@ val remapBlockfrontTask = tasks.register<RemapTask>("remapBlockfront") {
     dependsOn(blockfrontOriginal, extractBlockfrontLibrariesTask)
 
     input = blockfrontOriginal.resolve().first()
-    output = file("build/generated/bf-remapped.jar")
+    output = layout.buildDirectory.file("generated/bf-remapped.jar")
     mappings = file("bf-mappings.tiny")
     classpath.from(extractBlockfrontLibrariesTask)
     from = "official"
     to = "named"
     nonClassFiles = false
     mixinExtension = false
+}
+
+val decompileBlockfrontTask = tasks.register<DecompileTask>("decompileBlockfront") {
+    dependsOn(remapBlockfrontTask)
+
+    input.set(remapBlockfrontTask.get().outputs.files.first())
+    output.set(layout.buildDirectory.file("generated/bf-sources.jar"))
 }
 
 dependencies {
@@ -153,6 +160,7 @@ dependencies {
 neoForge {
     ideSyncTask(extractBlockfrontLibrariesTask)
     ideSyncTask(remapBlockfrontTask)
+    ideSyncTask(decompileBlockfrontTask)
 }
 
 val generateModMetadataTask = tasks.register<ProcessResources>("generateModMetadata") {
