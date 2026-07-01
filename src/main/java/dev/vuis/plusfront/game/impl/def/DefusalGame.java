@@ -70,7 +70,7 @@ import static dev.vuis.plusfront.util.AssetCommandUtil.executorPlayers;
 public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerManager, GameStageManager<DefusalGame, DefusalPlayerManager>>
 	implements IAllowsCallouts<DefusalGame>, IAllowsPings, IAllowsSoundboard, ICanSwitchTeams, IHasBombs, IHasClasses, IHasConsumables, IHasDominations, IUseKillIcons {
 
-	public static final int SCORE_TO_WIN = 8;
+	public static final int SCORE_TO_WIN = 10;
 
 	private final List<BombSite> bombSites = new ObjectArrayList<>();
 
@@ -566,7 +566,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 				"pf.message.gamemode.notification.round.win",
 				Component.literal(winningTeam.getName()).withStyle(winningTeam.getStyleText())
 			),
-			100,
+			120,
 			"round.end"
 		);
 
@@ -597,7 +597,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 			players,
 			Component.translatable("pf.message.gamemode.notification.round.draw")
 				.withStyle(ChatFormatting.GOLD),
-			100,
+			120,
 			"round.end"
 		);
 

@@ -19,10 +19,13 @@ import com.boehmod.blockfront.util.math.BFPose;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.util.PFUtil;
 import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -199,13 +202,9 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	}
 
 	public @Nullable WinningTeamData getWinningTeam() {
-		if (!game.isRoundInProgress()) {
-			return null;
-		}
-
-		GameTeam ctTeam = getTeamByName(DefusalPlayerManager.CT_NAME);
+		GameTeam ctTeam = getTeamByName(CT_NAME);
 		assert ctTeam != null;
-		GameTeam tTeam = getTeamByName(DefusalPlayerManager.T_NAME);
+		GameTeam tTeam = getTeamByName(T_NAME);
 		assert tTeam != null;
 
 		if (ctTeam.getStatInt(BFStats.SCORE) >= DefusalGame.SCORE_TO_WIN) {
@@ -242,9 +241,29 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	 * @param dataHandler used to set freeze positions if players are currently frozen
 	 */
 	public void teleportPlayersToRandomSpawn(PlayerDataHandler<?> dataHandler) {
+		Random random = ThreadLocalRandom.current();
+
 		for (GameTeam team : getTeams()) {
+			List<BFPose> originalSpawns = team.getPlayerSpawns();
+			if (originalSpawns.isEmpty()) {
+				if (lobbySpawn != null) {
+					originalSpawns = List.of(lobbySpawn);
+				} else {
+					throw new IllegalStateException("Missing team spawns and lobby spawn");
+				}
+			}
+			List<BFPose> spawns = new ObjectArrayList<>(originalSpawns);
+
 			for (UUID playerUuid : team.getPlayers()) {
-				GameUtils.teleportPlayerAndSync(dataHandler, playerUuid, team.randomSpawn(game));
+				if (spawns.isEmpty()) {
+					spawns.addAll(originalSpawns);
+				}
+
+				GameUtils.teleportPlayerAndSync(
+					dataHandler,
+					playerUuid,
+					spawns.remove(random.nextInt(spawns.size()))
+				);
 			}
 		}
 	}
@@ -261,6 +280,28 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	}
 
 	@Override
+	public void handlePlayerDeath(
+		@NotNull BFAbstractManager<?, ?, ?> manager,
+		@NotNull ServerLevel level,
+		@NotNull ServerPlayer killedPlayer,
+		@NotNull UUID killedUuid,
+		@Nullable ServerPlayer sourcePlayer,
+		@Nullable UUID sourceUuid,
+		@NotNull DamageSource source,
+		@NotNull Set<UUID> players
+	) {
+		if (sourcePlayer != null &&
+			sourceUuid != null &&
+			!killedUuid.equals(sourceUuid) &&
+			isFriendlyKill(killedUuid, sourceUuid)
+		) {
+			onFriendlyKill(sourcePlayer, players);
+		} else {
+			super.handlePlayerDeath(manager, level, killedPlayer, killedUuid, sourcePlayer, sourceUuid, source, players);
+		}
+	}
+
+	@Override
 	public void onPlayerKilled(
 		@NotNull BFAbstractManager<?, ?, ?> manager,
 		@NotNull ServerLevel level,
@@ -271,48 +312,49 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		@NotNull DamageSource source,
 		@NotNull Set<UUID> players
 	) {
-		if (sourcePlayer != null && sourceUuid != null) {
-			GameTeam killedTeam = getPlayerTeam(killedUuid);
-			GameTeam sourceTeam = getPlayerTeam(sourceUuid);
-
-			if (killedTeam != null &&
-				sourceTeam != null &&
-				killedTeam.getName().equals(sourceTeam.getName()) &&
-				game.isRoundInProgress()
-			) {
-				GameUtils.sendNotification(
-					players,
-					Component.translatable(
-						"pf.message.gamemode.notification.kill.friendly",
-						Component.literal(sourcePlayer.getScoreboardName())
-					).withStyle(ChatFormatting.DARK_RED),
-					60
-				);
-
-				GameUtils.sendChatGraphic(
-					ChatGraphic.WARNING,
-					sourcePlayer,
-					Component.translatable("pf.message.gamemode.message.kill.friendly")
-						.withStyle(ChatFormatting.RED)
-				);
-				GameUtils.playSound(
-					sourcePlayer,
-					SoundEvents.NOTE_BLOCK_HARP.value(),
-					SoundSource.MASTER,
-					1f, 2f
-				);
-				GameUtils.playSound(
-					sourcePlayer,
-					SoundEvents.NOTE_BLOCK_BASS.value(),
-					SoundSource.MASTER,
-					1f, 2f
-				);
-			}
-		}
-
 		if (killedUuid.equals(bombPlayer)) {
 			onBombDrop(killedPlayer);
 		}
+	}
+
+	private boolean isFriendlyKill(UUID killedUuid, UUID sourceUuid) {
+		GameTeam killedTeam = getPlayerTeam(killedUuid);
+		GameTeam sourceTeam = getPlayerTeam(sourceUuid);
+
+		return killedTeam != null
+			&& sourceTeam != null
+			&& killedTeam.getName().equals(sourceTeam.getName())
+			&& game.isRoundInProgress();
+	}
+
+	private void onFriendlyKill(ServerPlayer sourcePlayer, Set<UUID> players) {
+		GameUtils.sendNotification(
+			players,
+			Component.translatable(
+				"pf.message.gamemode.notification.kill.friendly",
+				Component.literal(sourcePlayer.getScoreboardName())
+			).withStyle(ChatFormatting.DARK_RED),
+			80
+		);
+
+		GameUtils.sendChatGraphic(
+			ChatGraphic.WARNING,
+			sourcePlayer,
+			Component.translatable("pf.message.gamemode.message.kill.friendly")
+				.withStyle(ChatFormatting.RED)
+		);
+		GameUtils.playSound(
+			sourcePlayer,
+			SoundEvents.NOTE_BLOCK_HARP.value(),
+			SoundSource.MASTER,
+			1f, 2f
+		);
+		GameUtils.playSound(
+			sourcePlayer,
+			SoundEvents.NOTE_BLOCK_BASS.value(),
+			SoundSource.MASTER,
+			1f, 2f
+		);
 	}
 
 	public void onBombDrop(Player previousPlayer) {
@@ -489,7 +531,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	 * Adds an item stack of size 1 to the given player's inventory and broadcasts the changes.
 	 *
 	 * @param player the player to give the item to
-	 * @param item the item to give
+	 * @param item   the item to give
 	 */
 	private static void giveAndSync(Player player, Item item) {
 		player.getInventory().add(new ItemStack(item));
@@ -500,7 +542,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	 * Checks that the given player's inventory does not already have an item of the given item instance, then adds an item stack of size 1 and broadcasts the changes.
 	 *
 	 * @param player the player to give the item to
-	 * @param item the item to give
+	 * @param item   the item to give
 	 */
 	private static void giveSingletonItem(Player player, Item item) {
 		for (ItemStack stack : player.getInventory().items) {
