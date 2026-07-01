@@ -1,5 +1,6 @@
 package dev.vuis.plusfront.game.impl.def;
 
+import com.boehmod.bflib.cloud.common.ChatGraphic;
 import com.boehmod.bflib.cloud.packet.IPacket;
 import com.boehmod.blockfront.BlockFront;
 import com.boehmod.blockfront.common.BFAbstractManager;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -269,11 +271,48 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		@NotNull DamageSource source,
 		@NotNull Set<UUID> players
 	) {
-		if (!killedUuid.equals(bombPlayer)) {
-			return;
+		if (sourcePlayer != null && sourceUuid != null) {
+			GameTeam killedTeam = getPlayerTeam(killedUuid);
+			GameTeam sourceTeam = getPlayerTeam(sourceUuid);
+
+			if (killedTeam != null &&
+				sourceTeam != null &&
+				killedTeam.getName().equals(sourceTeam.getName()) &&
+				game.isRoundInProgress()
+			) {
+				GameUtils.sendNotification(
+					players,
+					Component.translatable(
+						"pf.message.gamemode.notification.kill.friendly",
+						Component.literal(sourcePlayer.getScoreboardName())
+					).withStyle(ChatFormatting.DARK_RED),
+					60
+				);
+
+				GameUtils.sendChatGraphic(
+					ChatGraphic.WARNING,
+					sourcePlayer,
+					Component.translatable("pf.message.gamemode.message.kill.friendly")
+						.withStyle(ChatFormatting.RED)
+				);
+				GameUtils.playSound(
+					sourcePlayer,
+					SoundEvents.NOTE_BLOCK_HARP.value(),
+					SoundSource.MASTER,
+					1f, 2f
+				);
+				GameUtils.playSound(
+					sourcePlayer,
+					SoundEvents.NOTE_BLOCK_BASS.value(),
+					SoundSource.MASTER,
+					1f, 2f
+				);
+			}
 		}
 
-		onBombDrop(killedPlayer);
+		if (killedUuid.equals(bombPlayer)) {
+			onBombDrop(killedPlayer);
+		}
 	}
 
 	public void onBombDrop(Player previousPlayer) {
@@ -375,10 +414,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 			return source.is(DamageTypeTags.IS_EXPLOSION) || source.is(DamageTypeTags.IS_FIRE);
 		}
 
-		GameTeam damagedTeam = getPlayerTeam(uuid);
-		GameTeam sourceTeam = getPlayerTeam(sourceUuid);
-
-		return damagedTeam == null || sourceTeam == null || !damagedTeam.getName().equals(sourceTeam.getName());
+		return !(game.getStageManager().getCurrentStage() instanceof DefusalWaitingStage);
 	}
 
 	@Override

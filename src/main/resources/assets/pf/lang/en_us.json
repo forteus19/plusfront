@@ -4,11 +4,13 @@
   "pf.message.command.assets.backup.error.generic": "Failed to backup assets",
   "pf.message.command.assets.backup.success": "Assets backed up successfully",
   "pf.message.datapath.error": "Unable to save due to unset data path",
+  "pf.message.gamemode.message.kill.friendly": "Do not hurt your teammates!",
   "pf.message.gamemode.notification.bomb.defused": "The bomb has been defused!",
   "pf.message.gamemode.notification.bomb.drop": "%s dropped the bomb!",
   "pf.message.gamemode.notification.bomb.give": "The bomb was given to %s!",
   "pf.message.gamemode.notification.bomb.pickup": "%s picked up the bomb!",
   "pf.message.gamemode.notification.bomb.planted": "The bomb has been planted!",
+  "pf.message.gamemode.notification.kill.friendly": "%s killed a teammate!",
   "pf.message.gamemode.notification.round.draw": "Round draw!",
   "pf.message.gamemode.notification.round.win": "%s won the round!"
 }

@@ -448,7 +448,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 			players,
 			Component.translatable("pf.message.gamemode.notification.bomb.defused")
 				.withStyle(ChatFormatting.BLUE),
-			90,
+			100,
 			"bomb.defused"
 		);
 
@@ -566,7 +566,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 				"pf.message.gamemode.notification.round.win",
 				Component.literal(winningTeam.getName()).withStyle(winningTeam.getStyleText())
 			),
-			90,
+			100,
 			"round.end"
 		);
 
@@ -597,7 +597,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 			players,
 			Component.translatable("pf.message.gamemode.notification.round.draw")
 				.withStyle(ChatFormatting.GOLD),
-			90,
+			100,
 			"round.end"
 		);
 
