@@ -40,6 +40,7 @@ import com.boehmod.blockfront.util.math.BFPose;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.data.PFDefusalData;
 import dev.vuis.plusfront.ex.TeamDeathmatchCodecEx;
+import dev.vuis.plusfront.util.PFMathUtil;
 import dev.vuis.plusfront.util.PFUtil;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -88,7 +89,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 				}
 
 				bombSites.add(new BombSite(
-					PFUtil.copyVec3(((Player) source).position()),
+					PFMathUtil.copyVec3(((Player) source).position()),
 					name,
 					radius
 				));
@@ -356,6 +357,10 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	@Override
 	public void onPingRequest(@NotNull BFAbstractManager<?, ?, ?> manager, @NotNull ServerPlayer player, @NotNull Vec3 position) {
+		if (PFUtil.isPlayerUnavailable(player)) {
+			return;
+		}
+
 		UUID playerUuid = player.getUUID();
 
 		GameTeam team = playerManager.getPlayerTeam(playerUuid);
@@ -435,15 +440,18 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	@Override
 	public void onBombDefused(@NotNull BombEntity bomb, @Nullable ServerPlayer player, @NotNull UUID playerUuid) {
+		if (player == null) {
+			return;
+		}
+
+		BFAbstractManager<?, ?, ?> manager = PFUtil.blockfrontManager();
+
 		isBombPlanted = false;
+
+		GameUtils.changePlayerStat(manager, this, player.getUUID(), BFStats.SCORE, 3);
 
 		Set<UUID> players = playerManager.getPlayers();
 
-//		GameUtils.playSound(
-//			players,
-//			BFSounds.ITEM_BOMB_DEFUSE.value(),
-//			SoundSource.NEUTRAL
-//		);
 		GameUtils.sendNotification(
 			players,
 			Component.translatable("pf.message.gamemode.notification.bomb.defused")
@@ -477,6 +485,8 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	@Override
 	public void onBombPlanted(@NotNull Level level, @NotNull Player player, @NotNull ItemStack heldStack) {
+		BFAbstractManager<?, ?, ?> manager = PFUtil.blockfrontManager();
+
 		if (!checkBombSiteDistance(player.position())) {
 			PlusFront.LOGGER.warn("Player {} tried to plant outside of bombsite radius!", player.getScoreboardName());
 			return;
@@ -492,6 +502,8 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 		playerManager.clearBombPlayer();
 		player.getInventory().removeItem(heldStack);
+
+		GameUtils.changePlayerStat(manager, this, player.getUUID(), BFStats.SCORE, 3);
 
 		Set<UUID> players = playerManager.getPlayers();
 

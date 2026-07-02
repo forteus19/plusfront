@@ -1,6 +1,5 @@
 package dev.vuis.plusfront.compat.voicechat;
 
-import com.boehmod.blockfront.BlockFront;
 import com.boehmod.blockfront.common.BFAbstractManager;
 import com.boehmod.blockfront.common.player.BFAbstractPlayerData;
 import com.boehmod.blockfront.game.AbstractGame;
@@ -14,6 +13,7 @@ import de.maxhenkel.voicechat.api.events.EventRegistration;
 import de.maxhenkel.voicechat.api.events.MicrophonePacketEvent;
 import de.maxhenkel.voicechat.api.events.VoicechatServerStartingEvent;
 import dev.vuis.plusfront.PlusFront;
+import dev.vuis.plusfront.util.PFUtil;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -68,10 +68,7 @@ public final class PFVoicechat implements VoicechatPlugin {
 	}
 
 	private static void onMicrophonePacket(MicrophonePacketEvent event) {
-		BFAbstractManager<?, ?, ?> manager = BlockFront.getInstance().getManager();
-		if (manager == null) {
-			return;
-		}
+		BFAbstractManager<?, ?, ?> manager = PFUtil.blockfrontManager();
 
 		VoicechatConnection connection = event.getSenderConnection();
 		if (connection == null) {

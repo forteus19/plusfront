@@ -18,7 +18,7 @@ public abstract class GameUtilsMixin {
 		at = @At("TAIL")
 	)
 	private static void addLoadoutGiveEvent(ServerLevel level, ServerPlayer player, Loadout loadout, boolean keepUnset, CallbackInfo ci) {
-		if (PFUtil.getPlayerGame(player) instanceof DefusalGame defusalGame) {
+		if (PFUtil.blockfrontManager().getPlayerGame(player) instanceof DefusalGame defusalGame) {
 			defusalGame.getPlayerManager().onGiveLoadout(player);
 		}
 	}

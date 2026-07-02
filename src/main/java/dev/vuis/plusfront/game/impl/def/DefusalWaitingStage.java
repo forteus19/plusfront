@@ -29,11 +29,9 @@ public class DefusalWaitingStage extends AbstractGameStage<DefusalGame, DefusalP
 			GameUtils.freezePlayer(context.playerDataHandler(), player);
 
 			timer.setSecondsRemaining(10);
-
-			return;
+		} else {
+			player.setGameMode(GameType.SPECTATOR);
 		}
-
-		player.setGameMode(GameType.SPECTATOR);
 	}
 
 	@Override

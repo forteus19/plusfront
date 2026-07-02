@@ -1,12 +1,12 @@
 package dev.vuis.plusfront.event;
 
-import com.boehmod.blockfront.BlockFront;
 import com.boehmod.blockfront.common.BFAbstractManager;
 import com.mojang.brigadier.CommandDispatcher;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.command.PFCommand;
 import dev.vuis.plusfront.net.payload.PFStartConsumablePayload;
 import dev.vuis.plusfront.net.payload.PFStopMusicPayload;
+import dev.vuis.plusfront.util.PFUtil;
 import java.util.stream.Collectors;
 import net.minecraft.commands.CommandSourceStack;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -28,11 +28,7 @@ public final class PFCommonEvents {
 	public static void onLoadComplete(FMLLoadCompleteEvent event) {
 		PlusFront.LOGGER.info("Doing post-load setup...");
 
-		BFAbstractManager<?, ?, ?> manager = BlockFront.getInstance().getManager();
-		if (manager == null) {
-			PlusFront.LOGGER.error("BlockFront manager is null during common setup!");
-			return;
-		}
+		BFAbstractManager<?, ?, ?> manager = PFUtil.blockfrontManager();
 
 		PlusFront.LOGGER.info(
 			"Overriding feature flags:\n{}",

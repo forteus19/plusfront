@@ -1,4 +1,5 @@
 {
+  "bf.popup.message.score.negative": "%s Score",
   "pf.gamemode.def": "Defusal",
   "pf.message.command.assets.backup.error.exists": "Target backup path already exists",
   "pf.message.command.assets.backup.error.generic": "Failed to backup assets",

@@ -2,12 +2,12 @@ package dev.vuis.plusfront.game.impl.def;
 
 import com.boehmod.bflib.cloud.common.ChatGraphic;
 import com.boehmod.bflib.cloud.packet.IPacket;
-import com.boehmod.blockfront.BlockFront;
 import com.boehmod.blockfront.common.BFAbstractManager;
 import com.boehmod.blockfront.common.player.BFAbstractPlayerData;
 import com.boehmod.blockfront.common.player.PlayerDataHandler;
 import com.boehmod.blockfront.common.stat.BFStats;
 import com.boehmod.blockfront.game.AbstractGamePlayerManager;
+import com.boehmod.blockfront.game.AbstractGameStage;
 import com.boehmod.blockfront.game.GameStageTimer;
 import com.boehmod.blockfront.game.GameTeam;
 import com.boehmod.blockfront.game.GameUtils;
@@ -96,16 +96,15 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	public void update(@NotNull Set<UUID> players) {
 		super.update(players);
 
-		BFAbstractManager<?, ?, ?> manager = BlockFront.getInstance().getManager();
-		if (manager == null) {
-			return;
+		if (game.isRoundInProgress()) {
+			handleEliminationWinConditions(
+				PFUtil.playerDataHandler(),
+				players
+			);
 		}
-		PlayerDataHandler<?> dataHandler = manager.getPlayerDataHandler();
+	}
 
-		if (!game.isRoundInProgress()) {
-			return;
-		}
-
+	private void handleEliminationWinConditions(PlayerDataHandler<?> dataHandler, Set<UUID> players) {
 		GameTeam ctTeam = getTeamByName(DefusalPlayerManager.CT_NAME);
 		assert ctTeam != null;
 		GameTeam tTeam = getTeamByName(DefusalPlayerManager.T_NAME);
@@ -270,7 +269,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 
 	@Override
 	public void onRemovePlayer(@NotNull ServerPlayer player) {
-		if (player.getUUID().equals(bombPlayer)) {
+		if (player.getUUID().equals(bombPlayer) && !PFUtil.isPlayerUnavailable(player)) {
 			refreshTerroristBomb();
 		}
 	}
@@ -295,7 +294,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 			!killedUuid.equals(sourceUuid) &&
 			isFriendlyKill(killedUuid, sourceUuid)
 		) {
-			onFriendlyKill(sourcePlayer, players);
+			onFriendlyKill(manager, sourcePlayer, sourceUuid, players);
 		} else {
 			super.handlePlayerDeath(manager, level, killedPlayer, killedUuid, sourcePlayer, sourceUuid, source, players);
 		}
@@ -312,22 +311,29 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		@NotNull DamageSource source,
 		@NotNull Set<UUID> players
 	) {
+		if (sourceUuid != null && !sourceUuid.equals(killedUuid)) {
+			GameUtils.incrementPlayerStat(manager, game, sourceUuid, BFStats.SCORE);
+		}
+
 		if (killedUuid.equals(bombPlayer)) {
 			onBombDrop(killedPlayer);
 		}
 	}
 
 	private boolean isFriendlyKill(UUID killedUuid, UUID sourceUuid) {
+		if (!game.isRoundInProgress()) {
+			return false;
+		}
+
 		GameTeam killedTeam = getPlayerTeam(killedUuid);
 		GameTeam sourceTeam = getPlayerTeam(sourceUuid);
 
-		return killedTeam != null
-			&& sourceTeam != null
-			&& killedTeam.getName().equals(sourceTeam.getName())
-			&& game.isRoundInProgress();
+		return PFUtil.isSameTeam(killedTeam, sourceTeam);
 	}
 
-	private void onFriendlyKill(ServerPlayer sourcePlayer, Set<UUID> players) {
+	private void onFriendlyKill(BFAbstractManager<?, ?, ?> manager, ServerPlayer sourcePlayer, UUID sourceUuid, Set<UUID> players) {
+		GameUtils.changePlayerStat(manager, game, sourceUuid, BFStats.SCORE, -1);
+
 		GameUtils.sendNotification(
 			players,
 			Component.translatable(
@@ -423,25 +429,34 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		@NotNull UUID uuid
 	) {
 		GameUtils.resetPlayer(dataHandler, level, player);
-		player.setGameMode(GameType.SPECTATOR);
+		GameUtils.unfreezePlayer(dataHandler, player);
 
-		BFPose spawnPos = lobbySpawn;
+		if (game.getStageManager().getCurrentStage() instanceof DefusalGameStage) {
+			player.setGameMode(GameType.SPECTATOR);
 
-		Set<UUID> availablePlayers = getAvailablePlayers();
-		if (!availablePlayers.isEmpty()) {
-			Player randomPlayer = GameUtils.getPlayerByUUID(
-				RandomUtils.randomFromSet(availablePlayers)
-			);
+			BFPose spawnPos = lobbySpawn;
 
-			if (randomPlayer != null) {
-				spawnPos = new BFPose(randomPlayer);
+			Set<UUID> availablePlayers = getAvailablePlayers();
+			if (!availablePlayers.isEmpty()) {
+				Player randomPlayer = GameUtils.getPlayerByUUID(
+					RandomUtils.randomFromSet(availablePlayers)
+				);
+
+				if (randomPlayer != null) {
+					spawnPos = new BFPose(randomPlayer);
+				}
+			}
+
+			if (spawnPos != null) {
+				GameUtils.teleportPlayer(dataHandler, player, spawnPos);
+			}
+		} else {
+			GameTeam team = getPlayerTeam(player.getUUID());
+			if (team != null) {
+				GameUtils.teleportPlayer(dataHandler, player, team.randomSpawn(game));
+				player.containerMenu.sendAllDataToRemote();
 			}
 		}
-
-		if (spawnPos != null) {
-			GameUtils.teleportPlayer(dataHandler, player, spawnPos);
-		}
-		GameUtils.unfreezePlayer(dataHandler, player);
 	}
 
 	@Override
@@ -456,7 +471,34 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 			return source.is(DamageTypeTags.IS_EXPLOSION) || source.is(DamageTypeTags.IS_FIRE);
 		}
 
-		return !(game.getStageManager().getCurrentStage() instanceof DefusalWaitingStage);
+		AbstractGameStage<?, ?> currentStage = game.getStageManager().getCurrentStage();
+
+		if (currentStage instanceof DefusalGameStage gameStage) {
+			if (gameStage.isFinished) {
+				return true;
+			}
+
+			GameStageTimer timer = gameStage.getStageTimer(game);
+
+			if (timer == null) {
+				return true;
+			}
+
+			GameTeam damagedTeam = getPlayerTeam(uuid);
+			GameTeam sourceTeam = getPlayerTeam(sourceUuid);
+
+			if (PFUtil.isSameTeam(damagedTeam, sourceTeam)) {
+				return timer.secondsPassed() >= 5;
+			} else {
+				return true;
+			}
+		}
+
+		if (currentStage instanceof DefusalWaitingStage) {
+			return false;
+		}
+
+		return true;
 	}
 
 	@Override

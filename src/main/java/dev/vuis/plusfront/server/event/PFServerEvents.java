@@ -1,9 +1,7 @@
 package dev.vuis.plusfront.server.event;
 
-import com.boehmod.blockfront.BlockFront;
 import com.boehmod.blockfront.common.BFAbstractManager;
 import com.boehmod.blockfront.game.AbstractGame;
-import com.boehmod.blockfront.game.GameUtils;
 import com.boehmod.blockfront.registry.BFItems;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.game.impl.def.DefusalGame;
@@ -29,14 +27,11 @@ public final class PFServerEvents {
 
 	@SubscribeEvent
 	public static void onItemEntityPickupPost(ItemEntityPickupEvent.Post event) {
-		BFAbstractManager<?, ?, ?> manager = BlockFront.getInstance().getManager();
-		if (manager == null) {
-			return;
-		}
+		BFAbstractManager<?, ?, ?> manager = PFUtil.blockfrontManager();
 
 		Player player = event.getPlayer();
 
-		if (GameUtils.isPlayerUnavailable(player, manager.getPlayerDataHandler().getPlayerData(player))) {
+		if (PFUtil.isPlayerUnavailable(player)) {
 			return;
 		}
 
@@ -54,8 +49,7 @@ public final class PFServerEvents {
 	public static void onItemToss(ItemTossEvent event) {
 		Player player = event.getPlayer();
 
-		AbstractGame<?, ?, ?> game = PFUtil.getPlayerGame(player);
-		if (!(game instanceof DefusalGame defusalGame)) {
+		if (!(PFUtil.blockfrontManager().getPlayerGame(player) instanceof DefusalGame defusalGame)) {
 			return;
 		}
 
@@ -74,8 +68,7 @@ public final class PFServerEvents {
 			return;
 		}
 
-		AbstractGame<?, ?, ?> game = PFUtil.getPlayerGame(player);
-		if (!(game instanceof DefusalGame defusalGame)) {
+		if (!(PFUtil.blockfrontManager().getPlayerGame(player) instanceof DefusalGame defusalGame)) {
 			return;
 		}
 

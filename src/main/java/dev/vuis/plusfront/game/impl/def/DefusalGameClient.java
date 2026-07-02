@@ -12,12 +12,12 @@ import com.boehmod.blockfront.client.screen.match.summary.MatchSummaryScreen;
 import com.boehmod.blockfront.client.settings.BFClientSettings;
 import com.boehmod.blockfront.common.net.packet.BFRegularPingRequestPacket;
 import com.boehmod.blockfront.common.net.packet.BFRegularPingTriggerRequestPacket;
-import com.boehmod.blockfront.common.stat.BFStat;
 import com.boehmod.blockfront.common.stat.BFStats;
 import com.boehmod.blockfront.game.AbstractGameClient;
 import com.boehmod.blockfront.game.AbstractGamePlayerManager;
 import com.boehmod.blockfront.game.GameStatus;
 import com.boehmod.blockfront.game.GameTeam;
+import com.boehmod.blockfront.game.GameUtils;
 import com.boehmod.blockfront.game.tag.client.IAllowsPingsClient;
 import com.boehmod.blockfront.registry.BFItems;
 import com.boehmod.blockfront.unnamed.BF_552;
@@ -341,7 +341,8 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 			.column("PING", (data, info, tag) -> info != null ? StringUtils.formatLong(info.getLatency()) : "???")
 			.column("K", (data, info, tag) -> StringUtils.formatLong(tag.getInt(BFStats.KILLS.getKey())))
 			.column("A", (data, info, tag) -> StringUtils.formatLong(tag.getInt(BFStats.ASSISTS.getKey())))
-			.column("D", (data, info, tag) -> StringUtils.formatLong(tag.getInt(BFStats.DEATHS.getKey())));
+			.column("D", (data, info, tag) -> StringUtils.formatLong(tag.getInt(BFStats.DEATHS.getKey())))
+			.column("SCORE", (data, info, tag) -> StringUtils.formatLong(tag.getInt(BFStats.SCORE.getKey())));
 	}
 
 	@Override
@@ -429,14 +430,11 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	}
 
 	@Override
-	protected @NotNull BFStat getTopPlayersStat() {
-		return BFStats.KILLS;
-	}
-
-	@Override
 	public void onPing(@NotNull Minecraft minecraft, @NotNull BFClientManager manager) {
 		LocalPlayer localPlayer = minecraft.player;
-		if (localPlayer == null) {
+		BFClientPlayerData localPlayerData = manager.getPlayerDataHandler().getPlayerData(minecraft);
+
+		if (localPlayer == null || GameUtils.isPlayerUnavailable(localPlayer, localPlayerData)) {
 			return;
 		}
 
