@@ -599,7 +599,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	public void onStartConsumable(Level level, Player player, ItemStack stack) {
 		Vec3 position = player.position();
 
-		if (!game.checkBombSiteDistance(position)) {
+		if (!game.checkBombSiteArea(position)) {
 			return;
 		}
 

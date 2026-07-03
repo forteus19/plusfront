@@ -151,18 +151,20 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		@NotNull Font font,
 		@NotNull GuiGraphics graphics,
 		@NotNull Camera camera,
-		boolean renderGameInfo,
+		boolean debug,
 		float renderTime,
 		float partialTick
 	) {
-		super.renderWorld(playerManager, minecraft, level, player, renderEvent, bufferSource, poseStack, frustum, font, graphics, camera, renderGameInfo, renderTime, partialTick);
+		super.renderWorld(playerManager, minecraft, level, player, renderEvent, bufferSource, poseStack, frustum, font, graphics, camera, debug, renderTime, partialTick);
 
-		if (!BFClientSettings.UI_RENDER_WAYPOINTS.isEnabled()) {
-			return;
-		}
+		if (BFClientSettings.UI_RENDER_WAYPOINTS.isEnabled()) {
+			for (BombSiteClient site : bombSites) {
+				if (debug) {
+					site.renderDebug(bufferSource, poseStack);
+				}
 
-		for (BombSiteClient site : bombSites) {
-			site.render(poseStack, font, graphics, camera);
+				site.render(poseStack, font, graphics, camera);
+			}
 		}
 	}
 

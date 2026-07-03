@@ -1,34 +1,51 @@
 package dev.vuis.plusfront.game.impl.def;
 
-import com.boehmod.bflib.cloud.packet.IPacket;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.vuis.plusfront.util.PFMathUtil;
 import dev.vuis.plusfront.util.PFPacketUtil;
+import dev.vuis.plusfront.util.Vec2d;
 import io.netty.buffer.ByteBuf;
+import java.util.List;
+import net.minecraft.network.Utf8String;
 import net.minecraft.world.phys.Vec3;
 
 /**
  * Represents a bomb site in a defusal game.
  *
- * @param position the position of the bomb site
+ * @param areaPolygon a list of points that makes up the polygon of the plantable area ({@code y} represents {@code z})
+ * @param minY the minimum plantable Y position
+ * @param maxY the maximum plantable Y position
+ * @param waypoints a list of positions to show visible waypoints
  * @param name the name of the bomb site
- * @param radius the radius a player must be within in order to plant the bomb
  *
  * @see DefusalGame
  */
 public record BombSite(
-	Vec3 position,
-	String name,
-	float radius
+	List<Vec2d> areaPolygon,
+	double minY,
+	double maxY,
+	List<Vec3> waypoints,
+	String name
 ) {
+	public static final int NAME_MAX_LENGTH = 16;
+
+	public BombSite {
+		if (name.length() > NAME_MAX_LENGTH) {
+			throw new IllegalArgumentException("Name is too long!");
+		}
+	}
+
 	/**
 	 * Codec used for serialization.
 	 */
 	public static final Codec<BombSite> CODEC = RecordCodecBuilder.create(instance ->
 		instance.group(
-			Vec3.CODEC.fieldOf("position").forGetter(BombSite::position),
-			Codec.STRING.fieldOf("name").forGetter(BombSite::name),
-			Codec.FLOAT.fieldOf("radius").forGetter(BombSite::radius)
+			Vec2d.CODEC.listOf().fieldOf("areaPolygon").forGetter(BombSite::areaPolygon),
+			Codec.DOUBLE.fieldOf("minY").forGetter(BombSite::minY),
+			Codec.DOUBLE.fieldOf("maxY").forGetter(BombSite::maxY),
+			Vec3.CODEC.listOf().fieldOf("waypoints").forGetter(BombSite::waypoints),
+			Codec.sizeLimitedString(NAME_MAX_LENGTH).fieldOf("name").forGetter(BombSite::name)
 		).apply(
 			instance, BombSite::new
 		));
@@ -39,9 +56,11 @@ public record BombSite(
 	 * @param buf the buf to write the data to
 	 */
 	public void write(ByteBuf buf) {
-		PFPacketUtil.writeVec3(buf, position);
-		IPacket.writeString(buf, name);
-		buf.writeFloat(radius);
+		PFPacketUtil.writeList(buf, areaPolygon, Vec2d::write);
+		buf.writeDouble(minY);
+		buf.writeDouble(maxY);
+		PFPacketUtil.writeList(buf, waypoints, PFPacketUtil::writeVec3);
+		Utf8String.write(buf, name, NAME_MAX_LENGTH);
 	}
 
 	/**
@@ -51,10 +70,22 @@ public record BombSite(
 	 * @return a new bomb site record from buf data
 	 */
 	public static BombSite read(ByteBuf buf) {
-		Vec3 position = PFPacketUtil.readVec3(buf);
-		String name = IPacket.readString(buf);
-		float radius = buf.readFloat();
+		List<Vec2d> areaPolygon = PFPacketUtil.readList(buf, Vec2d::read);
+		double minY = buf.readDouble();
+		double maxY = buf.readDouble();
+		List<Vec3> waypoints = PFPacketUtil.readList(buf, PFPacketUtil::readVec3);
+		String name = Utf8String.read(buf, NAME_MAX_LENGTH);
 
-		return new BombSite(position, name, radius);
+		return new BombSite(areaPolygon, minY, maxY, waypoints, name);
+	}
+
+	public boolean isWithinArea(Vec3 position) {
+		if (areaPolygon.size() < 3) {
+			return false;
+		}
+
+		return position.y >= minY
+			&& position.y <= maxY
+			&& PFMathUtil.isPointWithinPolygon(areaPolygon, Vec2d.ofYPlane(position));
 	}
 }

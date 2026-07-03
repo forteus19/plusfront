@@ -40,7 +40,6 @@ import com.boehmod.blockfront.util.math.BFPose;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.data.PFDefusalData;
 import dev.vuis.plusfront.ex.TeamDeathmatchCodecEx;
-import dev.vuis.plusfront.util.PFMathUtil;
 import dev.vuis.plusfront.util.PFUtil;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -77,25 +76,6 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	private final AssetCommandBuilder command = new AssetCommandBuilder()
 		.subCommand("bombsite", new AssetCommandBuilder()
-			.subCommand("add", executorPlayers(new String[]{"name", "radius"}, (context, source, args) -> {
-				String name = args[0];
-
-				float radius;
-				try {
-					radius = Float.parseFloat(args[1]);
-				} catch (NumberFormatException e) {
-					CommandUtils.sendBfa(source, Component.literal("Invalid radius."));
-					return;
-				}
-
-				bombSites.add(new BombSite(
-					PFMathUtil.copyVec3(((Player) source).position()),
-					name,
-					radius
-				));
-
-				CommandUtils.sendBfa(source, Component.literal("Added bombsite " + name + "."));
-			}))
 			.subCommand("clear", executor((context, source, args) -> {
 				bombSites.clear();
 
@@ -471,7 +451,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	@Override
 	public boolean canPlantBomb(@NotNull Level level, @NotNull Player player) {
-		if (isBombPlanted || !player.onGround()) {
+		if (isBombPlanted) {
 			return false;
 		}
 
@@ -480,14 +460,32 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 			return false;
 		}
 
-		return checkBombSiteDistance(player.position());
+		Vec3 playerPos = player.position();
+
+		return checkBombSiteArea(playerPos);
+	}
+
+	/**
+	 * Checks if the given position is within the planting area of any bomb site.
+	 *
+	 * @param playerPos the position to check against
+	 * @return if the given position is within the planting area of any bomb site
+	 */
+	public boolean checkBombSiteArea(Vec3 playerPos) {
+		for (BombSite site : bombSites) {
+			if (site.isWithinArea(playerPos)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	@Override
 	public void onBombPlanted(@NotNull Level level, @NotNull Player player, @NotNull ItemStack heldStack) {
 		BFAbstractManager<?, ?, ?> manager = PFUtil.blockfrontManager();
 
-		if (!checkBombSiteDistance(player.position())) {
+		if (!checkBombSiteArea(player.position())) {
 			PlusFront.LOGGER.warn("Player {} tried to plant outside of bombsite radius!", player.getScoreboardName());
 			return;
 		}
@@ -530,24 +528,6 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 				);
 			}
 		}
-	}
-
-	/**
-	 * Checks if the given position is within radius of any bomb site.
-	 *
-	 * @param playerPos the position to check against
-	 * @return if the given position is within radius of any bomb site
-	 */
-	public boolean checkBombSiteDistance(Vec3 playerPos) {
-		for (BombSite site : bombSites) {
-			float radius = site.radius();
-
-			if (playerPos.distanceToSqr(site.position()) <= radius * radius) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	/**
