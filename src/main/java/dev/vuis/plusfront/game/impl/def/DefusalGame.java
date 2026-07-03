@@ -13,6 +13,7 @@ import com.boehmod.blockfront.common.net.packet.BFRegularPingPacket;
 import com.boehmod.blockfront.common.net.packet.BFRegularPingTriggerPacket;
 import com.boehmod.blockfront.common.player.PlayerDataHandler;
 import com.boehmod.blockfront.common.stat.BFStats;
+import com.boehmod.blockfront.common.world.damage.GrenadeDamageSource;
 import com.boehmod.blockfront.game.AbstractGame;
 import com.boehmod.blockfront.game.AbstractGameClient;
 import com.boehmod.blockfront.game.AbstractGameStage;
@@ -49,16 +50,20 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.VarInt;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -71,6 +76,8 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	implements IAllowsCallouts<DefusalGame>, IAllowsPings, IAllowsSoundboard, ICanSwitchTeams, IHasBombs, IHasClasses, IHasConsumables, IHasDominations, IUseKillIcons {
 
 	public static final int SCORE_TO_WIN = 10;
+
+	private static final float BOMB_EXPLOSION_RADIUS = 16f;
 
 	private final List<BombSite> bombSites = new ObjectArrayList<>();
 
@@ -146,6 +153,10 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		}
 	}
 
+	public void clearBombItem() {
+		bombItemId = null;
+	}
+
 	@Override
 	public @NotNull AssetCommandBuilder getCommand() {
 		return super.getCommand().inherit(command);
@@ -206,8 +217,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	@Override
 	public void specificReset(@Nullable Level level) {
-		isBombPlanted = false;
-		bombItemId = null;
+		onGameStageEnd();
 	}
 
 	@Override
@@ -331,6 +341,15 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	}
 
 	@Override
+	public void getErrorMessages(@NotNull List<MutableComponent> messages) {
+		super.getErrorMessages(messages);
+
+		if (bombSites.isEmpty()) {
+			messages.add(Component.literal("Bomb sites for game " + name + " are missing."));
+		}
+	}
+
+	@Override
 	public void onCallout(@NotNull ServerPlayer player, @NotNull UUID uuid, @NotNull MatchCallout callout) {
 		handleCallout(this, uuid, callout);
 	}
@@ -407,15 +426,48 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		return isBombPlanted;
 	}
 
-	public void resetBombPlanted() {
+	public void clearBombPlanted() {
 		isBombPlanted = false;
 	}
 
 	@Override
 	public void onBombExplode(@NotNull BombEntity bomb, @NotNull Level level) {
-		isBombPlanted = false;
+		doBombExplosion(bomb, level);
+
+		clearBombPlanted();
+		playerManager.setBombPlanter(null);
 
 		onRoundWin(playerManager.getPlayers(), false);
+	}
+
+	private void doBombExplosion(BombEntity bomb, Level level) {
+		Vec3 bombPosition = bomb.position();
+
+		DamageSource damageSource = new GrenadeDamageSource(
+			level,
+			playerManager.getBombPlanter(),
+			new ItemStack(BFItems.BOMB.value()),
+			bombPosition
+		);
+
+		Explosion explosion = new Explosion(
+			level,
+			bomb,
+			damageSource,
+			null,
+			bombPosition.x,
+			bombPosition.y,
+			bombPosition.z,
+			BOMB_EXPLOSION_RADIUS,
+			false,
+			Explosion.BlockInteraction.KEEP,
+			ParticleTypes.EXPLOSION,
+			ParticleTypes.EXPLOSION_EMITTER,
+			SoundEvents.GENERIC_EXPLODE
+		);
+
+		explosion.explode();
+		explosion.finalizeExplosion(true);
 	}
 
 	@Override
@@ -498,8 +550,9 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 		level.addFreshEntity(bomb);
 
-		playerManager.clearBombPlayer();
 		player.getInventory().removeItem(heldStack);
+		playerManager.clearBombHolder();
+		playerManager.setBombPlanter(player);
 
 		GameUtils.changePlayerStat(manager, this, player.getUUID(), BFStats.SCORE, 3);
 
@@ -598,6 +651,11 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 			BFSounds.MATCH_GAMEMODE_DOM_POINT_LOST.value(),
 			SoundSource.NEUTRAL
 		);
+	}
+
+	public void onGameStageEnd() {
+		clearBombPlanted();
+		clearBombItem();
 	}
 
 	@Override

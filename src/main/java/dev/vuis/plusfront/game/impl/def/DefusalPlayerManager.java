@@ -58,7 +58,8 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	public static final Style T_STYLE = Style.EMPTY.withColor(0x7E3831);
 	public static final Style T_ICON_STYLE = Style.EMPTY.withColor(0xE4D5D4);
 
-	private UUID bombPlayer = null;
+	private @Nullable UUID bombHolder = null;
+	private @Nullable Player bombPlanter = null;
 
 	public DefusalPlayerManager(@NotNull DefusalGame game, @NotNull PlayerDataHandler<?> dataHandler) {
 		super(game, dataHandler);
@@ -67,19 +68,32 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		addTeam(new GameTeam(game, T_NAME, T_STYLE, T_ICON_STYLE, 8));
 	}
 
-	public void clearBombPlayer() {
-		bombPlayer = null;
+	public void clearBombHolder() {
+		bombHolder = null;
 	}
 
-	public boolean isBombPlayer(UUID uuid) {
-		return uuid.equals(bombPlayer);
+	public boolean isBombHolder(UUID uuid) {
+		return uuid.equals(bombHolder);
+	}
+
+	public @Nullable Player getBombPlanter() {
+		return bombPlanter;
+	}
+
+	public void setBombPlanter(@Nullable Player uuid) {
+		bombPlanter = uuid;
+	}
+
+	public void onGameStageEnd() {
+		clearBombHolder();
+		setBombPlanter(null);
 	}
 
 	@Override
 	public void reset() {
 		super.reset();
 
-		clearBombPlayer();
+		onGameStageEnd();
 	}
 
 	@Override
@@ -137,9 +151,9 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	protected void write(@NotNull ByteBuf buf) throws IOException {
 		super.write(buf);
 
-		buf.writeBoolean(bombPlayer != null);
-		if (bombPlayer != null) {
-			IPacket.writeUUID(buf, bombPlayer);
+		buf.writeBoolean(bombHolder != null);
+		if (bombHolder != null) {
+			IPacket.writeUUID(buf, bombHolder);
 		}
 	}
 
@@ -147,9 +161,9 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	protected void read(@NotNull ByteBuf buf) throws IOException {
 		super.read(buf);
 
-		bombPlayer = null;
+		bombHolder = null;
 		if (buf.readBoolean()) {
-			bombPlayer = IPacket.readUUID(buf);
+			bombHolder = IPacket.readUUID(buf);
 		}
 	}
 
@@ -269,7 +283,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 
 	@Override
 	public void onRemovePlayer(@NotNull ServerPlayer player) {
-		if (player.getUUID().equals(bombPlayer) && !PFUtil.isPlayerUnavailable(player)) {
+		if (player.getUUID().equals(bombHolder) && !PFUtil.isPlayerUnavailable(player)) {
 			refreshTerroristBomb();
 		}
 	}
@@ -315,7 +329,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 			GameUtils.incrementPlayerStat(manager, game, sourceUuid, BFStats.SCORE);
 		}
 
-		if (killedUuid.equals(bombPlayer)) {
+		if (killedUuid.equals(bombHolder)) {
 			onBombDrop(killedPlayer);
 		}
 	}
@@ -364,7 +378,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	}
 
 	public void onBombDrop(Player previousPlayer) {
-		clearBombPlayer();
+		clearBombHolder();
 
 		GameTeam terroristsTeam = getTeamByName(T_NAME);
 		assert terroristsTeam != null;
@@ -398,7 +412,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 			PlusFront.LOGGER.error("Non-terrorist player picked up the bomb! ({})", player.getScoreboardName());
 		}
 
-		bombPlayer = playerUuid;
+		bombHolder = playerUuid;
 		game.setBombItem(null);
 
 		Set<UUID> terrorists = terroristsTeam.getPlayers();
@@ -524,7 +538,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		assert terroristsTeam != null;
 
 		if (terroristsTeam.numPlayers() == 0) {
-			bombPlayer = null;
+			bombHolder = null;
 			return;
 		}
 
@@ -537,7 +551,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 			return;
 		}
 
-		bombPlayer = randomUuid;
+		bombHolder = randomUuid;
 		giveAndSync(randomPlayer, BFItems.BOMB.value());
 
 		GameUtils.sendNotification(
@@ -564,7 +578,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 			giveSingletonItem(player, BFItems.BOMB_DEFUSE_KIT.value());
 		}
 
-		if (player.getUUID().equals(bombPlayer)) {
+		if (player.getUUID().equals(bombHolder)) {
 			giveSingletonItem(player, BFItems.BOMB.value());
 		}
 	}

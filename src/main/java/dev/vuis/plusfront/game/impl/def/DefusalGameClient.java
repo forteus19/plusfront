@@ -303,7 +303,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 					8, 8, 64, 64
 				);
 
-				if (showBombIndicator && playerManager.isBombPlayer(playerUuid)) {
+				if (showBombIndicator && playerManager.isBombHolder(playerUuid)) {
 					RenderSystem.setShaderColor(1f, 0f, 0f, 1f);
 					graphics.blit(
 						INDICATOR_TEXTURE,

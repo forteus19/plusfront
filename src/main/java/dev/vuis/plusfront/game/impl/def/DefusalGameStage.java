@@ -31,9 +31,8 @@ public class DefusalGameStage extends AbstractGameStage<DefusalGame, DefusalPlay
 
 		GameUtils.discardMatchEntities(context.serverLevel(), game, context.playerHandler());
 
-		game.resetBombPlanted();
-		game.setBombItem(null);
-		playerManager.clearBombPlayer();
+		game.onGameStageEnd();
+		playerManager.onGameStageEnd();
 
 		for (UUID playerUuid : context.players()) {
 			dataHandler.getPlayerData(playerUuid).clearPlayerDamage();
