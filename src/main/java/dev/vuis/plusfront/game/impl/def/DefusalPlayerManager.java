@@ -3,6 +3,7 @@ package dev.vuis.plusfront.game.impl.def;
 import com.boehmod.bflib.cloud.common.ChatGraphic;
 import com.boehmod.bflib.cloud.packet.IPacket;
 import com.boehmod.blockfront.common.BFAbstractManager;
+import com.boehmod.blockfront.common.entity.BombEntity;
 import com.boehmod.blockfront.common.player.BFAbstractPlayerData;
 import com.boehmod.blockfront.common.player.PlayerDataHandler;
 import com.boehmod.blockfront.common.stat.BFStats;
@@ -306,7 +307,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		if (sourcePlayer != null &&
 			sourceUuid != null &&
 			!killedUuid.equals(sourceUuid) &&
-			isFriendlyKill(killedUuid, sourceUuid)
+			isFriendlyKill(killedUuid, sourceUuid, source)
 		) {
 			onFriendlyKill(manager, sourcePlayer, sourceUuid, players);
 		} else {
@@ -329,13 +330,13 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 			GameUtils.incrementPlayerStat(manager, game, sourceUuid, BFStats.SCORE);
 		}
 
-		if (killedUuid.equals(bombHolder)) {
+		if (isBombHolder(killedUuid)) {
 			onBombDrop(killedPlayer);
 		}
 	}
 
-	private boolean isFriendlyKill(UUID killedUuid, UUID sourceUuid) {
-		if (!game.isRoundInProgress()) {
+	private boolean isFriendlyKill(UUID killedUuid, UUID sourceUuid, DamageSource source) {
+		if (!game.isRoundInProgress() || source.getEntity() instanceof BombEntity) {
 			return false;
 		}
 
