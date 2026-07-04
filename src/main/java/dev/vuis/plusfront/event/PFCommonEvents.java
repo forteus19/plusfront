@@ -6,15 +6,20 @@ import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.command.PFCommand;
 import dev.vuis.plusfront.net.payload.PFStartConsumablePayload;
 import dev.vuis.plusfront.net.payload.PFStopMusicPayload;
+import dev.vuis.plusfront.registry.PFAttachmentTypes;
+import dev.vuis.plusfront.server.config.PFServerConfig;
 import dev.vuis.plusfront.util.PFUtil;
 import dev.vuis.plusfront.util.index.ItemIndex;
 import java.util.stream.Collectors;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
@@ -52,6 +57,27 @@ public final class PFCommonEvents {
 				.getFeatureFlagManager()
 				.setFeatureFlags(PlusFront.FEATURE_FLAGS);
 		});
+	}
+
+	@SubscribeEvent
+	public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+		Player player = event.getEntity();
+		MinecraftServer server = player.getServer();
+		if (server == null) {
+			return;
+		}
+
+		if (PFServerConfig.INSTANCE.getAutoFetchArmory()) {
+			player.getData(PFAttachmentTypes.ARMORY).fetchWeapons(
+				player.getUUID(),
+				server,
+				armory -> PlusFront.LOGGER.info(
+					"Auto-fetched armory for {} ({} weapons)",
+					player.getScoreboardName(),
+					armory.numWeapons()
+				)
+			);
+		}
 	}
 
 	@SubscribeEvent
