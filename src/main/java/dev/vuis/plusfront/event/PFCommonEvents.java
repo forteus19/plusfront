@@ -6,6 +6,7 @@ import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.command.PFCommand;
 import dev.vuis.plusfront.net.payload.PFStartConsumablePayload;
 import dev.vuis.plusfront.net.payload.PFStopMusicPayload;
+import dev.vuis.plusfront.player.PFArmory;
 import dev.vuis.plusfront.registry.PFAttachmentTypes;
 import dev.vuis.plusfront.server.config.PFServerConfig;
 import dev.vuis.plusfront.util.PFUtil;
@@ -67,14 +68,18 @@ public final class PFCommonEvents {
 			return;
 		}
 
+		PFArmory.Weapons weapons = player.getData(PFAttachmentTypes.ARMORY_WEAPONS);
+		PFArmory.Extra extra = player.getData(PFAttachmentTypes.ARMORY_EXTRA);
+
 		if (PFServerConfig.INSTANCE.getAutoFetchArmory()) {
-			player.getData(PFAttachmentTypes.ARMORY).fetchWeapons(
+			PFArmory.fetch(
+				weapons, extra,
 				player.getUUID(),
 				server,
-				armory -> PlusFront.LOGGER.info(
+				() -> PlusFront.LOGGER.info(
 					"Auto-fetched armory for {} ({} weapons)",
 					player.getScoreboardName(),
-					armory.numWeapons()
+					weapons.numWeapons()
 				)
 			);
 		}

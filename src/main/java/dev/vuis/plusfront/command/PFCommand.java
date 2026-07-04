@@ -2,6 +2,8 @@ package dev.vuis.plusfront.command;
 
 import com.boehmod.bflib.cloud.common.item.CloudItem;
 import com.boehmod.bflib.cloud.common.item.CloudItemStack;
+import com.boehmod.bflib.cloud.common.item.types.AbstractCloudItemCoin;
+import com.boehmod.bflib.cloud.common.item.types.CloudItemCallingCard;
 import com.boehmod.blockfront.assets.AssetStore;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
@@ -9,7 +11,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.vuis.plusfront.PlusFront;
-import dev.vuis.plusfront.player.PFCustomArmory;
+import dev.vuis.plusfront.player.PFArmory;
 import dev.vuis.plusfront.registry.PFAttachmentTypes;
 import dev.vuis.plusfront.util.PFZipUtil;
 import dev.vuis.plusfront.util.index.CloudRegistryIndex;
@@ -42,21 +44,37 @@ public final class PFCommand {
 		dispatcher.register(literal("pf").then(
 			literal("armory").requires(stack -> stack.hasPermission(2)).then(
 				argument("players", EntityArgument.players()).then(
-					literal("clear").executes(PFCommand::runArmoryClearAll).then(
-						argument("item", ResourceLocationArgument.id()).suggests(ItemIndex.suggestWeapons()).executes(PFCommand::runArmoryClearSpecific)
+					literal("clear").executes(PFCommand::runArmoryClear).then(
+						literal("weapon").executes(PFCommand::runArmoryClearWeapon).then(
+							argument("item", ResourceLocationArgument.id()).suggests(ItemIndex.suggestWeapons()).executes(PFCommand::runArmoryWeaponClearSpecific)
+						)
+					).then(
+						literal("card").executes(PFCommand::runArmoryClearCard)
+					).then(
+						literal("coin").executes(PFCommand::runArmoryClearCoin)
 					)
 				).then(
 					literal("fetch").executes(PFCommand::runArmoryFetch)
 				).then(
 					literal("set").then(
-						argument("item", ResourceLocationArgument.id()).suggests(ItemIndex.suggestWeapons()).then(
-							argument("skin", StringArgumentType.word()).suggests(CloudRegistryIndex.ITEMS.suggestSkins("item")).executes(
-								PFCommand::runArmorySet
-							).then(
-								argument("mint", DoubleArgumentType.doubleArg()).executes(context ->
-									runArmorySet(context, DoubleArgumentType.getDouble(context, "mint"))
+						literal("weapon").then(
+							argument("item", ResourceLocationArgument.id()).suggests(ItemIndex.suggestWeapons()).then(
+								argument("skin", StringArgumentType.word()).suggests(CloudRegistryIndex.ITEMS.suggestWeaponSkins("item")).executes(
+									PFCommand::runArmorySetWeapon
+								).then(
+									argument("mint", DoubleArgumentType.doubleArg()).executes(context ->
+										runArmorySetWeapon(context, DoubleArgumentType.getDouble(context, "mint"))
+									)
 								)
 							)
+						)
+					).then(
+						literal("card").then(
+							argument("item", StringArgumentType.word()).suggests(CloudRegistryIndex.ITEMS.suggestCards()).executes(PFCommand::runArmorySetCard)
+						)
+					).then(
+						literal("coin").then(
+							argument("item", StringArgumentType.word()).suggests(CloudRegistryIndex.ITEMS.suggestCoins()).executes(PFCommand::runArmorySetCoin)
 						)
 					)
 				)
@@ -68,13 +86,14 @@ public final class PFCommand {
 		));
 	}
 
-	private static int runArmoryClearAll(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+	private static int runArmoryClear(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
 		CommandSourceStack stack = context.getSource();
 
 		Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "players");
 
 		for (ServerPlayer player : players) {
-			player.getData(PFAttachmentTypes.ARMORY).clearWeapons();
+			player.getData(PFAttachmentTypes.ARMORY_WEAPONS).clearWeapons();
+			player.getData(PFAttachmentTypes.ARMORY_EXTRA).clearAll();
 		}
 
 		stack.sendSuccess(() -> {
@@ -88,7 +107,27 @@ public final class PFCommand {
 		return players.size();
 	}
 
-	private static int runArmoryClearSpecific(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+	private static int runArmoryClearWeapon(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+		CommandSourceStack stack = context.getSource();
+
+		Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "players");
+
+		for (ServerPlayer player : players) {
+			player.getData(PFAttachmentTypes.ARMORY_WEAPONS).clearWeapons();
+		}
+
+		stack.sendSuccess(() -> {
+			if (players.size() == 1) {
+				return Component.translatable("pf.message.command.armory.clear.weapon.success.single", players.iterator().next().getDisplayName());
+			} else {
+				return Component.translatable("pf.message.command.armory.clear.weapon.success", players.size());
+			}
+		}, true);
+
+		return players.size();
+	}
+
+	private static int runArmoryWeaponClearSpecific(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
 		CommandSourceStack stack = context.getSource();
 
 		ResourceLocation itemLocation = ResourceLocationArgument.getId(context, "item");
@@ -103,14 +142,54 @@ public final class PFCommand {
 		Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "players");
 
 		for (ServerPlayer player : players) {
-			player.getData(PFAttachmentTypes.ARMORY).clearWeapon(item);
+			player.getData(PFAttachmentTypes.ARMORY_WEAPONS).clearWeapon(item);
 		}
 
 		stack.sendSuccess(() -> {
 			if (players.size() == 1) {
-				return Component.translatable("pf.message.command.armory.clear.specific.success.single", players.iterator().next().getDisplayName());
+				return Component.translatable("pf.message.command.armory.clear.weapon.specific.success.single", players.iterator().next().getDisplayName());
 			} else {
-				return Component.translatable("pf.message.command.armory.clear.specific.success", players.size());
+				return Component.translatable("pf.message.command.armory.clear.weapon.specific.success", players.size());
+			}
+		}, true);
+
+		return players.size();
+	}
+
+	private static int runArmoryClearCard(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+		CommandSourceStack stack = context.getSource();
+
+		Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "players");
+
+		for (ServerPlayer player : players) {
+			player.getData(PFAttachmentTypes.ARMORY_EXTRA).clearCard();
+		}
+
+		stack.sendSuccess(() -> {
+			if (players.size() == 1) {
+				return Component.translatable("pf.message.command.armory.clear.card.success.single", players.iterator().next().getDisplayName());
+			} else {
+				return Component.translatable("pf.message.command.armory.clear.card.success", players.size());
+			}
+		}, true);
+
+		return players.size();
+	}
+
+	private static int runArmoryClearCoin(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+		CommandSourceStack stack = context.getSource();
+
+		Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "players");
+
+		for (ServerPlayer player : players) {
+			player.getData(PFAttachmentTypes.ARMORY_EXTRA).clearCoin();
+		}
+
+		stack.sendSuccess(() -> {
+			if (players.size() == 1) {
+				return Component.translatable("pf.message.command.armory.clear.coin.success.single", players.iterator().next().getDisplayName());
+			} else {
+				return Component.translatable("pf.message.command.armory.clear.coin.success", players.size());
 			}
 		}, true);
 
@@ -129,27 +208,32 @@ public final class PFCommand {
 
 		ServerPlayer player = players.iterator().next();
 
-		player.getData(PFAttachmentTypes.ARMORY).fetchWeapons(
+		PFArmory.Weapons weapons = player.getData(PFAttachmentTypes.ARMORY_WEAPONS);
+		PFArmory.Extra extra = player.getData(PFAttachmentTypes.ARMORY_EXTRA);
+
+		PFArmory.fetch(
+			weapons,
+			extra,
 			player.getUUID(),
 			stack.getServer(),
-			armory -> stack.sendSuccess(() -> Component.translatable(
+			() -> stack.sendSuccess(() -> Component.translatable(
 				"pf.message.command.armory.fetch.success",
 				player.getDisplayName(),
-				armory.numWeapons()
+				weapons.numWeapons()
 			), true)
 		);
 
 		return players.size();
 	}
 
-	private static int runArmorySet(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-		return runArmorySet(
+	private static int runArmorySetWeapon(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+		return runArmorySetWeapon(
 			context,
 			CloudItemStack.mintStack(ThreadLocalRandom.current())
 		);
 	}
 
-	private static int runArmorySet(CommandContext<CommandSourceStack> context, double mint) throws CommandSyntaxException {
+	private static int runArmorySetWeapon(CommandContext<CommandSourceStack> context, double mint) throws CommandSyntaxException {
 		CommandSourceStack stack = context.getSource();
 
 		ResourceLocation itemLocation = ResourceLocationArgument.getId(context, "item");
@@ -161,9 +245,9 @@ public final class PFCommand {
 
 		String skin = StringArgumentType.getString(context, "skin");
 
-		CloudItem<?> cloudItem = CloudRegistryIndex.ITEMS.getSkin(itemLocation, skin);
+		CloudItem<?> cloudItem = CloudRegistryIndex.ITEMS.getWeaponSkin(itemLocation, skin);
 		if (cloudItem == null) {
-			stack.sendFailure(Component.translatable("pf.message.command.armory.error.skin"));
+			stack.sendFailure(Component.translatable("pf.message.command.armory.error.item"));
 			return -1;
 		}
 
@@ -172,14 +256,70 @@ public final class PFCommand {
 		Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "players");
 
 		for (ServerPlayer player : players) {
-			player.getData(PFAttachmentTypes.ARMORY).equipWeapon(item, new PFCustomArmory.CustomStack(cloudItem, mint));
+			player.getData(PFAttachmentTypes.ARMORY_WEAPONS).equipWeapon(item, new PFArmory.Weapons.Stack(cloudItem, mint));
 		}
 
 		stack.sendSuccess(() -> {
 			if (players.size() == 1) {
-				return Component.translatable("pf.message.command.armory.set.success.single", players.iterator().next().getDisplayName());
+				return Component.translatable("pf.message.command.armory.set.weapon.success.single", players.iterator().next().getDisplayName());
 			} else {
-				return Component.translatable("pf.message.command.armory.set.success", players.size());
+				return Component.translatable("pf.message.command.armory.set.weapon.success", players.size());
+			}
+		}, true);
+
+		return players.size();
+	}
+
+	private static int runArmorySetCard(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+		CommandSourceStack stack = context.getSource();
+
+		String cardName = StringArgumentType.getString(context, "item");
+
+		CloudItemCallingCard card = CloudRegistryIndex.ITEMS.getCard(cardName);
+		if (card == null) {
+			stack.sendFailure(Component.translatable("pf.message.command.armory.error.item"));
+			return -1;
+		}
+
+		Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "players");
+
+		for (ServerPlayer player : players) {
+			player.getData(PFAttachmentTypes.ARMORY_EXTRA).equipCard(card);
+		}
+
+		stack.sendSuccess(() -> {
+			if (players.size() == 1) {
+				return Component.translatable("pf.message.command.armory.set.card.success.single", players.iterator().next().getDisplayName());
+			} else {
+				return Component.translatable("pf.message.command.armory.set.card.success", players.size());
+			}
+		}, true);
+
+		return players.size();
+	}
+
+	private static int runArmorySetCoin(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+		CommandSourceStack stack = context.getSource();
+
+		String coinName = StringArgumentType.getString(context, "item");
+
+		AbstractCloudItemCoin<?> coin = CloudRegistryIndex.ITEMS.getCoin(coinName);
+		if (coin == null) {
+			stack.sendFailure(Component.translatable("pf.message.command.armory.error.item"));
+			return -1;
+		}
+
+		Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "players");
+
+		for (ServerPlayer player : players) {
+			player.getData(PFAttachmentTypes.ARMORY_EXTRA).equipCoin(coin);
+		}
+
+		stack.sendSuccess(() -> {
+			if (players.size() == 1) {
+				return Component.translatable("pf.message.command.armory.set.coin.success.single", players.iterator().next().getDisplayName());
+			} else {
+				return Component.translatable("pf.message.command.armory.set.coin.success", players.size());
 			}
 		}, true);
 

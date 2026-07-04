@@ -2,7 +2,7 @@ package dev.vuis.plusfront.mixin.bf;
 
 import com.boehmod.blockfront.common.item.BFWeaponItem;
 import com.boehmod.blockfront.registry.BFDataComponents;
-import dev.vuis.plusfront.player.PFCustomArmory;
+import dev.vuis.plusfront.player.PFArmory;
 import dev.vuis.plusfront.registry.PFAttachmentTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -35,7 +35,7 @@ public abstract class BFWeaponItemMixin {
 
 		setOriginalOwner(stack, player.getScoreboardName());
 
-		PFCustomArmory.CustomStack customStack = player.getData(PFAttachmentTypes.ARMORY).getEquippedWeapon(stack.getItem());
+		PFArmory.Weapons.Stack customStack = player.getData(PFAttachmentTypes.ARMORY_WEAPONS).getEquippedWeapon(stack.getItem());
 		if (customStack != null) {
 			customStack.setComponents(stack);
 		}
