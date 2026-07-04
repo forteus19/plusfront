@@ -17,6 +17,7 @@ import com.boehmod.blockfront.common.world.damage.GrenadeDamageSource;
 import com.boehmod.blockfront.game.AbstractGame;
 import com.boehmod.blockfront.game.AbstractGameClient;
 import com.boehmod.blockfront.game.AbstractGameStage;
+import com.boehmod.blockfront.game.GameBoundary;
 import com.boehmod.blockfront.game.GameStageManager;
 import com.boehmod.blockfront.game.GameTeam;
 import com.boehmod.blockfront.game.GameTypeCodec;
@@ -38,6 +39,7 @@ import com.boehmod.blockfront.registry.BFItems;
 import com.boehmod.blockfront.registry.BFSounds;
 import com.boehmod.blockfront.util.CommandUtils;
 import com.boehmod.blockfront.util.math.BFPose;
+import com.mojang.brigadier.context.CommandContext;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.data.PFDefusalData;
 import dev.vuis.plusfront.ex.TeamDeathmatchCodecEx;
@@ -45,11 +47,13 @@ import dev.vuis.plusfront.util.PFUtil;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.VarInt;
 import net.minecraft.network.chat.Component;
@@ -83,10 +87,49 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	private final AssetCommandBuilder command = new AssetCommandBuilder()
 		.subCommand("bombsite", new AssetCommandBuilder()
+			.subCommand("add", executor(new String[]{"name"}, (context, source, args) -> {
+				String name = args[0];
+
+				bombSites.add(new BombSite(name));
+
+				CommandUtils.sendBfa(source, Component.literal("Added bomb site " + name + ". (" + bombSites.size() + ")"));
+			}))
 			.subCommand("clear", executor((context, source, args) -> {
 				bombSites.clear();
 
 				CommandUtils.sendBfa(source, Component.literal("Cleared all bombsites."));
+			}))
+			.subCommand("boundary", executorPlayers(new String[]{"name"}, this::suggestBombSites, (context, source, args) -> {
+				String name = args[0];
+
+				BombSite bombSite = getBombSiteByName(name);
+				if (bombSite == null) {
+					CommandUtils.sendBfa(source, Component.literal("Bomb site " + name + " was not found!"));
+					return;
+				}
+
+				GameBoundary boundary = dataHandler.getPlayerData((Player) source).getRegionSelection().getBoundary();
+				if (boundary == null) {
+					CommandUtils.sendBfa(source, Component.literal("No region selection! Select an area with the region wand first."));
+					return;
+				}
+
+				bombSite.boundary = boundary;
+
+				CommandUtils.sendBfa(source, Component.literal("Set boundary for bomb site " + name + " from your selection. (" + boundary.numPoints() + " points)"));
+			}))
+			.subCommand("visibleY", executorPlayers(new String[]{"name"}, this::suggestBombSites, (context, source, args) -> {
+				String name = args[0];
+
+				BombSite bombSite = getBombSiteByName(name);
+				if (bombSite == null) {
+					CommandUtils.sendBfa(source, Component.literal("Bomb site " + name + " was not found!"));
+					return;
+				}
+
+				bombSite.visibleY = ((Player) source).position().y;
+
+				CommandUtils.sendBfa(source, Component.literal("Set visible Y for bomb site " + name + "."));
 			})))
 		.subCommand("spawn", new AssetCommandBuilder()
 			.subCommand("add", executorPlayers(new String[]{"team"}, (context, source, args) -> {
@@ -125,6 +168,20 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	public List<BombSite> getBombSites() {
 		return bombSites;
+	}
+
+	private Collection<String> suggestBombSites(CommandContext<CommandSourceStack> context, String[] args) {
+		return args.length == 0 ? bombSites.stream().map(site -> site.name).toList() : List.of();
+	}
+
+	private @Nullable BombSite getBombSiteByName(String name) {
+		for (BombSite bombSite : bombSites) {
+			if (bombSite.name.equalsIgnoreCase(name)) {
+				return bombSite;
+			}
+		}
+
+		return null;
 	}
 
 	public @Nullable ItemEntity getBombItem(Level level) {
@@ -226,8 +283,13 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 			Optional.empty()
 		);
 
+		List<BombSiteCodec> bombSiteCodecs = new ObjectArrayList<>(bombSites.size());
+		for (BombSite bombSite : bombSites) {
+			bombSiteCodecs.add(bombSite.toCodec());
+		}
+
 		TeamDeathmatchCodecEx.cast(codec).pf$setDefusalData(Optional.of(new PFDefusalData(
-			List.copyOf(bombSites)
+			bombSiteCodecs
 		)));
 
 		return codec;
@@ -243,7 +305,9 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		PFDefusalData defusalData = TeamDeathmatchCodecEx.cast(tdmData).pf$getDefusalData().orElseThrow();
 
 		bombSites.clear();
-		bombSites.addAll(defusalData.bombSites());
+		for (BombSiteCodec bombSiteCodec : defusalData.bombSites()) {
+			bombSites.add(BombSite.fromCodec(bombSiteCodec));
+		}
 	}
 
 	@Override
@@ -285,6 +349,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	public void writeForClient(@NotNull ByteBuf buf) throws IOException {
 		super.writeForClient(buf);
 
+		buf.writeBoolean(isRoundInProgress());
 		buf.writeBoolean(isRoundFinished());
 	}
 
@@ -346,6 +411,12 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 		if (bombSites.isEmpty()) {
 			messages.add(Component.literal("Bomb sites for game " + name + " are missing."));
+		}
+
+		for (BombSite bombSite : bombSites) {
+			if (bombSite.boundary.isEmpty()) {
+				messages.add(Component.literal("Boundary for bomb site " + bombSite.name + " for game " + name + " is missing."));
+			}
 		}
 	}
 

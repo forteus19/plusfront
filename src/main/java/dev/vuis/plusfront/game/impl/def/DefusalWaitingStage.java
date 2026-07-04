@@ -9,10 +9,12 @@ import com.boehmod.blockfront.game.GameTeam;
 import com.boehmod.blockfront.game.GameUtils;
 import com.boehmod.blockfront.game.TeamJoinType;
 import com.boehmod.blockfront.game.TimedStage;
+import com.boehmod.blockfront.registry.BFSounds;
 import java.util.Set;
 import java.util.UUID;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,13 +45,20 @@ public class DefusalWaitingStage extends AbstractGameStage<DefusalGame, DefusalP
 		ServerLevel level = context.serverLevel();
 
 		GameUtils.clearClientRagdolls(players);
-		GameUtils.freezePlayers(dataHandler, players);
-		playerManager.teleportPlayersToRandomSpawn(dataHandler);
 		GameUtils.resetPlayers(level, players, dataHandler);
+		playerManager.teleportPlayersToRandomSpawn(dataHandler);
+		GameUtils.freezePlayers(dataHandler, players);
 
 		for (GameTeam team : playerManager.getTeams()) {
 			GameUtils.giveClassLoadout(level, game, team);
 		}
+
+		GameUtils.playSound(
+			players,
+			BFSounds.MATCH_CLASSES_CHANGE.value(),
+			SoundSource.NEUTRAL,
+			1f, 1f
+		);
 
 		playerManager.refreshTerroristBomb();
 	}

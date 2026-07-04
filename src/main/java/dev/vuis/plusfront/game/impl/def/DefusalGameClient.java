@@ -15,6 +15,7 @@ import com.boehmod.blockfront.common.net.packet.BFRegularPingTriggerRequestPacke
 import com.boehmod.blockfront.common.stat.BFStats;
 import com.boehmod.blockfront.game.AbstractGameClient;
 import com.boehmod.blockfront.game.AbstractGamePlayerManager;
+import com.boehmod.blockfront.game.GameNotification;
 import com.boehmod.blockfront.game.GameStatus;
 import com.boehmod.blockfront.game.GameTeam;
 import com.boehmod.blockfront.game.GameUtils;
@@ -22,6 +23,7 @@ import com.boehmod.blockfront.game.tag.client.IAllowsPingsClient;
 import com.boehmod.blockfront.registry.BFItems;
 import com.boehmod.blockfront.unnamed.BF_552;
 import com.boehmod.blockfront.util.BFRes;
+import com.boehmod.blockfront.util.BFStyles;
 import com.boehmod.blockfront.util.CollisionUtils;
 import com.boehmod.blockfront.util.PacketUtils;
 import com.boehmod.blockfront.util.StringUtils;
@@ -57,6 +59,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
@@ -65,26 +68,39 @@ import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.NotNull;
 
 public final class DefusalGameClient extends AbstractGameClient<DefusalGame, DefusalPlayerManager> implements IAllowsPingsClient {
-	private static final Component CT_LABEL = Component.literal("CT").withStyle(DefusalPlayerManager.CT_STYLE);
-	private static final Component T_LABEL = Component.literal("T").withStyle(DefusalPlayerManager.T_STYLE);
+	private static final Component CT_LABEL =
+		Component.literal("CT").withStyle(DefusalPlayerManager.CT_STYLE);
+	private static final Component T_LABEL =
+		Component.literal("T").withStyle(DefusalPlayerManager.T_STYLE);
+
+	private static final Component BOMB_PLANT_REMINDER =
+		Component.translatable("pf.message.gamemode.notification.bomb.reminder").withStyle(DefusalPlayerManager.T_STYLE);
 
 	public static final ResourceLocation BOMB_TEXTURE = PlusFront.res("textures/gui/defusal/bomb.png");
 	public static final ResourceLocation BOMB_BLINK_TEXTURE = PlusFront.res("textures/gui/defusal/bomb_blink.png");
 	private static final ResourceLocation DEAD_TEXTURE = BFRes.loc("textures/gui/dead.png");
 	private static final ResourceLocation INDICATOR_TEXTURE = BFRes.loc("textures/gui/indicator.png");
 
-	private final List<BombSiteClient> bombSites;
+	private static final Component BOMBSITE_LABEL = Component.literal("BOMBSITE");
 
+	private static final int BOMBSITE_CAGE_COLOR = 0xFFFC4141;
+	private static final BFRendering.CageSettings BOMBSITE_CAGE_SETTINGS =
+		BFRendering.CageSettings.create()
+			.fill(BOMBSITE_CAGE_COLOR, 0.25f)
+			.line(BOMBSITE_CAGE_COLOR, 1.0f, 1.5f)
+			.gridSpacing(1.0)
+			.sides(true, false, false)
+			.verticalFade(BFRendering.BoundaryFadeDirection.TOP)
+			.occludedAlpha(0.25f);
+
+	private final List<AABB> bombSiteBoxes = new ObjectArrayList<>();
+
+	private boolean isRoundInProgress = false;
 	private boolean isRoundFinished = false;
-	private int bombBlinkTimer = 0;
+	private int bombItemBlinkTimer = 0;
 
 	public DefusalGameClient(@NotNull BFClientManager manager, @NotNull DefusalGame game, @NotNull ClientPlayerDataHandler dataHandler) {
 		super(manager, game, dataHandler);
-
-		bombSites = new ObjectArrayList<>(game.getBombSites().size());
-		for (BombSite data : game.getBombSites()) {
-			bombSites.add(new BombSiteClient(data));
-		}
 
 		manager.getCinematics().method_2205(new BF_552(game));
 	}
@@ -101,6 +117,28 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 			new TeamScoreGameElement<>(),
 			new DefusalTimeGameElement()
 		);
+	}
+
+	@Override
+	protected void addLocalNotifications(@NotNull Minecraft minecraft, @NotNull LocalPlayer player, @NotNull List<GameNotification> target) {
+		super.addLocalNotifications(minecraft, player, target);
+
+		if (!isRoundInProgress) {
+			return;
+		}
+
+		DefusalPlayerManager playerManager = game.getPlayerManager();
+		UUID playerUuid = player.getUUID();
+
+		GameTeam team = playerManager.getPlayerTeam(playerUuid);
+
+		if (team != null &&
+			team.getName().equals(DefusalPlayerManager.T_NAME) &&
+			playerManager.isBombHolder(playerUuid) &&
+			game.checkBombSiteArea(player.position())
+		) {
+			addNotification(target, "bomb.reminder", BOMB_PLANT_REMINDER);
+		}
 	}
 
 	@Override
@@ -124,18 +162,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	) {
 		super.update(minecraft, random, randomSource, player, level, manager, playerData, players, renderTime, cameraPos, cameraBlockPos);
 
-		bombBlinkTimer = ++bombBlinkTimer % 20;
-
-		GameTeam terroristTeam = game.getPlayerManager().getTeamByName(DefusalPlayerManager.T_NAME);
-		assert terroristTeam != null;
-
-		boolean highlightInRadius = player.getMainHandItem().getItem() == BFItems.BOMB.value();
-
-		if (BFClientSettings.UI_RENDER_WAYPOINTS.isEnabled()) {
-			for (BombSiteClient site : bombSites) {
-				site.update(player, highlightInRadius);
-			}
-		}
+		bombItemBlinkTimer = ++bombItemBlinkTimer % 20;
 	}
 
 	@Override
@@ -158,13 +185,70 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		super.renderWorld(playerManager, minecraft, level, player, renderEvent, bufferSource, poseStack, frustum, font, graphics, camera, debug, renderTime, partialTick);
 
 		if (BFClientSettings.UI_RENDER_WAYPOINTS.isEnabled()) {
-			for (BombSiteClient site : bombSites) {
-				if (debug) {
-					site.renderDebug(bufferSource, poseStack);
-				}
+			renderBombSites(player, poseStack, frustum, font, graphics, camera);
+		}
+	}
 
-				site.render(poseStack, font, graphics, camera);
-			}
+	private void renderBombSites(
+		LocalPlayer player,
+		PoseStack poseStack,
+		Frustum frustum,
+		Font font,
+		GuiGraphics graphics,
+		Camera camera
+	) {
+		List<BombSite> bombSites = game.getBombSites();
+		int numBombSites = bombSites.size();
+
+		if (numBombSites != bombSiteBoxes.size()) {
+			PlusFront.LOGGER.warn("Mismatched bomb sites and boundary AABBs!");
+		}
+
+		boolean showBoundary = player.getMainHandItem().getItem() == BFItems.BOMB.value();
+
+		for (int i = 0; i < numBombSites; i++) {
+			BombSite bombSite = bombSites.get(i);
+			AABB bombSiteAABB = bombSiteBoxes.get(i);
+
+			renderBombSite(
+				poseStack, frustum, font, graphics, camera,
+				bombSite, showBoundary, bombSiteAABB
+			);
+		}
+	}
+
+	private static void renderBombSite(
+		PoseStack poseStack,
+		Frustum frustum,
+		Font font,
+		GuiGraphics graphics,
+		Camera camera,
+		BombSite bombSite,
+		boolean showBoundary,
+		AABB boundaryAABB
+	) {
+		if (showBoundary && frustum.isVisible(boundaryAABB)) {
+			BFRendering.cageGameBoundary(
+				camera, poseStack,
+				bombSite.boundary,
+				bombSite.visibleY, bombSite.visibleY + BombSite.VISIBLE_HEIGHT,
+				BOMBSITE_CAGE_SETTINGS
+			);
+		}
+
+		for (Vec3 waypoint : bombSite.waypoints) {
+			BFRendering.component(
+				poseStack, font, camera, graphics,
+				Component.literal(bombSite.name).withStyle(BFStyles.BOLD),
+				waypoint.x, waypoint.y + 2.5f, waypoint.z,
+				2.0f, 0xFFFFFFFF, true
+			);
+			BFRendering.component(
+				poseStack, font, camera, graphics,
+				BOMBSITE_LABEL,
+				waypoint.x, waypoint.y + 1.75f, waypoint.z,
+				1.0f, 0xFFFFFFFF, true
+			);
 		}
 	}
 
@@ -237,7 +321,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		BFRendering.ScreenClampData screenClampData = BFRendering.screenClamp(bombPosition, camera, width, height, 32, partialTick);
 
 		graphics.blit(
-			bombBlinkTimer < 10 ? BOMB_TEXTURE : BOMB_BLINK_TEXTURE,
+			bombItemBlinkTimer < 10 ? BOMB_TEXTURE : BOMB_BLINK_TEXTURE,
 			(int) (screenClampData.screenX() - 16f), (int) (screenClampData.screenY() - 8f),
 			0f, 0f,
 			32, 16, 32, 16
@@ -323,7 +407,17 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	public void read(@NotNull ByteBuf buf) throws IOException {
 		super.read(buf);
 
+		isRoundInProgress = buf.readBoolean();
 		isRoundFinished = buf.readBoolean();
+
+		onGamePacket();
+	}
+
+	private void onGamePacket() {
+		bombSiteBoxes.clear();
+		for (BombSite bombSite : game.getBombSites()) {
+			bombSiteBoxes.add(bombSite.getBoundaryAABB());
+		}
 	}
 
 	public boolean isRoundFinished() {

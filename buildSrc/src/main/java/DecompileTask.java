@@ -1,4 +1,6 @@
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.InputFile;
@@ -15,7 +17,7 @@ public abstract class DecompileTask extends DefaultTask {
 	public abstract RegularFileProperty getOutput();
 
 	@TaskAction
-	public void run() {
+	public void run() throws IOException {
 		File input = getInput().get().getAsFile();
 		File output = getOutput().get().getAsFile();
 
@@ -24,6 +26,8 @@ public abstract class DecompileTask extends DefaultTask {
 			.output(new SingleFileSaver(output))
 			.logger(new PrintStreamLogger(System.out))
 			.build();
+
+		Files.deleteIfExists(output.toPath());
 
 		decompiler.decompile();
 	}

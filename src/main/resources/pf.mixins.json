@@ -10,8 +10,10 @@
     "bf.AbstractGameMixin",
     "bf.AbstractGamePlayerManagerMixin",
     "bf.BFPopupStatMixin",
+    "bf.BFUpdaterMixin",
     "bf.BombEntityMixin",
     "bf.GameAssetMixin",
+    "bf.GameBoundaryMixin",
     "bf.GameTeamMixin",
     "bf.GameTypeCodecMixin",
     "bf.GameTypeCodecMixin$TeamDeathmatchMixin",
@@ -29,7 +31,6 @@
   "client": [
     "bf.client.AbstractGameClientMixin",
     "bf.client.BFConsumableItemMixin",
-    "bf.client.BFVersionCheckerMixin",
     "bf.client.MatchGuiLayerMixin",
     "bf.client.TeamScoreGameElementMixin",
     "bf.client.TroubleTownGameClientMixin",

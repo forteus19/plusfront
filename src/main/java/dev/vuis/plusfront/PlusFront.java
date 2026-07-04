@@ -20,7 +20,8 @@ public final class PlusFront {
 		"server_grenade_cook_drop_on_death", true,
 		"client_fancy_bullet_effects", true,
 		"client_veil_fancy_gun_light", true,
-		"server_player_voice_sounds", false
+		"server_player_voice_sounds", false,
+		"server_chat_markdown", true
 	);
 
 	/**

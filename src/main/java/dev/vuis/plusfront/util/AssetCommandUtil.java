@@ -3,6 +3,8 @@ package dev.vuis.plusfront.util;
 import com.boehmod.blockfront.assets.AssetCommandBuilder;
 import com.boehmod.blockfront.assets.AssetCommandValidators;
 import com.mojang.brigadier.context.CommandContext;
+import java.util.Collection;
+import java.util.function.BiFunction;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import org.jetbrains.annotations.NotNull;
@@ -34,6 +36,14 @@ public final class AssetCommandUtil {
 
 	public static AssetCommandBuilder executorPlayers(String[] requiredArgs, Executor executor) {
 		return executor(requiredArgs, executor).validator(AssetCommandValidators.ONLY_PLAYERS);
+	}
+
+	public static AssetCommandBuilder executorPlayers(
+		String[] requiredArgs,
+		BiFunction<CommandContext<CommandSourceStack>, String[], Collection<String>> suggestor,
+		Executor executor
+	) {
+		return executorPlayers(requiredArgs, executor).suggest(suggestor);
 	}
 
 	@FunctionalInterface
