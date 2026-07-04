@@ -1,7 +1,9 @@
 package dev.vuis.plusfront;
 
+import dev.vuis.plusfront.registry.PFAttachmentTypes;
 import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,8 +31,11 @@ public final class PlusFront {
 	 */
 	public static boolean voicechatLoaded = false;
 
-	public PlusFront() {
-		PlusFront.LOGGER.info("PlusFront initialized!");
+	public PlusFront(IEventBus modBus) {
+		LOGGER.info("Registering attachment types...");
+		PFAttachmentTypes.register(modBus);
+
+		LOGGER.info("PlusFront initialized!");
 	}
 
 	public static ResourceLocation res(String path) {

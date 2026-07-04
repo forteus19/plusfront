@@ -7,10 +7,12 @@ import dev.vuis.plusfront.command.PFCommand;
 import dev.vuis.plusfront.net.payload.PFStartConsumablePayload;
 import dev.vuis.plusfront.net.payload.PFStopMusicPayload;
 import dev.vuis.plusfront.util.PFUtil;
+import dev.vuis.plusfront.util.index.ItemIndex;
 import java.util.stream.Collectors;
 import net.minecraft.commands.CommandSourceStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -22,6 +24,13 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 public final class PFCommonEvents {
 	private PFCommonEvents() {
 		throw new AssertionError();
+	}
+
+	@SubscribeEvent
+	public static void onCommonSetup(FMLCommonSetupEvent event) {
+		PlusFront.LOGGER.info("Doing common setup...");
+
+		ItemIndex.init();
 	}
 
 	@SubscribeEvent
@@ -37,10 +46,12 @@ public final class PFCommonEvents {
 				.collect(Collectors.joining("\n"))
 		);
 
-		manager.getConnectionManager()
-			.getRequester()
-			.getFeatureFlagManager()
-			.setFeatureFlags(PlusFront.FEATURE_FLAGS);
+		event.enqueueWork(() -> {
+			manager.getConnectionManager()
+				.getRequester()
+				.getFeatureFlagManager()
+				.setFeatureFlags(PlusFront.FEATURE_FLAGS);
+		});
 	}
 
 	@SubscribeEvent
