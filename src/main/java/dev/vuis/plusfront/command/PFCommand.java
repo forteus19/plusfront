@@ -42,9 +42,11 @@ public final class PFCommand {
 		dispatcher.register(literal("pf").then(
 			literal("armory").requires(stack -> stack.hasPermission(2)).then(
 				argument("players", EntityArgument.players()).then(
-					literal("clear").executes(PFCommand::runClearAll).then(
-						argument("item", ResourceLocationArgument.id()).suggests(ItemIndex.suggestWeapons()).executes(PFCommand::runClearSpecific)
+					literal("clear").executes(PFCommand::runArmoryClearAll).then(
+						argument("item", ResourceLocationArgument.id()).suggests(ItemIndex.suggestWeapons()).executes(PFCommand::runArmoryClearSpecific)
 					)
+				).then(
+					literal("fetch").executes(PFCommand::runArmoryFetch)
 				).then(
 					literal("set").then(
 						argument("item", ResourceLocationArgument.id()).suggests(ItemIndex.suggestWeapons()).then(
@@ -66,13 +68,13 @@ public final class PFCommand {
 		));
 	}
 
-	private static int runClearAll(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+	private static int runArmoryClearAll(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
 		CommandSourceStack stack = context.getSource();
 
 		Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "players");
 
 		for (ServerPlayer player : players) {
-			player.getData(PFAttachmentTypes.ARMORY).clearAll();
+			player.getData(PFAttachmentTypes.ARMORY).clearWeapons();
 		}
 
 		stack.sendSuccess(() -> {
@@ -86,7 +88,7 @@ public final class PFCommand {
 		return players.size();
 	}
 
-	private static int runClearSpecific(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+	private static int runArmoryClearSpecific(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
 		CommandSourceStack stack = context.getSource();
 
 		ResourceLocation itemLocation = ResourceLocationArgument.getId(context, "item");
@@ -111,6 +113,31 @@ public final class PFCommand {
 				return Component.translatable("pf.message.command.armory.clear.specific.success", players.size());
 			}
 		}, true);
+
+		return players.size();
+	}
+
+	private static int runArmoryFetch(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+		CommandSourceStack stack = context.getSource();
+
+		Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "players");
+
+		if (players.size() > 1) {
+			stack.sendFailure(Component.translatable("pf.message.command.armory.fetch.error.multiple"));
+			return -1;
+		}
+
+		ServerPlayer player = players.iterator().next();
+
+		player.getData(PFAttachmentTypes.ARMORY).fetchWeapons(
+			player.getUUID(),
+			stack.getServer(),
+			armory -> stack.sendSuccess(() -> Component.translatable(
+				"pf.message.command.armory.fetch.success",
+				player.getDisplayName(),
+				armory.numWeapons()
+			), true)
+		);
 
 		return players.size();
 	}

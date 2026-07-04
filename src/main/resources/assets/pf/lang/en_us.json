@@ -7,6 +7,8 @@
   "pf.message.command.armory.clear.success.single": "Cleared skins for %s",
   "pf.message.command.armory.error.skin": "Skin not found",
   "pf.message.command.armory.error.weapon": "Must be a gun or melee item",
+  "pf.message.command.armory.fetch.error.multiple": "Only one player can be fetched at a time",
+  "pf.message.command.armory.fetch.success": "Fetched armory for %s (%s weapons)",
   "pf.message.command.armory.set.success": "Equipped skin for %s players",
   "pf.message.command.armory.set.success.single": "Equipped skin for %s",
   "pf.message.command.assets.backup.error.exists": "Target backup path already exists",
