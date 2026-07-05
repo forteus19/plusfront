@@ -6,6 +6,7 @@ import com.boehmod.bflib.cloud.common.item.types.AbstractCloudItemCoin;
 import com.boehmod.bflib.cloud.common.item.types.CloudItemCallingCard;
 import com.boehmod.blockfront.assets.AssetStore;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -13,14 +14,18 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.player.PFArmory;
 import dev.vuis.plusfront.registry.PFAttachmentTypes;
+import dev.vuis.plusfront.util.PFUtil;
 import dev.vuis.plusfront.util.PFZipUtil;
 import dev.vuis.plusfront.util.index.CloudRegistryIndex;
+import dev.vuis.plusfront.util.index.FeatureFlagIndex;
 import dev.vuis.plusfront.util.index.ItemIndex;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -82,6 +87,20 @@ public final class PFCommand {
 		).then(
 			literal("assets").requires(stack -> stack.hasPermission(3)).then(
 				literal("backup").executes(PFCommand::runAssetsBackup)
+			)
+		).then(
+			literal("feature").then(
+				literal("list").executes(PFCommand::runFeatureList)
+			).then(
+				literal("get").then(
+					argument("name", StringArgumentType.word()).suggests(FeatureFlagIndex.suggestFeatureFlags()).executes(PFCommand::runFeatureGet)
+				)
+			).then(
+				literal("set").requires(stack -> stack.hasPermission(2)).then(
+					argument("name", StringArgumentType.word()).suggests(FeatureFlagIndex.suggestFeatureFlags()).then(
+						argument("value", BoolArgumentType.bool()).executes(PFCommand::runFeatureSet)
+					)
+				)
 			)
 		));
 	}
@@ -375,6 +394,61 @@ public final class PFCommand {
 
 		PlusFront.LOGGER.info("Assets backed up!");
 		stack.sendSuccess(() -> Component.translatable("pf.message.command.assets.backup.success"), true);
+
+		return 1;
+	}
+
+	private static int runFeatureList(CommandContext<CommandSourceStack> context) {
+		CommandSourceStack stack = context.getSource();
+
+		var featureFlags = PFUtil.getFeatureFlags(stack.getServer());
+		if (featureFlags == null) {
+			stack.sendFailure(Component.translatable("pf.message.command.feature.list.error"));
+			return -1;
+		}
+
+		stack.sendSystemMessage(Component.translatable("pf.message.command.feature.list.header", featureFlags.size()));
+
+		featureFlags.object2BooleanEntrySet().stream().sorted(Map.Entry.comparingByKey()).forEachOrdered(flag -> {
+			stack.sendSystemMessage(Component.literal("- " + flag.getKey() + ": " + flag.getBooleanValue()));
+		});
+
+		return 0;
+	}
+
+	private static int runFeatureGet(CommandContext<CommandSourceStack> context) {
+		CommandSourceStack stack = context.getSource();
+
+		String name = StringArgumentType.getString(context, "name");
+
+		Optional<Boolean> value = PFUtil.getFeatureFlag(stack.getServer(), name);
+
+		stack.sendSystemMessage(
+			value.isPresent() ?
+				Component.translatable("pf.message.command.feature.get.success", name, Boolean.toString(value.orElseThrow())) :
+				Component.translatable("pf.message.command.feature.get.empty", name)
+		);
+
+		return 0;
+	}
+
+	private static int runFeatureSet(CommandContext<CommandSourceStack> context) {
+		CommandSourceStack stack = context.getSource();
+
+		String name = StringArgumentType.getString(context, "name");
+		boolean value = BoolArgumentType.getBool(context, "value");
+
+		if (!FeatureFlagIndex.isAcknowledged(name)) {
+			stack.sendFailure(Component.translatable("pf.message.command.feature.set.error.invalid"));
+			return -1;
+		}
+
+		if (!PFUtil.setFeatureFlag(stack.getServer(), name, value)) {
+			stack.sendFailure(Component.translatable("pf.message.command.feature.set.error.generic"));
+			return -1;
+		}
+
+		stack.sendSuccess(() -> Component.translatable("pf.message.command.feature.set.success", name, Boolean.toString(value)), true);
 
 		return 1;
 	}

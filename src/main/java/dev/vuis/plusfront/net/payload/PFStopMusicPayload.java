@@ -30,7 +30,7 @@ public final class PFStopMusicPayload implements CustomPacketPayload {
 		PacketDistributor.sendToPlayer(player, INSTANCE);
 	}
 
-	private static void handleClient(PFStopMusicPayload payload, IPayloadContext context) {
+	private void handleClient(IPayloadContext context) {
 		BFClientManager manager = BFClientManager.getInstance();
 		if (manager == null) {
 			return;
