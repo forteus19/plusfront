@@ -6,6 +6,7 @@ import com.boehmod.blockfront.common.player.BFAbstractPlayerData;
 import com.boehmod.blockfront.common.player.PlayerDataHandler;
 import com.boehmod.blockfront.game.GameTeam;
 import com.boehmod.blockfront.game.GameUtils;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.net.payload.PFFeatureFlagsPayload;
 import dev.vuis.plusfront.world.PFSavedData;
@@ -14,6 +15,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -66,6 +69,10 @@ public final class PFUtil {
 
 	public static boolean isSameTeam(@Nullable GameTeam teamA, @Nullable GameTeam teamB) {
 		return teamA != null && teamB != null && teamA.getName().equals(teamB.getName());
+	}
+
+	public static SuggestionProvider<CommandSourceStack> suggestGames() {
+		return (context, builder) -> SharedSuggestionProvider.suggest(blockfrontManager().getGames().keySet(), builder);
 	}
 
 	public static void updateFeatureFlags(Map<String, Boolean> featureFlags) {

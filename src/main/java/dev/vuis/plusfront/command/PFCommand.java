@@ -5,6 +5,8 @@ import com.boehmod.bflib.cloud.common.item.CloudItemStack;
 import com.boehmod.bflib.cloud.common.item.types.AbstractCloudItemCoin;
 import com.boehmod.bflib.cloud.common.item.types.CloudItemCallingCard;
 import com.boehmod.blockfront.assets.AssetStore;
+import com.boehmod.blockfront.common.BFAbstractManager;
+import com.boehmod.blockfront.game.AbstractGame;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
@@ -47,6 +49,12 @@ public final class PFCommand {
 
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 		dispatcher.register(literal("pf").then(
+			literal("forcejoin").requires(stack -> stack.hasPermission(3)).then(
+				argument("players", EntityArgument.players()).then(
+					argument("game", StringArgumentType.word()).suggests(PFUtil.suggestGames()).executes(PFCommand::runForceJoin)
+				)
+			)
+		).then(
 			literal("armory").requires(stack -> stack.hasPermission(2)).then(
 				argument("players", EntityArgument.players()).then(
 					literal("clear").executes(PFCommand::runArmoryClear).then(
@@ -103,6 +111,37 @@ public final class PFCommand {
 				)
 			)
 		));
+	}
+
+	private static int runForceJoin(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+		CommandSourceStack stack = context.getSource();
+
+		BFAbstractManager<?, ?, ?> manager = PFUtil.blockfrontManager();
+
+		String gameName = StringArgumentType.getString(context, "game");
+
+		AbstractGame<?, ?, ?> game = manager.getGameByName(gameName);
+		if (game == null) {
+			//noinspection NoTranslation
+			stack.sendFailure(Component.translatable("bf.message.command.game.player.error.nogame", gameName));
+			return -1;
+		}
+
+		Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "players");
+
+		PlusFront.LOGGER.info("Force-joining {} players to game '{}'", players.size(), game.getName());
+
+		for (ServerPlayer player : players) {
+			AbstractGame<?, ?, ?> previousGame = manager.getPlayerGame(player);
+
+			if (previousGame != null) {
+				previousGame.getPlayerManager().removePlayer(manager, player.serverLevel(), player);
+			}
+
+			manager.assignPlayerToGame(player.serverLevel(), player, game);
+		}
+
+		return players.size();
 	}
 
 	private static int runArmoryClear(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
