@@ -9,6 +9,7 @@ import org.gradle.api.tasks.TaskAction;
 import org.jetbrains.java.decompiler.api.Decompiler;
 import org.jetbrains.java.decompiler.main.decompiler.PrintStreamLogger;
 import org.jetbrains.java.decompiler.main.decompiler.SingleFileSaver;
+import org.jetbrains.java.decompiler.main.extern.IFernflowerPreferences;
 
 public abstract class DecompileTask extends DefaultTask {
 	@InputFile
@@ -22,6 +23,8 @@ public abstract class DecompileTask extends DefaultTask {
 		File output = getOutput().get().getAsFile();
 
 		Decompiler decompiler = Decompiler.builder()
+			.option(IFernflowerPreferences.INDENT_STRING, "\t")
+			.option(IFernflowerPreferences.SOURCE_FILE_COMMENTS, true)
 			.inputs(input)
 			.output(new SingleFileSaver(output))
 			.logger(new PrintStreamLogger(System.out))

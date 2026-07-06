@@ -6,6 +6,7 @@ import com.boehmod.blockfront.registry.BFItems;
 import dev.vuis.plusfront.PFTemp;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.game.impl.def.DefusalGame;
+import dev.vuis.plusfront.net.payload.PFFeatureFlagsPayload;
 import dev.vuis.plusfront.util.PFUtil;
 import java.util.UUID;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,6 +20,7 @@ import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 @EventBusSubscriber(
 	value = Dist.DEDICATED_SERVER,
@@ -93,6 +95,11 @@ public final class PFServerEvents {
 	public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
 		if (!(event.getEntity() instanceof ServerPlayer player)) {
 			return;
+		}
+
+		var featureFlags = PFUtil.getFeatureFlags(player.server);
+		if (featureFlags != null) {
+			PacketDistributor.sendToPlayer(player, new PFFeatureFlagsPayload(featureFlags));
 		}
 
 		UUID autoJoinPlayer = PFTemp.autoJoinPlayer;

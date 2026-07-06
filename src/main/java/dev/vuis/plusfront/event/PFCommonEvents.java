@@ -20,7 +20,6 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
@@ -45,11 +44,6 @@ public final class PFCommonEvents {
 		MinecraftServer server = player.getServer();
 		if (server == null) {
 			return;
-		}
-
-		var featureFlags = PFUtil.getFeatureFlags(server);
-		if (featureFlags != null) {
-			PacketDistributor.sendToAllPlayers(new PFFeatureFlagsPayload(featureFlags));
 		}
 
 		if (PFServerConfig.INSTANCE.getAutoFetchArmory()) {

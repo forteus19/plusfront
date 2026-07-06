@@ -822,21 +822,21 @@ c	com/boehmod/blockfront/aZ	com/boehmod/blockfront/unnamed/BF_40	com/boehmod/blo
 	f	Lcom/boehmod/blockfront/ij;	a	field_189	MUSIC
 	f	Lcom/boehmod/blockfront/ik;	a	field_190	MUSIC_SEARCHING
 	f	Z	aj	field_191	play
-c	com/boehmod/blockfront/aa	com/boehmod/blockfront/unnamed/BF_21	com/boehmod/blockfront/client/render/effect/AbstractParticleEffect
+c	com/boehmod/blockfront/aa	com/boehmod/blockfront/unnamed/BF_21	com/boehmod/blockfront/client/world/weather/AbstractWeatherEffect
 	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/l;Lnet/minecraft/client/gui/GuiGraphics;IIFF)V	a	method_6779	method_6779
 	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/l;Lnet/minecraft/client/multiplayer/ClientLevel;Lnet/minecraft/util/RandomSource;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/core/BlockPos;F)V	a	method_143	method_143
 	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/l;)V	c	method_6780	method_6780
-c	com/boehmod/blockfront/ab	com/boehmod/blockfront/unnamed/BF_22	com/boehmod/blockfront/client/render/effect/BFParticleEffects
+c	com/boehmod/blockfront/ab	com/boehmod/blockfront/unnamed/BF_22	com/boehmod/blockfront/client/world/weather/WeatherEffectRegistry
 	f	Ljava/util/Map;	d	field_100	BY_TYPE
 	m	(Lcom/boehmod/blockfront/pn;)Lcom/boehmod/blockfront/aa;	a	method_144	get
 		p	0			type
-	m	(Lcom/boehmod/blockfront/pn;Ljava/util/function/Supplier;)V	a	method_145	method_145
-c	com/boehmod/blockfront/ac	com/boehmod/blockfront/unnamed/BF_23	com/boehmod/blockfront/client/render/effect/FallingAshEffect
+	m	(Lcom/boehmod/blockfront/pn;Ljava/util/function/Supplier;)V	a	method_145	register
+c	com/boehmod/blockfront/ac	com/boehmod/blockfront/unnamed/BF_23	com/boehmod/blockfront/client/world/weather/FallingLeavesWeatherEffect
 	f	I	ai	field_7594	field_7594
 	f	I	aj	field_7595	field_7595
 	f	I	ak	field_7596	field_7596
 	f	F	r	field_7597	field_7597
-c	com/boehmod/blockfront/ad	com/boehmod/blockfront/unnamed/BF_1284	com/boehmod/blockfront/client/render/effect/SnowstormOverlayEffect
+c	com/boehmod/blockfront/ad	com/boehmod/blockfront/unnamed/BF_1284	com/boehmod/blockfront/client/world/weather/HeavySnowWeatherEffect
 	f	I	al	field_7598	field_7598
 	f	I	am	field_7599	field_7599
 	f	I	an	field_7600	field_7600
@@ -845,14 +845,14 @@ c	com/boehmod/blockfront/ad	com/boehmod/blockfront/unnamed/BF_1284	com/boehmod/b
 	f	Lnet/minecraft/resources/ResourceLocation;	m	field_7603	field_7603
 	f	F	s	field_7604	field_7604
 	f	F	t	field_7605	field_7605
-c	com/boehmod/blockfront/ae	com/boehmod/blockfront/unnamed/BF_59	com/boehmod/blockfront/client/render/effect/SnowParticleEffect
+c	com/boehmod/blockfront/ae	com/boehmod/blockfront/unnamed/BF_59	com/boehmod/blockfront/client/world/weather/LightSnowWeatherEffect
 	f	I	aq	field_7606	field_7606
 	f	I	ar	field_7607	field_7607
 	f	I	as	field_324	field_324
 	f	I	at	field_7608	field_7608
 	f	I	au	field_7609	field_7609
 	f	F	u	field_7610	field_7610
-c	com/boehmod/blockfront/af	com/boehmod/blockfront/unnamed/BF_58	com/boehmod/blockfront/client/render/effect/RainstormEffect
+c	com/boehmod/blockfront/af	com/boehmod/blockfront/unnamed/BF_58	com/boehmod/blockfront/client/world/weather/RainstormWeatherEffect
 	f	I	aA	field_7611	field_7611
 	f	I	aB	field_321	field_321
 	f	I	aC	field_322	field_322
@@ -864,7 +864,7 @@ c	com/boehmod/blockfront/af	com/boehmod/blockfront/unnamed/BF_58	com/boehmod/blo
 	f	I	az	field_7614	field_7614
 	f	F	v	field_7615	field_7615
 	f	F	w	field_7616	field_7616
-c	com/boehmod/blockfront/ag	com/boehmod/blockfront/unnamed/BF_1285	com/boehmod/blockfront/client/render/effect/SandstormOverlayEffect
+c	com/boehmod/blockfront/ag	com/boehmod/blockfront/unnamed/BF_1285	com/boehmod/blockfront/client/world/weather/SandstormWeatherEffect
 	f	F	A	field_7636	field_7636
 	f	F	B	field_7617	field_7617
 	f	F	C	field_7618	field_7618
@@ -886,16 +886,16 @@ c	com/boehmod/blockfront/ag	com/boehmod/blockfront/unnamed/BF_1285	com/boehmod/b
 	f	F	y	field_7634	field_7634
 	f	F	z	field_7635	field_7635
 	m	(F)F	d	method_6784	method_6784
-c	com/boehmod/blockfront/ah	com/boehmod/blockfront/unnamed/BF_1286	com/boehmod/blockfront/unnamed/BF_1286
+c	com/boehmod/blockfront/ah	com/boehmod/blockfront/unnamed/BF_1286	com/boehmod/blockfront/client/world/weather/SandyFloorWeatherEffect
 	f	I	aI	field_7637	field_7637
-c	com/boehmod/blockfront/ai	com/boehmod/blockfront/unnamed/BF_1214	com/boehmod/blockfront/client/render/effect/FastSnowParticleEffect
+c	com/boehmod/blockfront/ai	com/boehmod/blockfront/unnamed/BF_1214	com/boehmod/blockfront/client/world/weather/SnowWeatherEffect
 	f	F	I	field_7054	field_7054
 	f	I	aJ	field_7638	field_7638
 	f	I	aK	field_7639	field_7639
 	f	I	aL	field_7640	field_7640
 	f	I	aM	field_7641	field_7641
 	f	I	aN	field_7642	field_7642
-c	com/boehmod/blockfront/aj	com/boehmod/blockfront/unnamed/BF_1287	com/boehmod/blockfront/unnamed/BF_1287
+c	com/boehmod/blockfront/aj	com/boehmod/blockfront/unnamed/BF_1287	com/boehmod/blockfront/client/world/weather/SnowyFloorWeatherEffect
 	f	I	aO	field_7643	field_7643
 c	com/boehmod/blockfront/ak	com/boehmod/blockfront/unnamed/BF_1288	com/boehmod/blockfront/client/event/BFChatReceivedSubscriber
 	f	Z	O	field_7644	field_7644
@@ -15435,7 +15435,7 @@ c	com/boehmod/blockfront/pm	com/boehmod/blockfront/unnamed/BF_765	com/boehmod/bl
 	m	(Lnet/minecraft/server/level/ServerLevel;Lcom/boehmod/blockfront/oF;Ljava/util/Set;)V	b	method_3195	update
 	m	(Lcom/boehmod/blockfront/pm;)Ljava/lang/Double;	c	method_6313	method_6313
 	m	(Lcom/mojang/serialization/codecs/RecordCodecBuilder$Instance;)Lcom/mojang/datafixers/kinds/App;	j	method_6314	method_6314
-c	com/boehmod/blockfront/pn	com/boehmod/blockfront/unnamed/BF_766	com/boehmod/blockfront/client/render/effect/WeatherEffectType
+c	com/boehmod/blockfront/pn	com/boehmod/blockfront/unnamed/BF_766	com/boehmod/blockfront/map/WeatherEffectType
 	f	[Lcom/boehmod/blockfront/pn;	$VALUES	$VALUES	$VALUES
 	f	Ljava/util/Map;	BY_ID	BY_ID	BY_ID
 	f	Lcom/mojang/serialization/Codec;	CODEC	CODEC	CODEC
@@ -15840,7 +15840,7 @@ c	com/boehmod/blockfront/qF	com/boehmod/blockfront/unnamed/BF_1417	com/boehmod/b
 	m	()Lnet/minecraft/sounds/SoundEvent;	v	method_8729	method_8729
 	m	()Lnet/minecraft/sounds/SoundEvent;	w	method_8730	method_8730
 c	com/boehmod/blockfront/qF$a	com/boehmod/blockfront/unnamed/BF_1417$BF_1418	com/boehmod/blockfront/map/MapWeatherCodec$AmbientSound
-	f	Lcom/mojang/serialization/Codec;	L	field_8331	field_8331
+	f	Lcom/mojang/serialization/Codec;	L	field_8331	CODEC
 	f	Lcom/boehmod/blockfront/qF$b;	a	field_8332	playbackEnvironment
 	f	Lnet/minecraft/resources/ResourceLocation;	eL	field_8333	soundGroup
 	f	I	pf	field_8334	tickIntervalMin
