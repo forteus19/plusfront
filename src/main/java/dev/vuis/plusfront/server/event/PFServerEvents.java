@@ -3,9 +3,12 @@ package dev.vuis.plusfront.server.event;
 import com.boehmod.blockfront.common.BFAbstractManager;
 import com.boehmod.blockfront.game.AbstractGame;
 import com.boehmod.blockfront.registry.BFItems;
+import dev.vuis.plusfront.PFTemp;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.game.impl.def.DefusalGame;
 import dev.vuis.plusfront.util.PFUtil;
+import java.util.UUID;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -15,6 +18,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 @EventBusSubscriber(
 	value = Dist.DEDICATED_SERVER,
@@ -81,6 +85,24 @@ public final class PFServerEvents {
 				itemEntity.setInvulnerable(true);
 				defusalGame.setBombItem(itemEntity);
 				break;
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+		if (!(event.getEntity() instanceof ServerPlayer player)) {
+			return;
+		}
+
+		UUID autoJoinPlayer = PFTemp.autoJoinPlayer;
+		if (autoJoinPlayer != null) {
+			BFAbstractManager<?, ?, ?> manager = PFUtil.blockfrontManager();
+
+			AbstractGame<?, ?, ?> game = manager.getPlayerGame(autoJoinPlayer);
+
+			if (game != null) {
+				manager.assignPlayerToGame(player.serverLevel(), player, game);
 			}
 		}
 	}

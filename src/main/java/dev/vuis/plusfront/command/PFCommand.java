@@ -13,6 +13,7 @@ import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.vuis.plusfront.PFTemp;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.player.PFArmory;
 import dev.vuis.plusfront.registry.PFAttachmentTypes;
@@ -49,12 +50,6 @@ public final class PFCommand {
 
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 		dispatcher.register(literal("pf").then(
-			literal("forcejoin").requires(stack -> stack.hasPermission(3)).then(
-				argument("players", EntityArgument.players()).then(
-					argument("game", StringArgumentType.word()).suggests(PFUtil.suggestGames()).executes(PFCommand::runForceJoin)
-				)
-			)
-		).then(
 			literal("armory").requires(stack -> stack.hasPermission(2)).then(
 				argument("players", EntityArgument.players()).then(
 					literal("clear").executes(PFCommand::runArmoryClear).then(
@@ -97,6 +92,20 @@ public final class PFCommand {
 				literal("backup").executes(PFCommand::runAssetsBackup)
 			)
 		).then(
+			literal("autojoin").requires(stack -> stack.hasPermission(3)).then(
+				literal("set").then(
+					argument("player", EntityArgument.player()).executes(PFCommand::runAutoJoinSet)
+				)
+			).then(
+				literal("clear").executes(PFCommand::runAutoJoinClear)
+			)
+		).then(
+			literal("forcejoin").requires(stack -> stack.hasPermission(3)).then(
+				argument("players", EntityArgument.players()).then(
+					argument("game", StringArgumentType.word()).suggests(PFUtil.suggestGames()).executes(PFCommand::runForceJoin)
+				)
+			)
+		).then(
 			literal("feature").then(
 				literal("list").executes(PFCommand::runFeatureList)
 			).then(
@@ -111,37 +120,6 @@ public final class PFCommand {
 				)
 			)
 		));
-	}
-
-	private static int runForceJoin(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-		CommandSourceStack stack = context.getSource();
-
-		BFAbstractManager<?, ?, ?> manager = PFUtil.blockfrontManager();
-
-		String gameName = StringArgumentType.getString(context, "game");
-
-		AbstractGame<?, ?, ?> game = manager.getGameByName(gameName);
-		if (game == null) {
-			//noinspection NoTranslation
-			stack.sendFailure(Component.translatable("bf.message.command.game.player.error.nogame", gameName));
-			return -1;
-		}
-
-		Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "players");
-
-		PlusFront.LOGGER.info("Force-joining {} players to game '{}'", players.size(), game.getName());
-
-		for (ServerPlayer player : players) {
-			AbstractGame<?, ?, ?> previousGame = manager.getPlayerGame(player);
-
-			if (previousGame != null) {
-				previousGame.getPlayerManager().removePlayer(manager, player.serverLevel(), player);
-			}
-
-			manager.assignPlayerToGame(player.serverLevel(), player, game);
-		}
-
-		return players.size();
 	}
 
 	private static int runArmoryClear(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -435,6 +413,62 @@ public final class PFCommand {
 		stack.sendSuccess(() -> Component.translatable("pf.message.command.assets.backup.success"), true);
 
 		return 1;
+	}
+
+	private static int runAutoJoinSet(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+		CommandSourceStack stack = context.getSource();
+
+		ServerPlayer player = EntityArgument.getPlayer(context, "player");
+
+		PFTemp.autoJoinPlayer = player.getUUID();
+
+		BFAbstractManager<?, ?, ?> manager = PFUtil.blockfrontManager();
+
+		AbstractGame<?, ?, ?> currentGame = manager.getPlayerGame(player);
+		if (currentGame != null) {
+			for (ServerPlayer otherPlayer : player.serverLevel().players()) {
+				PFUtil.forceJoinGame(manager, otherPlayer, currentGame);
+			}
+		}
+
+		stack.sendSuccess(() -> Component.translatable("pf.message.command.autojoin.set.success", player.getDisplayName()), true);
+
+		return 1;
+	}
+
+	private static int runAutoJoinClear(CommandContext<CommandSourceStack> context) {
+		CommandSourceStack stack = context.getSource();
+
+		PFTemp.autoJoinPlayer = null;
+
+		stack.sendSuccess(() -> Component.translatable("pf.message.command.autojoin.clear.success"), true);
+
+		return 1;
+	}
+
+	private static int runForceJoin(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+		CommandSourceStack stack = context.getSource();
+
+		BFAbstractManager<?, ?, ?> manager = PFUtil.blockfrontManager();
+
+		String gameName = StringArgumentType.getString(context, "game");
+
+		AbstractGame<?, ?, ?> game = manager.getGameByName(gameName);
+		if (game == null) {
+			//noinspection NoTranslation
+			stack.sendFailure(Component.translatable("bf.message.command.game.player.error.nogame", gameName));
+			return -1;
+		}
+
+		Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "players");
+
+		PlusFront.LOGGER.info("Force-joining {} players to game '{}'", players.size(), game.getName());
+
+		for (ServerPlayer player : players) {
+			PFUtil.forceJoinGame(manager, player, game);
+		}
+
+		return players.size();
 	}
 
 	private static int runFeatureList(CommandContext<CommandSourceStack> context) {

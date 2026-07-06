@@ -27,6 +27,8 @@ public abstract class BFWeaponItemMixin {
 		cancellable = true
 	)
 	private void customComponentHandling(ItemStack stack, Entity entity, CallbackInfo ci) {
+		ci.cancel();
+
 		stack.set(BFDataComponents.HAS_TAG, true);
 
 		if (!(entity instanceof Player player)) {
@@ -39,7 +41,5 @@ public abstract class BFWeaponItemMixin {
 		if (customStack != null) {
 			customStack.setComponents(stack);
 		}
-
-		ci.cancel();
 	}
 }

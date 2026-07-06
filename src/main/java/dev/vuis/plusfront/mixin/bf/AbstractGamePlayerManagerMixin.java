@@ -3,7 +3,7 @@ package dev.vuis.plusfront.mixin.bf;
 import com.boehmod.blockfront.common.BFAbstractManager;
 import com.boehmod.blockfront.game.AbstractGame;
 import com.boehmod.blockfront.game.AbstractGamePlayerManager;
-import dev.vuis.plusfront.PlusFront;
+import dev.vuis.plusfront.PFTemp;
 import dev.vuis.plusfront.compat.voicechat.PFVoicechat;
 import java.util.Set;
 import java.util.UUID;
@@ -40,7 +40,7 @@ public abstract class AbstractGamePlayerManagerMixin<G extends AbstractGame<G, ?
 		@NotNull Set<UUID> players,
 		CallbackInfo ci
 	) {
-		if (PlusFront.voicechatLoaded) {
+		if (PFTemp.voicechatLoaded) {
 			PFVoicechat.getInstance().addToDeadGroup(game.getUUID(), killedPlayer.getUUID());
 		}
 	}
@@ -55,7 +55,7 @@ public abstract class AbstractGamePlayerManagerMixin<G extends AbstractGame<G, ?
 		@NotNull ServerPlayer player,
 		CallbackInfo ci
 	) {
-		if (PlusFront.voicechatLoaded) {
+		if (PFTemp.voicechatLoaded) {
 			PFVoicechat.getInstance().removeFromGroup(player.getUUID());
 		}
 	}

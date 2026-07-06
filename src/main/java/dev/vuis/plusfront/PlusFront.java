@@ -14,11 +14,6 @@ public final class PlusFront {
 	public static final String MOD_ID = "pf";
 	public static final Logger LOGGER = LogManager.getLogger("PlusFront");
 
-	/**
-	 * A flag that stores if the voicechat plugin has been loaded.
-	 */
-	public static boolean voicechatLoaded = false;
-
 	public PlusFront(IEventBus modBus, ModContainer container) {
 		LOGGER.info("Registering attachment types...");
 		PFAttachmentTypes.register(modBus);

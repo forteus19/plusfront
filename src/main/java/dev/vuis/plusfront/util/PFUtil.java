@@ -4,6 +4,7 @@ import com.boehmod.blockfront.BlockFront;
 import com.boehmod.blockfront.common.BFAbstractManager;
 import com.boehmod.blockfront.common.player.BFAbstractPlayerData;
 import com.boehmod.blockfront.common.player.PlayerDataHandler;
+import com.boehmod.blockfront.game.AbstractGame;
 import com.boehmod.blockfront.game.GameTeam;
 import com.boehmod.blockfront.game.GameUtils;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
@@ -69,6 +70,20 @@ public final class PFUtil {
 
 	public static boolean isSameTeam(@Nullable GameTeam teamA, @Nullable GameTeam teamB) {
 		return teamA != null && teamB != null && teamA.getName().equals(teamB.getName());
+	}
+
+	public static void forceJoinGame(BFAbstractManager<?, ?, ?> manager, ServerPlayer player, AbstractGame<?, ?, ?> targetGame) {
+		AbstractGame<?, ?, ?> currentGame = manager.getPlayerGame(player);
+
+		if (currentGame == targetGame) {
+			return;
+		}
+
+		if (currentGame != null) {
+			currentGame.getPlayerManager().removePlayer(manager, player.serverLevel(), player);
+		}
+
+		manager.assignPlayerToGame(player.serverLevel(), player, targetGame);
 	}
 
 	public static SuggestionProvider<CommandSourceStack> suggestGames() {

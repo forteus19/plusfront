@@ -4,7 +4,7 @@ import com.boehmod.blockfront.game.GameStageContext;
 import com.boehmod.blockfront.game.impl.ttt.TroubleTownGame;
 import com.boehmod.blockfront.game.impl.ttt.TroubleTownPlayerManager;
 import com.boehmod.blockfront.game.impl.ttt.TroubleTownWaitingStage;
-import dev.vuis.plusfront.PlusFront;
+import dev.vuis.plusfront.PFTemp;
 import dev.vuis.plusfront.compat.voicechat.PFVoicechat;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +23,7 @@ public abstract class TroubleTownWaitingStageMixin {
 		@NotNull GameStageContext<TroubleTownGame, TroubleTownPlayerManager> context,
 		CallbackInfo ci
 	) {
-		if (PlusFront.voicechatLoaded) {
+		if (PFTemp.voicechatLoaded) {
 			PFVoicechat vc = PFVoicechat.getInstance();
 
 			for (UUID playerUuid : context.players()) {

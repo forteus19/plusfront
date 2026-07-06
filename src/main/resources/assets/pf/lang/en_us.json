@@ -24,6 +24,8 @@
   "pf.message.command.assets.backup.error.exists": "Target backup path already exists",
   "pf.message.command.assets.backup.error.generic": "Failed to backup assets",
   "pf.message.command.assets.backup.success": "Assets backed up successfully",
+  "pf.message.command.autojoin.clear.success": "Cleared auto-join player",
+  "pf.message.command.autojoin.set.success": "Set auto-join player to %s",
   "pf.message.command.feature.get.empty": "Feature flag \"%s\" has no value",
   "pf.message.command.feature.get.success": "Feature flag \"%s\": %s",
   "pf.message.command.feature.list.error": "Failed to get feature flags",

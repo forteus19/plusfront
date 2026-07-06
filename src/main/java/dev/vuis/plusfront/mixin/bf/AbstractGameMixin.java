@@ -1,7 +1,7 @@
 package dev.vuis.plusfront.mixin.bf;
 
 import com.boehmod.blockfront.game.AbstractGame;
-import dev.vuis.plusfront.PlusFront;
+import dev.vuis.plusfront.PFTemp;
 import dev.vuis.plusfront.compat.voicechat.PFVoicechat;
 import java.util.UUID;
 import net.minecraft.server.level.ServerLevel;
@@ -22,7 +22,7 @@ public abstract class AbstractGameMixin {
 		at = @At("TAIL")
 	)
 	private void handleVoicechat(ServerLevel level, CallbackInfo ci) {
-		if (PlusFront.voicechatLoaded) {
+		if (PFTemp.voicechatLoaded) {
 			PFVoicechat.getInstance().onGameEnd(getUUID());
 		}
 	}

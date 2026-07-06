@@ -12,6 +12,7 @@ import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.events.EventRegistration;
 import de.maxhenkel.voicechat.api.events.MicrophonePacketEvent;
 import de.maxhenkel.voicechat.api.events.VoicechatServerStartingEvent;
+import dev.vuis.plusfront.PFTemp;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.util.PFUtil;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -30,17 +31,17 @@ public final class PFVoicechat implements VoicechatPlugin {
 
 	public PFVoicechat() {
 		instance = this;
-		PlusFront.voicechatLoaded = true;
+		PFTemp.voicechatLoaded = true;
 
 		PlusFront.LOGGER.info("Voicechat plugin initialized!");
 	}
 
 	/**
-	 * Returns the current voicechat plugin instance. Check {@link PlusFront#voicechatLoaded} before calling.
+	 * Returns the current voicechat plugin instance. Check {@link PFTemp#voicechatLoaded} before calling.
 	 *
 	 * @return the voicechat plugin instance
 	 *
-	 * @see PlusFront#voicechatLoaded
+	 * @see PFTemp#voicechatLoaded
 	 */
 	public static PFVoicechat getInstance() {
 		if (instance == null) {
