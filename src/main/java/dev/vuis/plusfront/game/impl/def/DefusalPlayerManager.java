@@ -446,7 +446,15 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		GameUtils.resetPlayer(dataHandler, level, player);
 		GameUtils.unfreezePlayer(dataHandler, player);
 
-		if (game.getStageManager().getCurrentStage() instanceof DefusalGameStage) {
+		if (game.getStageManager().getCurrentStage() instanceof DefusalPreStage) {
+			GameTeam team = getPlayerTeam(player.getUUID());
+
+			if (team != null) {
+				GameUtils.teleportPlayer(dataHandler, player, team.randomSpawn(game));
+				GameUtils.giveClassLoadout(level, player, game, team);
+				player.containerMenu.broadcastChanges();
+			}
+		} else {
 			player.setGameMode(GameType.SPECTATOR);
 
 			BFPose spawnPos = lobbySpawn;
@@ -464,12 +472,6 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 
 			if (spawnPos != null) {
 				GameUtils.teleportPlayer(dataHandler, player, spawnPos);
-			}
-		} else {
-			GameTeam team = getPlayerTeam(player.getUUID());
-			if (team != null) {
-				GameUtils.teleportPlayer(dataHandler, player, team.randomSpawn(game));
-				player.containerMenu.sendAllDataToRemote();
 			}
 		}
 	}
