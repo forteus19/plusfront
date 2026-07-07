@@ -32,6 +32,7 @@
   ],
   "client": [
     "bf.client.AbstractGameClientMixin",
+    "bf.client.BFClientScreenSubscriberMixin",
     "bf.client.BFConsumableItemMixin",
     "bf.client.MatchGuiLayerMixin",
     "bf.client.PlayerCloudInventoryMixin",
