@@ -49,22 +49,31 @@ public final class PFArmory {
 
 		BfApi.fetchPlayerInventory(playerUuid).thenAccept(
 			inventory -> mainThreadExecutor.execute(() -> {
-				processFetchedInventory(weapons, extra, playerUuid, inventory);
-				if (onFinished != null) {
-					onFinished.run();
+				try {
+					PlusFront.LOGGER.info("Processing fetched inventory for {}", playerUuid);
+
+					processFetchedInventory(weapons, extra, inventory);
+
+					if (onFinished != null) {
+						onFinished.run();
+					}
+				} catch (Exception e) {
+					PlusFront.LOGGER.error("Error while processing player inventory", e);
 				}
 			})
+		).exceptionally(
+			e -> {
+				PlusFront.LOGGER.error("Error while fetching player inventory", e);
+				return null;
+			}
 		);
 	}
 
 	private static void processFetchedInventory(
 		Weapons weapons,
 		Extra extra,
-		UUID playerUuid,
 		BfApi.Inventory inventory
 	) {
-		PlusFront.LOGGER.info("Processing fetched inventory for {}", playerUuid);
-
 		weapons.clearWeapons();
 		extra.clearAll();
 
@@ -85,12 +94,24 @@ public final class PFArmory {
 
 					Item item = BuiltInRegistries.ITEM.get(minecraftId);
 
+					if (weapons.hasEquippedWeapon(item)) {
+						PlusFront.LOGGER.warn("Duplicate weapon {}", cloudItem.getDisplayName());
+					}
+
 					weapons.equipWeapon(item, new Weapons.Stack(cloudItem, stack.mint()));
 				}
 				case CARD -> {
+					if (extra.hasEquippedCard()) {
+						PlusFront.LOGGER.warn("Duplicate card {}", cloudItem.getDisplayName());
+					}
+
 					extra.equipCard((CloudItemCallingCard) cloudItem);
 				}
 				case COIN -> {
+					if (extra.hasEquippedCoin()) {
+						PlusFront.LOGGER.warn("Duplicate coin {}", cloudItem.getDisplayName());
+					}
+
 					extra.equipCoin((AbstractCloudItemCoin<?>) cloudItem);
 				}
 			}
@@ -121,8 +142,12 @@ public final class PFArmory {
 			return equippedWeapons;
 		}
 
-		public @Nullable PFArmory.Weapons.Stack getEquippedWeapon(Item itemHolder) {
-			return equippedWeapons.get(itemHolder);
+		public @Nullable PFArmory.Weapons.Stack getEquippedWeapon(Item item) {
+			return equippedWeapons.get(item);
+		}
+
+		public boolean hasEquippedWeapon(Item item) {
+			return equippedWeapons.containsKey(item);
 		}
 
 		public void equipWeapon(Item item, Stack customStack) {
@@ -266,6 +291,10 @@ public final class PFArmory {
 			return Optional.ofNullable(equippedCard);
 		}
 
+		public boolean hasEquippedCard() {
+			return equippedCard != null;
+		}
+
 		private void updateCardStack() {
 			if (equippedCard == null || (cachedCardStack != null && equippedCard.getId() == cachedCardStack.getItemId())) {
 				return;
@@ -290,6 +319,10 @@ public final class PFArmory {
 
 		public Optional<AbstractCloudItemCoin<?>> getEquippedCoin() {
 			return Optional.ofNullable(equippedCoin);
+		}
+
+		public boolean hasEquippedCoin() {
+			return equippedCoin != null;
 		}
 
 		private void updateCoinStack() {

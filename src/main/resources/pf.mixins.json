@@ -10,6 +10,7 @@
     "bf.AbstractGameMixin",
     "bf.AbstractGamePlayerManagerMixin",
     "bf.BFAbstractManagerMixin",
+    "bf.BFLivingDamageSubscriberMixin",
     "bf.BFPopupStatMixin",
     "bf.BFUpdaterMixin",
     "bf.BFWeaponItemMixin",

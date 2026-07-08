@@ -4640,7 +4640,9 @@ c	com/boehmod/blockfront/common/player/b	com/boehmod/blockfront/common/player/b	
 		p	3			player
 		p	4			game
 	m	(Lcom/boehmod/blockfront/ju;Lnet/minecraft/world/level/Level;Z)V	a	method_839	method_839
-	m	(Ljava/util/UUID;F)V	a	method_840	method_840
+	m	(Ljava/util/UUID;F)V	a	method_840	addPlayerDamage
+		p	1			player
+		p	2			damage
 	m	(Ljava/util/UUID;J)V	a	method_6982	method_6982
 	m	(Lnet/minecraft/world/level/Level;Lnet/minecraft/server/level/ServerPlayer;)V	a	method_841	updateServer
 		p	1			level
@@ -13779,7 +13781,9 @@ c	com/boehmod/blockfront/oL	com/boehmod/blockfront/unnamed/BF_684	com/boehmod/bl
 	m	(Lcom/boehmod/blockfront/ju;Lcom/boehmod/blockfront/common/player/c;Lcom/boehmod/blockfront/pp;Lnet/minecraft/world/entity/Entity;)V	a	method_7278	method_7278
 	m	(Lcom/boehmod/blockfront/ju;Lcom/boehmod/blockfront/common/player/c;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/world/entity/Entity;Ljava/util/Set;)V	a	method_2803	method_2803
 	m	(Lcom/boehmod/blockfront/ju;Lcom/boehmod/blockfront/common/player/c;Lnet/minecraft/world/damagesource/DamageSource;Lnet/minecraft/server/level/ServerPlayer;Ljava/util/UUID;Lnet/minecraft/world/entity/LivingEntity;Ljava/util/Set;)V	a	method_2804	method_2804
-	m	(Lcom/boehmod/blockfront/ju;Lcom/boehmod/blockfront/common/player/c;Lnet/minecraft/world/entity/LivingEntity;Lcom/boehmod/blockfront/pp;Lnet/minecraft/world/entity/Entity;)V	a	method_2805	method_2805
+	m	(Lcom/boehmod/blockfront/ju;Lcom/boehmod/blockfront/common/player/c;Lnet/minecraft/world/entity/LivingEntity;Lcom/boehmod/blockfront/pp;Lnet/minecraft/world/entity/Entity;)V	a	method_2805	addAssistSections
+		p	1			manager
+		p	2			dataHandler
 	m	(Lcom/boehmod/blockfront/ju;Lcom/boehmod/blockfront/common/player/c;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/damagesource/DamageSource;ZZ)V	a	method_2806	addKillFeedEntry
 		p	1			manager
 		p	2			dataHandler

@@ -523,6 +523,13 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		return true;
 	}
 
+	public boolean shouldAddAssistDamage(@NotNull UUID sourceUuid, @NotNull UUID targetUuid) {
+		GameTeam sourceTeam = getPlayerTeam(sourceUuid);
+		GameTeam targetTeam = getPlayerTeam(targetUuid);
+
+		return !PFUtil.isSameTeam(sourceTeam, targetTeam);
+	}
+
 	@Override
 	public boolean isAcceptingPlayers() {
 		return true;
