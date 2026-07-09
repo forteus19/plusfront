@@ -1,5 +1,7 @@
 package dev.vuis.plusfront.event;
 
+import com.boehmod.blockfront.common.net.packet.BFExplosionPacket;
+import com.boehmod.blockfront.common.world.ExplosionType;
 import com.mojang.brigadier.CommandDispatcher;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.command.PFCommand;
@@ -11,15 +13,19 @@ import dev.vuis.plusfront.registry.PFAttachmentTypes;
 import dev.vuis.plusfront.server.config.PFServerConfig;
 import dev.vuis.plusfront.util.PFUtil;
 import dev.vuis.plusfront.util.index.ItemIndex;
+import dev.vuis.plusfront.world.BombDamageSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
@@ -36,6 +42,17 @@ public final class PFCommonEvents {
 		PlusFront.LOGGER.info("Doing common setup...");
 
 		ItemIndex.init();
+	}
+
+	@SubscribeEvent
+	public static void onLivingDeath(LivingDeathEvent event) {
+		Entity entity = event.getEntity();
+
+		if (!entity.level().isClientSide() && event.getSource() instanceof BombDamageSource) {
+			PacketDistributor.sendToAllPlayers(
+				new BFExplosionPacket(ExplosionType.GORE_EXPLOSION, entity.getEyePosition())
+			);
+		}
 	}
 
 	@SubscribeEvent

@@ -3,7 +3,6 @@ package dev.vuis.plusfront.game.impl.def;
 import com.boehmod.bflib.cloud.common.ChatGraphic;
 import com.boehmod.bflib.cloud.packet.IPacket;
 import com.boehmod.blockfront.common.BFAbstractManager;
-import com.boehmod.blockfront.common.entity.BombEntity;
 import com.boehmod.blockfront.common.player.BFAbstractPlayerData;
 import com.boehmod.blockfront.common.player.PlayerDataHandler;
 import com.boehmod.blockfront.common.stat.BFStats;
@@ -19,6 +18,7 @@ import com.boehmod.blockfront.util.RandomUtils;
 import com.boehmod.blockfront.util.math.BFPose;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.util.PFUtil;
+import dev.vuis.plusfront.world.BombDamageSource;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.IOException;
@@ -304,6 +304,14 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		@NotNull DamageSource source,
 		@NotNull Set<UUID> players
 	) {
+		if (!game.isRoundInProgress()) {
+			return;
+		}
+
+		if (isBombHolder(killedUuid)) {
+			onBombDrop(killedPlayer);
+		}
+
 		if (sourcePlayer != null &&
 			sourceUuid != null &&
 			!killedUuid.equals(sourceUuid) &&
@@ -329,14 +337,10 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		if (sourceUuid != null && !sourceUuid.equals(killedUuid)) {
 			GameUtils.incrementPlayerStat(manager, game, sourceUuid, BFStats.SCORE);
 		}
-
-		if (isBombHolder(killedUuid)) {
-			onBombDrop(killedPlayer);
-		}
 	}
 
 	private boolean isFriendlyKill(UUID killedUuid, UUID sourceUuid, DamageSource source) {
-		if (!game.isRoundInProgress() || source.getEntity() instanceof BombEntity) {
+		if (source instanceof BombDamageSource) {
 			return false;
 		}
 

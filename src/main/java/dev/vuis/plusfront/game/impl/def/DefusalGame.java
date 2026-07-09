@@ -13,7 +13,6 @@ import com.boehmod.blockfront.common.net.packet.BFRegularPingPacket;
 import com.boehmod.blockfront.common.net.packet.BFRegularPingTriggerPacket;
 import com.boehmod.blockfront.common.player.PlayerDataHandler;
 import com.boehmod.blockfront.common.stat.BFStats;
-import com.boehmod.blockfront.common.world.damage.GrenadeDamageSource;
 import com.boehmod.blockfront.game.AbstractGame;
 import com.boehmod.blockfront.game.AbstractGameClient;
 import com.boehmod.blockfront.game.AbstractGameStage;
@@ -44,6 +43,7 @@ import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.data.PFDefusalData;
 import dev.vuis.plusfront.ex.TeamDeathmatchCodecEx;
 import dev.vuis.plusfront.util.PFUtil;
+import dev.vuis.plusfront.world.BombDamageSource;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.IOException;
@@ -62,7 +62,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -514,11 +513,9 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	private void doBombExplosion(BombEntity bomb, Level level) {
 		Vec3 bombPosition = bomb.position();
 
-		DamageSource damageSource = new GrenadeDamageSource(
+		BombDamageSource damageSource = new BombDamageSource(
 			level,
-			playerManager.getBombPlanter(),
-			new ItemStack(BFItems.BOMB.value()),
-			bombPosition
+			playerManager.getBombPlanter()
 		);
 
 		Explosion explosion = new Explosion(
@@ -617,7 +614,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 		BombEntity bomb = new BombEntity(BFEntityTypes.BOMB.value(), level);
 		bomb.setGame(this);
-		bomb.setPos(player.position());
+		bomb.moveTo(player.position(), player.getYRot(), 0f);
 
 		level.addFreshEntity(bomb);
 
