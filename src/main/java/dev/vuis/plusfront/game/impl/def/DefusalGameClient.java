@@ -26,13 +26,13 @@ import com.boehmod.blockfront.util.BFRes;
 import com.boehmod.blockfront.util.BFStyles;
 import com.boehmod.blockfront.util.CollisionUtils;
 import com.boehmod.blockfront.util.PacketUtils;
-import com.boehmod.blockfront.util.StringUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.client.def.DefusalTeamGameElement;
 import dev.vuis.plusfront.client.def.DefusalTimeGameElement;
 import dev.vuis.plusfront.client.render.PFGuiRenderUtil;
+import dev.vuis.plusfront.game.ScoreboardFormats;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.IOException;
@@ -425,11 +425,12 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	@Override
 	public @NotNull Scoreboard getScoreboard() {
 		return new Scoreboard()
-			.column("PING", (data, info, tag) -> info != null ? StringUtils.formatLong(info.getLatency()) : "???")
-			.column("K", (data, info, tag) -> StringUtils.formatLong(tag.getInt(BFStats.KILLS.getKey())))
-			.column("A", (data, info, tag) -> StringUtils.formatLong(tag.getInt(BFStats.ASSISTS.getKey())))
-			.column("D", (data, info, tag) -> StringUtils.formatLong(tag.getInt(BFStats.DEATHS.getKey())))
-			.column("SCORE", (data, info, tag) -> StringUtils.formatLong(tag.getInt(BFStats.SCORE.getKey())));
+			.column("PING", ScoreboardFormats.ping())
+			.column("K", ScoreboardFormats.tagInt(BFStats.KILLS))
+			.column("D", ScoreboardFormats.tagInt(BFStats.DEATHS))
+			.column("A", ScoreboardFormats.tagInt(BFStats.ASSISTS))
+			.column("HS%", ScoreboardFormats.tagPercent(BFStats.HEAD_SHOTS, BFStats.KILLS))
+			.column("SCORE", ScoreboardFormats.tagInt(BFStats.SCORE));
 	}
 
 	@Override
