@@ -639,7 +639,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 				position.x, position.y, position.z,
 				BFSounds.ITEM_BOMB_PLANT.value(),
 				SoundSource.NEUTRAL,
-				1.75f, 0.75f
+				1.75f, 1f
 			);
 			level.playSound(
 				player,
@@ -654,7 +654,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 				position.x, position.y, position.z,
 				SoundEvents.ENDER_DRAGON_FLAP,
 				SoundSource.NEUTRAL,
-				1.75f, 1.5f
+				1.75f, 2f
 			);
 		}
 	}

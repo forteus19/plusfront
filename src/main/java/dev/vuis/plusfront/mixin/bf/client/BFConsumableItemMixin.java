@@ -8,6 +8,7 @@ import net.minecraft.client.MouseHandler;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -42,7 +43,7 @@ public abstract class BFConsumableItemMixin {
 	)
 	private void addStartListener(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected, CallbackInfo ci) {
 		if (ticksUntilAction == 0) {
-			PFStartConsumablePayload.sendToServer();
+			PacketDistributor.sendToServer(PFStartConsumablePayload.INSTANCE);
 		}
 	}
 }

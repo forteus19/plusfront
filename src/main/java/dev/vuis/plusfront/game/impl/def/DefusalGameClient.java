@@ -32,6 +32,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.client.def.DefusalTeamGameElement;
 import dev.vuis.plusfront.client.def.DefusalTimeGameElement;
+import dev.vuis.plusfront.client.render.PFGuiRenderUtil;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.IOException;
@@ -44,6 +45,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.PlayerFaceRenderer;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
@@ -66,12 +68,11 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderNameTagEvent;
 import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class DefusalGameClient extends AbstractGameClient<DefusalGame, DefusalPlayerManager> implements IAllowsPingsClient {
-	private static final Component CT_LABEL =
-		Component.literal("CT").withStyle(DefusalPlayerManager.CT_STYLE);
-	private static final Component T_LABEL =
-		Component.literal("T").withStyle(DefusalPlayerManager.T_STYLE);
+	private static final Component CT_LABEL = Component.literal("CT").withStyle(DefusalPlayerManager.CT_STYLE);
+	private static final Component T_LABEL = Component.literal("T").withStyle(DefusalPlayerManager.T_STYLE);
 
 	private static final Component BOMB_PLANT_REMINDER =
 		Component.translatable("pf.message.gamemode.notification.bomb.reminder").withStyle(DefusalPlayerManager.T_STYLE);
@@ -285,7 +286,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 
 			if (bombItem != null) {
 				renderBombItemWaypoint(
-					graphics, minecraft.gameRenderer.getMainCamera(), width, height, partialTick,
+					poseStack, minecraft.gameRenderer.getMainCamera(), width, height, partialTick,
 					bombItem.getPosition(partialTick).add(0.0, 0.5, 0.0)
 				);
 			}
@@ -302,16 +303,16 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		}
 
 		graphics.drawString(font, CT_LABEL, 12 - font.width(CT_LABEL) / 2, playerHeadsY + 4, 0xFFFFFFFF, true);
-		renderPlayerHeadList(minecraft, connection, manager, graphics, playerManager, ctTeam.getPlayers(), 20, playerHeadsY, false);
+		renderPlayerHeadList(connection, playerManager, ctTeam.getPlayers(), graphics, 20, playerHeadsY, false);
 
 		playerHeadsY += 17;
 
 		graphics.drawString(font, T_LABEL, 12 - font.width(T_LABEL) / 2, playerHeadsY + 4, 0xFFFFFFFF, true);
-		renderPlayerHeadList(minecraft, connection, manager, graphics, playerManager, tTeam.getPlayers(), 20, playerHeadsY, isTerrorist);
+		renderPlayerHeadList(connection, playerManager, tTeam.getPlayers(), graphics, 20, playerHeadsY, isTerrorist);
 	}
 
 	private void renderBombItemWaypoint(
-		GuiGraphics graphics,
+		PoseStack poseStack,
 		Camera camera,
 		int width,
 		int height,
@@ -320,21 +321,19 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	) {
 		BFRendering.ScreenClampData screenClampData = BFRendering.screenClamp(bombPosition, camera, width, height, 32, partialTick);
 
-		graphics.blit(
+		PFGuiRenderUtil.centeredTexture(
+			poseStack,
 			bombItemBlinkTimer < 10 ? BOMB_TEXTURE : BOMB_BLINK_TEXTURE,
-			(int) (screenClampData.screenX() - 16f), (int) (screenClampData.screenY() - 8f),
-			0f, 0f,
-			32, 16, 32, 16
+			screenClampData.screenX(), screenClampData.screenY(),
+			32f, 16f
 		);
 	}
 
 	private void renderPlayerHeadList(
-		Minecraft minecraft,
 		ClientPacketListener connection,
-		BFClientManager manager,
-		GuiGraphics graphics,
 		DefusalPlayerManager playerManager,
 		Set<UUID> players,
+		GuiGraphics graphics,
 		int x,
 		int y,
 		boolean showBombIndicator
@@ -357,14 +356,8 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 
 		for (UUID playerUuid : players) {
 			PlayerInfo playerInfo = connection.getPlayerInfo(playerUuid);
-			if (playerInfo == null) {
-				headX += 12;
-				continue;
-			}
 
-			BFClientPlayerData playerData = dataHandler.getPlayerData(playerUuid);
-
-			if (playerData.isOutOfGame() || playerInfo.getGameMode() == GameType.SPECTATOR) {
+			if (shouldShowPlayerDead(playerInfo, playerUuid)) {
 				graphics.blit(
 					DEAD_TEXTURE,
 					headX, headY, 11, 11,
@@ -372,19 +365,10 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 					8, 8, 8, 8
 				);
 			} else {
-				ResourceLocation skinTexture = BFRendering.getSkinTexture(minecraft, manager, playerUuid);
-
-				graphics.blit(
-					skinTexture,
-					headX, headY, 11, 11,
-					8f, 8f,
-					8, 8, 64, 64
-				);
-				graphics.blit(
-					skinTexture,
-					headX, headY, 11, 11,
-					40f, 8f,
-					8, 8, 64, 64
+				PlayerFaceRenderer.draw(
+					graphics,
+					playerInfo.getSkin(),
+					headX, headY, 11
 				);
 
 				if (showBombIndicator && playerManager.isBombHolder(playerUuid)) {
@@ -401,6 +385,15 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 
 			headX += 12;
 		}
+	}
+
+	private boolean shouldShowPlayerDead(@Nullable PlayerInfo playerInfo, @NotNull UUID playerUuid) {
+		if (playerInfo == null || playerInfo.getGameMode() == GameType.SPECTATOR) {
+			return true;
+		}
+
+		BFClientPlayerData playerData = dataHandler.getPlayerData(playerUuid);
+		return playerData.isOutOfGame();
 	}
 
 	@Override

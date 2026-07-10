@@ -7,7 +7,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import org.jetbrains.annotations.NotNull;
@@ -28,10 +27,6 @@ public final class PFStartConsumablePayload implements CustomPacketPayload {
 
 	public static void register(PayloadRegistrar registrar) {
 		registrar.playToServer(TYPE, STREAM_CODEC, PFStartConsumablePayload::handleServer);
-	}
-
-	public static void sendToServer() {
-		PacketDistributor.sendToServer(INSTANCE);
 	}
 
 	private void handleServer(IPayloadContext context) {
