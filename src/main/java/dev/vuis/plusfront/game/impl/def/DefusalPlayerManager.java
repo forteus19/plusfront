@@ -7,7 +7,6 @@ import com.boehmod.blockfront.common.player.BFAbstractPlayerData;
 import com.boehmod.blockfront.common.player.PlayerDataHandler;
 import com.boehmod.blockfront.common.stat.BFStats;
 import com.boehmod.blockfront.game.AbstractGamePlayerManager;
-import com.boehmod.blockfront.game.AbstractGameStage;
 import com.boehmod.blockfront.game.GameStageTimer;
 import com.boehmod.blockfront.game.GameTeam;
 import com.boehmod.blockfront.game.GameUtils;
@@ -85,7 +84,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		bombPlanter = uuid;
 	}
 
-	public void onGameStageEnd() {
+	public void onRoundFinished() {
 		clearBombHolder();
 		setBombPlanter(null);
 	}
@@ -94,7 +93,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	public void reset() {
 		super.reset();
 
-		onGameStageEnd();
+		onRoundFinished();
 	}
 
 	@Override
@@ -450,7 +449,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		GameUtils.resetPlayer(dataHandler, level, player);
 		GameUtils.unfreezePlayer(dataHandler, player);
 
-		if (game.getStageManager().getCurrentStage() instanceof DefusalPreStage) {
+		if (game.isPreStage()) {
 			GameTeam team = getPlayerTeam(player.getUUID());
 
 			if (team != null) {
@@ -492,15 +491,8 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 			return source.is(DamageTypeTags.IS_EXPLOSION) || source.is(DamageTypeTags.IS_FIRE);
 		}
 
-		AbstractGameStage<?, ?> currentStage = game.getStageManager().getCurrentStage();
-
-		if (currentStage instanceof DefusalGameStage gameStage) {
-			if (gameStage.isFinished) {
-				return true;
-			}
-
-			GameStageTimer timer = gameStage.getStageTimer(game);
-
+		if (game.isRoundInProgress()) {
+			GameStageTimer timer = game.getInProgressTimer();
 			if (timer == null) {
 				return true;
 			}
@@ -515,7 +507,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 			}
 		}
 
-		if (currentStage instanceof DefusalWaitingStage) {
+		if (game.isRoundWaiting()) {
 			return false;
 		}
 

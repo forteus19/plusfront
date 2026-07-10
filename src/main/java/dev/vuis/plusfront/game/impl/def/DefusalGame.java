@@ -18,6 +18,7 @@ import com.boehmod.blockfront.game.AbstractGameClient;
 import com.boehmod.blockfront.game.AbstractGameStage;
 import com.boehmod.blockfront.game.GameBoundary;
 import com.boehmod.blockfront.game.GameStageManager;
+import com.boehmod.blockfront.game.GameStageTimer;
 import com.boehmod.blockfront.game.GameTeam;
 import com.boehmod.blockfront.game.GameTypeCodec;
 import com.boehmod.blockfront.game.GameUtils;
@@ -238,17 +239,36 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		stageManager.update(manager, dataHandler, level);
 	}
 
+	public boolean isPreStage() {
+		return stageManager.getCurrentStage().getClass() == DefusalPreStage.class;
+	}
+
+	public boolean isRoundWaiting() {
+		return stageManager.getCurrentStage().getClass() == DefusalWaitingStage.class;
+	}
+
 	public boolean isRoundInProgress() {
-		return stageManager.getCurrentStage() instanceof DefusalGameStage gameStage && !gameStage.isFinished;
+		return stageManager.getCurrentStage().getClass() == DefusalGameStage.class;
+	}
+
+	public @Nullable GameStageTimer getInProgressTimer() {
+		if (isRoundInProgress()) {
+			return ((DefusalGameStage) stageManager.getCurrentStage()).getStageTimer(this);
+		} else {
+			return null;
+		}
 	}
 
 	public boolean isRoundFinished() {
-		return stageManager.getCurrentStage() instanceof DefusalGameStage gameStage && gameStage.isFinished;
+		return stageManager.getCurrentStage().getClass() == DefusalFinishedStage.class;
 	}
 
-	public void finishRound() {
-		if (stageManager.getCurrentStage() instanceof DefusalGameStage gameStage) {
-			gameStage.isFinished = true;
+	public boolean finishRound() {
+		if (isRoundInProgress()) {
+			stageManager.forceAdvance();
+			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -273,7 +293,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	@Override
 	public void specificReset(@Nullable Level level) {
-		onGameStageEnd();
+		onRoundFinished();
 	}
 
 	@Override
@@ -364,7 +384,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	@Override
 	public @NotNull SpectatorScope getSpectatorScope() {
-		return SpectatorScope.SAME_TEAM;
+		return (isRoundInProgress() || isRoundWaiting()) ? SpectatorScope.SAME_TEAM : SpectatorScope.ANYONE;
 	}
 
 	@Override
@@ -385,8 +405,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 			return false;
 		}
 
-		AbstractGameStage<?, ?> currentStage = stageManager.getCurrentStage();
-		if (currentStage instanceof DefusalWaitingStage || (currentStage instanceof DefusalGameStage gameStage && !gameStage.isFinished)) {
+		if (isRoundWaiting() || isRoundInProgress()) {
 			return (!isSenderUnavailable && !isTeamMessage) || senderTeam == receivingTeam;
 		} else {
 			return !isTeamMessage || senderTeam == receivingTeam;
@@ -658,10 +677,9 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	 * @param ctWin {@code true} if the Counter-Terrorists won, {@code false} if the Terrorists won
 	 */
 	public void onRoundWin(Set<UUID> players, boolean ctWin) {
-		if (!isRoundInProgress()) {
+		if (!finishRound()) {
 			return;
 		}
-		finishRound();
 
 		GameTeam ctTeam = playerManager.getTeamByName(DefusalPlayerManager.CT_NAME);
 		assert ctTeam != null;
@@ -701,10 +719,9 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	 * @param players all players in the match
 	 */
 	public void onRoundDraw(Set<UUID> players) {
-		if (!isRoundInProgress()) {
+		if (!finishRound()) {
 			return;
 		}
-		finishRound();
 
 		GameUtils.sendNotification(
 			players,
@@ -721,7 +738,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		);
 	}
 
-	public void onGameStageEnd() {
+	public void onRoundFinished() {
 		clearBombPlanted();
 		clearBombItem();
 	}

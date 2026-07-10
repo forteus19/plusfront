@@ -17,9 +17,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class DefusalWaitingStage extends AbstractGameStage<DefusalGame, DefusalPlayerManager> implements TimedStage<DefusalGame, DefusalPlayerManager> {
+public final class DefusalWaitingStage extends AbstractGameStage<DefusalGame, DefusalPlayerManager> implements TimedStage<DefusalGame, DefusalPlayerManager> {
 	private final GameStageTimer timer = new GameStageTimer(0, 5).warningTime(5);
 
 	@Override
@@ -100,7 +99,7 @@ public class DefusalWaitingStage extends AbstractGameStage<DefusalGame, DefusalP
 	}
 
 	@Override
-	public @Nullable GameStageTimer getStageTimer(@NotNull DefusalGame game) {
+	public @NotNull GameStageTimer getStageTimer(@NotNull DefusalGame game) {
 		return timer;
 	}
 }

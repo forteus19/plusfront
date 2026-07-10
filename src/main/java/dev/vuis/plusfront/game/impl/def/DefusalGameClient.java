@@ -419,9 +419,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 
 	@Override
 	public boolean canChangePerspective(@NotNull Player player) {
-		return game.getStatus() != GameStatus.GAME
-			|| game.getStageManager().getCurrentStage().getClass() == DefusalWaitingStage.class
-			|| player.getVehicle() != null;
+		return game.getStatus() != GameStatus.GAME || player.getVehicle() != null;
 	}
 
 	@Override

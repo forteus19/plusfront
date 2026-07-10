@@ -9,7 +9,7 @@ import com.boehmod.blockfront.util.PacketUtils;
 import dev.vuis.plusfront.net.payload.PFStopMusicPayload;
 import org.jetbrains.annotations.NotNull;
 
-public class DefusalPreStage extends PreGameStage<DefusalGame, DefusalPlayerManager> {
+public final class DefusalPreStage extends PreGameStage<DefusalGame, DefusalPlayerManager> {
 	public DefusalPreStage() {
 		super(20);
 	}

@@ -7,22 +7,24 @@ import com.boehmod.blockfront.game.GameStatus;
 import com.boehmod.blockfront.game.GameUtils;
 import com.boehmod.blockfront.game.TimedStage;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public final class DefusalGameStage extends AbstractGameStage<DefusalGame, DefusalPlayerManager> implements TimedStage<DefusalGame, DefusalPlayerManager> {
-	private final GameStageTimer timer = new GameStageTimer(1, 50).warningTime(15);
+public final class DefusalFinishedStage extends AbstractGameStage<DefusalGame, DefusalPlayerManager> implements TimedStage<DefusalGame, DefusalPlayerManager> {
+	private final GameStageTimer timer = new GameStageTimer(0, 8);
 
 	@Override
-	public void onStageStart(@NotNull GameStageContext<DefusalGame, DefusalPlayerManager> context) {
-		GameUtils.unfreezePlayers(context.playerDataHandler(), context.players());
+	public void onStageEnd(@NotNull GameStageContext<DefusalGame, DefusalPlayerManager> context) {
+		DefusalGame game = context.game();
+		DefusalPlayerManager playerManager = context.playerHandler();
+
+		GameUtils.discardMatchEntities(context.serverLevel(), game, playerManager);
+
+		game.onRoundFinished();
+		playerManager.onRoundFinished();
 	}
 
 	@Override
 	public void onSecond(@NotNull GameStageContext<DefusalGame, DefusalPlayerManager> context) {
-		GameStageTimer currentTimer = getStageTimer(context.game());
-		if (currentTimer != null) {
-			currentTimer.update(context.players());
-		}
+		timer.update(context.players());
 	}
 
 	@Override
@@ -32,7 +34,7 @@ public final class DefusalGameStage extends AbstractGameStage<DefusalGame, Defus
 
 	@Override
 	public @NotNull AbstractGameStage<DefusalGame, DefusalPlayerManager> createNextStage(@NotNull DefusalGame game) {
-		return game.getPlayerManager().getWinningTeam() == null ? new DefusalFinishedStage() : new DefusalPostStage();
+		return new DefusalWaitingStage();
 	}
 
 	@Override
@@ -41,7 +43,7 @@ public final class DefusalGameStage extends AbstractGameStage<DefusalGame, Defus
 	}
 
 	@Override
-	public @Nullable GameStageTimer getStageTimer(@NotNull DefusalGame game) {
-		return game.isBombPlanted() ? null : timer;
+	public @NotNull GameStageTimer getStageTimer(@NotNull DefusalGame game) {
+		return timer;
 	}
 }
