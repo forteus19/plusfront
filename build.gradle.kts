@@ -17,14 +17,14 @@ val minecraftVersion = "1.21.1"
 val parchmentMappingsVersion = "2024.11.17"
 val parchmentMinecraftVersion = "1.21.1"
 
-val blockfrontVersion = "0.9.0.13b"
-val blockfrontModrinthVersion = "HTLp5q91"
+val blockfrontVersion = "0.9.0.14b"
+val blockfrontModrinthVersion = "yh1JlKob"
 
 val geckolibVersion = "4.7.3"
 val veilVersion = "4.3.0"
 val voicechatApiVersion = "2.6.20"
 
-val blockfrontOriginal by configurations.creating
+val blockfrontOriginal = configurations.create("blockfrontOriginal")
 
 repositories {
     mavenCentral()
