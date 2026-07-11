@@ -27,7 +27,7 @@ public final class DefusalGameStage extends AbstractGameStage<DefusalGame, Defus
 
 	@Override
 	public boolean canAdvanceStage(@NotNull GameStageContext<DefusalGame, DefusalPlayerManager> context) {
-		return timer.isDone();
+		return timer.isDone() && !context.game().isBombPlanted();
 	}
 
 	@Override

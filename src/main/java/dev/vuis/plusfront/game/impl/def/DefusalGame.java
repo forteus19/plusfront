@@ -77,7 +77,16 @@ import static dev.vuis.plusfront.util.AssetCommandUtil.executor;
 import static dev.vuis.plusfront.util.AssetCommandUtil.executorPlayers;
 
 public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerManager, GameStageManager<DefusalGame, DefusalPlayerManager>>
-	implements IAllowsCallouts<DefusalGame>, IAllowsPings, IAllowsSoundboard, ICanSwitchTeams, IHasBombs, IHasClasses, IHasConsumables, IHasDominations, IUseKillIcons {
+	implements
+	IAllowsCallouts<DefusalGame>,
+	IAllowsPings,
+	IAllowsSoundboard,
+	ICanSwitchTeams,
+	IHasBombs,
+	IHasClasses,
+	IHasConsumables,
+	IHasDominations,
+	IUseKillIcons {
 
 	public static final int SCORE_TO_WIN = 10;
 
@@ -184,6 +193,10 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		return null;
 	}
 
+	public boolean isBombPlanted() {
+		return isBombPlanted;
+	}
+
 	public @Nullable ItemEntity getBombItem(Level level) {
 		if (bombItemId != null) {
 			Entity entity = level.getEntity(bombItemId);
@@ -208,10 +221,6 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		} else {
 			bombItemId = null;
 		}
-	}
-
-	public void clearBombItem() {
-		bombItemId = null;
 	}
 
 	@Override
@@ -266,10 +275,15 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	public boolean finishRound() {
 		if (isRoundInProgress()) {
 			stageManager.forceAdvance();
+			playerManager.preventEliminationWins();
 			return true;
 		} else {
 			return false;
 		}
+	}
+
+	public boolean isPostStage() {
+		return stageManager.getCurrentStage().getClass() == DefusalPostStage.class;
 	}
 
 	@Override
@@ -487,12 +501,11 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	@Override
 	public @Nullable Component getSwitchTeamMessage(@NotNull ServerPlayer player) {
-		GameTeam ctTeam = playerManager.getTeamByName(DefusalPlayerManager.CT_NAME);
-		assert ctTeam != null;
-		GameTeam tTeam = playerManager.getTeamByName(DefusalPlayerManager.T_NAME);
-		assert tTeam != null;
-
-		return getSwitchTeamMessage(player, tTeam.numPlayers(), ctTeam.numPlayers());
+		return getSwitchTeamMessage(
+			player,
+			playerManager.terrorists().numPlayers(),
+			playerManager.counterTerrorists().numPlayers()
+		);
 	}
 
 	@Override
@@ -511,19 +524,11 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		return 0;
 	}
 
-	public boolean isBombPlanted() {
-		return isBombPlanted;
-	}
-
-	public void clearBombPlanted() {
-		isBombPlanted = false;
-	}
-
 	@Override
 	public void onBombExplode(@NotNull BombEntity bomb, @NotNull Level level) {
 		doBombExplosion(bomb, level);
 
-		clearBombPlanted();
+		isBombPlanted = false;
 		playerManager.setBombPlanter(null);
 
 		onRoundWin(playerManager.getPlayers(), false);
@@ -590,7 +595,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	@Override
 	public boolean canPlantBomb(@NotNull Level level, @NotNull Player player) {
-		if (isBombPlanted) {
+		if (isBombPlanted || isPostStage()) {
 			return false;
 		}
 
@@ -674,20 +679,18 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	 * Called when a team wins the current round. Marks the current round as finished, and does nothing if a round is not in progress.
 	 *
 	 * @param players all players in the match
-	 * @param ctWin {@code true} if the Counter-Terrorists won, {@code false} if the Terrorists won
+	 * @param ctWin   {@code true} if the Counter-Terrorists won, {@code false} if the Terrorists won
 	 */
 	public void onRoundWin(Set<UUID> players, boolean ctWin) {
 		if (!finishRound()) {
 			return;
 		}
 
-		GameTeam ctTeam = playerManager.getTeamByName(DefusalPlayerManager.CT_NAME);
-		assert ctTeam != null;
-		GameTeam tTeam = playerManager.getTeamByName(DefusalPlayerManager.T_NAME);
-		assert tTeam != null;
+		GameTeam counterTerrorists = playerManager.counterTerrorists();
+		GameTeam terrorists = playerManager.terrorists();
 
-		GameTeam winningTeam = ctWin ? ctTeam : tTeam;
-		GameTeam losingTeam = ctWin ? tTeam : ctTeam;
+		GameTeam winningTeam = ctWin ? counterTerrorists : terrorists;
+		GameTeam losingTeam = ctWin ? terrorists : counterTerrorists;
 
 		winningTeam.putStatInt(BFStats.SCORE, winningTeam.getStatInt(BFStats.SCORE) + 1);
 
@@ -739,8 +742,8 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	}
 
 	public void onRoundFinished() {
-		clearBombPlanted();
-		clearBombItem();
+		isBombPlanted = false;
+		bombItemId = null;
 	}
 
 	@Override
@@ -789,11 +792,12 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	@Override
 	public boolean canUseConsumable(@NotNull Level level, @NotNull Player player, @NotNull BFConsumableItem item, @NotNull ItemStack stack) {
-		return true;
+		return item == BFItems.BOMB_DEFUSE_KIT.value() || item == BFItems.BOMB.value();
 	}
 
 	@Override
 	public void onUseConsumable(@NotNull ServerLevel level, @NotNull Player player, @NotNull BFConsumableItem item, @NotNull ItemStack stack) {
+		PlusFront.LOGGER.warn("[Defusal] onUseConsumable called!");
 	}
 
 	@Override

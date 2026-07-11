@@ -57,8 +57,7 @@ public final class PFSavedData extends SavedData {
 				if (featureFlagsTag.contains(key, Tag.TAG_BYTE)) {
 					featureFlags.put(key, featureFlagsTag.getBoolean(key));
 				} else {
-					//noinspection deprecation
-					featureFlags.put(key, defaultEntry.getValue());
+					featureFlags.put(key, defaultEntry.getValue().booleanValue());
 				}
 			}
 		} else {

@@ -58,14 +58,30 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	public static final Style T_STYLE = Style.EMPTY.withColor(0x7E3831);
 	public static final Style T_ICON_STYLE = Style.EMPTY.withColor(0xE4D5D4);
 
+	private final GameTeam counterTerrorists = new GameTeam(game, CT_NAME, CT_STYLE, CT_ICON_STYLE, 8);
+	private final GameTeam terrorists = new GameTeam(game, T_NAME, T_STYLE, T_ICON_STYLE, 8);
+
+	private boolean preventEliminationWins = false;
 	private @Nullable UUID bombHolder = null;
 	private @Nullable Player bombPlanter = null;
 
 	public DefusalPlayerManager(@NotNull DefusalGame game, @NotNull PlayerDataHandler<?> dataHandler) {
 		super(game, dataHandler);
 
-		addTeam(new GameTeam(game, CT_NAME, CT_STYLE, CT_ICON_STYLE, 8));
-		addTeam(new GameTeam(game, T_NAME, T_STYLE, T_ICON_STYLE, 8));
+		addTeam(counterTerrorists);
+		addTeam(terrorists);
+	}
+
+	public GameTeam counterTerrorists() {
+		return counterTerrorists;
+	}
+
+	public GameTeam terrorists() {
+		return terrorists;
+	}
+
+	public void preventEliminationWins() {
+		preventEliminationWins = true;
 	}
 
 	public void clearBombHolder() {
@@ -85,6 +101,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	}
 
 	public void onRoundFinished() {
+		preventEliminationWins = false;
 		clearBombHolder();
 		setBombPlanter(null);
 	}
@@ -110,28 +127,23 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	public void update(@NotNull Set<UUID> players) {
 		super.update(players);
 
-		if (game.isRoundInProgress()) {
-			handleEliminationWinConditions(
+		if (game.isRoundInProgress() && !preventEliminationWins) {
+			handleEliminations(
 				PFUtil.playerDataHandler(),
 				players
 			);
 		}
 	}
 
-	private void handleEliminationWinConditions(PlayerDataHandler<?> dataHandler, Set<UUID> players) {
-		GameTeam ctTeam = getTeamByName(DefusalPlayerManager.CT_NAME);
-		assert ctTeam != null;
-		GameTeam tTeam = getTeamByName(DefusalPlayerManager.T_NAME);
-		assert tTeam != null;
+	private void handleEliminations(PlayerDataHandler<?> dataHandler, Set<UUID> players) {
+		int ctDead = PFUtil.getNumUnavailable(dataHandler, counterTerrorists.getPlayers());
+		int tDead = PFUtil.getNumUnavailable(dataHandler, terrorists.getPlayers());
 
-		int ctDead = PFUtil.getNumUnavailable(dataHandler, ctTeam.getPlayers());
-		int tDead = PFUtil.getNumUnavailable(dataHandler, tTeam.getPlayers());
-
-		boolean ctOut = ctDead >= ctTeam.numPlayers();
-		boolean tOut = tDead >= tTeam.numPlayers();
+		boolean ctOut = ctDead >= counterTerrorists.numPlayers();
+		boolean tOut = tDead >= terrorists.numPlayers();
 
 		if (ctOut && tOut) {
-			if (!game.isBombPlanted()) {
+			if (game.isBombPlanted()) {
 				game.onRoundWin(players, false);
 			} else {
 				game.onRoundDraw(players);
@@ -215,16 +227,11 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	}
 
 	public @Nullable WinningTeamData getWinningTeam() {
-		GameTeam ctTeam = getTeamByName(CT_NAME);
-		assert ctTeam != null;
-		GameTeam tTeam = getTeamByName(T_NAME);
-		assert tTeam != null;
-
-		if (ctTeam.getStatInt(BFStats.SCORE) >= DefusalGame.SCORE_TO_WIN) {
-			return new WinningTeamData(ctTeam, null);
+		if (counterTerrorists.getStatInt(BFStats.SCORE) >= DefusalGame.SCORE_TO_WIN) {
+			return new WinningTeamData(counterTerrorists, null);
 		}
-		if (tTeam.getStatInt(BFStats.SCORE) >= DefusalGame.SCORE_TO_WIN) {
-			return new WinningTeamData(tTeam, null);
+		if (terrorists.getStatInt(BFStats.SCORE) >= DefusalGame.SCORE_TO_WIN) {
+			return new WinningTeamData(terrorists, null);
 		}
 
 		return null;
@@ -384,13 +391,10 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	public void onBombDrop(Player previousPlayer) {
 		clearBombHolder();
 
-		GameTeam terroristsTeam = getTeamByName(T_NAME);
-		assert terroristsTeam != null;
-
-		Set<UUID> terrorists = terroristsTeam.getPlayers();
+		Set<UUID> terroristPlayers = terrorists.getPlayers();
 
 		GameUtils.sendNotification(
-			terrorists,
+			terroristPlayers,
 			Component.translatable(
 				"pf.message.gamemode.notification.bomb.drop",
 				Component.literal(previousPlayer.getScoreboardName())
@@ -400,7 +404,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 			"bomb.transfer"
 		);
 		GameUtils.playSound(
-			terrorists,
+			terroristPlayers,
 			BFSounds.ITEM_BOMB_PLANT.value(),
 			SoundSource.NEUTRAL
 		);
@@ -409,20 +413,17 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	public void onBombPickup(Player player) {
 		UUID playerUuid = player.getUUID();
 
-		GameTeam terroristsTeam = getTeamByName(T_NAME);
-		assert terroristsTeam != null;
-
-		if (!terroristsTeam.hasPlayer(playerUuid)) {
-			PlusFront.LOGGER.error("Non-terrorist player picked up the bomb! ({})", player.getScoreboardName());
+		if (!terrorists.hasPlayer(playerUuid)) {
+			PlusFront.LOGGER.warn("Non-terrorist player picked up the bomb! ({})", player.getScoreboardName());
 		}
 
 		bombHolder = playerUuid;
 		game.setBombItem(null);
 
-		Set<UUID> terrorists = terroristsTeam.getPlayers();
+		Set<UUID> terroristPlayers = terrorists.getPlayers();
 
 		GameUtils.sendNotification(
-			terrorists,
+			terroristPlayers,
 			Component.translatable(
 				"pf.message.gamemode.notification.bomb.pickup",
 				Component.literal(player.getScoreboardName())
@@ -432,7 +433,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 			"bomb.transfer"
 		);
 		GameUtils.playSound(
-			terrorists,
+			terroristPlayers,
 			BFSounds.ITEM_BOMB_PLANT.value(),
 			SoundSource.NEUTRAL
 		);
@@ -540,17 +541,14 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 			return;
 		}
 
-		GameTeam terroristsTeam = getTeamByName(DefusalPlayerManager.T_NAME);
-		assert terroristsTeam != null;
-
-		if (terroristsTeam.numPlayers() == 0) {
+		if (terrorists.numPlayers() == 0) {
 			bombHolder = null;
 			return;
 		}
 
-		Set<UUID> terrorists = terroristsTeam.getPlayers();
+		Set<UUID> terroristPlayers = terrorists.getPlayers();
 
-		UUID randomUuid = RandomUtils.randomFromSet(terrorists);
+		UUID randomUuid = RandomUtils.randomFromSet(terroristPlayers);
 		ServerPlayer randomPlayer = GameUtils.getPlayerByUUID(randomUuid);
 
 		if (randomPlayer == null) {
@@ -561,7 +559,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		giveAndSync(randomPlayer, BFItems.BOMB.value());
 
 		GameUtils.sendNotification(
-			terrorists,
+			terroristPlayers,
 			Component.translatable(
 				"pf.message.gamemode.notification.bomb.give",
 				Component.literal(randomPlayer.getScoreboardName())
@@ -571,7 +569,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 			"bomb.transfer"
 		);
 		GameUtils.playSound(
-			terrorists,
+			terroristPlayers,
 			BFSounds.ITEM_BOMB_PLANT.value(),
 			SoundSource.NEUTRAL
 		);

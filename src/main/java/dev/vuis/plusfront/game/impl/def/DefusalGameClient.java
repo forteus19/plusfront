@@ -33,6 +33,7 @@ import dev.vuis.plusfront.client.def.DefusalTeamGameElement;
 import dev.vuis.plusfront.client.def.DefusalTimeGameElement;
 import dev.vuis.plusfront.client.render.PFGuiRenderUtil;
 import dev.vuis.plusfront.game.ScoreboardFormats;
+import dev.vuis.plusfront.util.PFUtil;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.IOException;
@@ -274,12 +275,10 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	) {
 		DefusalPlayerManager playerManager = game.getPlayerManager();
 
-		GameTeam ctTeam = playerManager.getTeamByName(DefusalPlayerManager.CT_NAME);
-		assert ctTeam != null;
-		GameTeam tTeam = playerManager.getTeamByName(DefusalPlayerManager.T_NAME);
-		assert tTeam != null;
+		GameTeam counterTerrorists = playerManager.counterTerrorists();
+		GameTeam terrorists = playerManager.terrorists();
 
-		boolean isTerrorist = tTeam.hasPlayer(player.getUUID());
+		boolean isTerrorist = terrorists.hasPlayer(player.getUUID());
 
 		if (isTerrorist) {
 			ItemEntity bombItem = game.getBombItem(level);
@@ -303,12 +302,12 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		}
 
 		graphics.drawString(font, CT_LABEL, 12 - font.width(CT_LABEL) / 2, playerHeadsY + 4, 0xFFFFFFFF, true);
-		renderPlayerHeadList(connection, playerManager, ctTeam.getPlayers(), graphics, 20, playerHeadsY, false);
+		renderPlayerHeadList(connection, playerManager, counterTerrorists.getPlayers(), graphics, 20, playerHeadsY, false);
 
 		playerHeadsY += 17;
 
 		graphics.drawString(font, T_LABEL, 12 - font.width(T_LABEL) / 2, playerHeadsY + 4, 0xFFFFFFFF, true);
-		renderPlayerHeadList(connection, playerManager, tTeam.getPlayers(), graphics, 20, playerHeadsY, isTerrorist);
+		renderPlayerHeadList(connection, playerManager, terrorists.getPlayers(), graphics, 20, playerHeadsY, isTerrorist);
 	}
 
 	private void renderBombItemWaypoint(
@@ -451,17 +450,10 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 
 		DefusalPlayerManager playerManager = game.getPlayerManager();
 
-		GameTeam targetTeam = playerManager.getPlayerTeam(targetPlayer.getUUID());
-		if (targetTeam == null) {
-			return false;
-		}
-
 		GameTeam localTeam = playerManager.getPlayerTeam(localPlayer.getUUID());
-		if (localTeam == null) {
-			return false;
-		}
+		GameTeam targetTeam = playerManager.getPlayerTeam(targetPlayer.getUUID());
 
-		return localTeam.getName().equalsIgnoreCase(targetTeam.getName());
+		return PFUtil.isSameTeam(localTeam, targetTeam);
 	}
 
 	@Override

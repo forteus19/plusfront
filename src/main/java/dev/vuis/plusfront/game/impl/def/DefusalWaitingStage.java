@@ -71,12 +71,7 @@ public final class DefusalWaitingStage extends AbstractGameStage<DefusalGame, De
 		DefusalPlayerManager playerManager = context.playerHandler();
 		Set<UUID> players = context.players();
 
-		GameTeam ctTeam = playerManager.getTeamByName(DefusalPlayerManager.CT_NAME);
-		assert ctTeam != null;
-		GameTeam tTeam = playerManager.getTeamByName(DefusalPlayerManager.T_NAME);
-		assert tTeam != null;
-
-		if (ctTeam.numPlayers() > 0 && tTeam.numPlayers() > 0) {
+		if (playerManager.counterTerrorists().numPlayers() > 0 && playerManager.terrorists().numPlayers() > 0) {
 			timer.update(players);
 		} else {
 			timer.restart();
