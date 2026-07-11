@@ -17,6 +17,7 @@
     "bf.BombEntityMixin",
     "bf.GameAssetMixin",
     "bf.GameBoundaryMixin",
+    "bf.GameCombatManagerMixin",
     "bf.GameTeamMixin",
     "bf.GameTypeCodecMixin",
     "bf.GameTypeCodecMixin$TeamDeathmatchMixin",
