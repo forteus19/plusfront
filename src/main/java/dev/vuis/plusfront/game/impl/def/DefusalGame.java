@@ -19,6 +19,7 @@ import com.boehmod.blockfront.game.AbstractGameStage;
 import com.boehmod.blockfront.game.GameBoundary;
 import com.boehmod.blockfront.game.GameStageManager;
 import com.boehmod.blockfront.game.GameStageTimer;
+import com.boehmod.blockfront.game.GameStatus;
 import com.boehmod.blockfront.game.GameTeam;
 import com.boehmod.blockfront.game.GameTypeCodec;
 import com.boehmod.blockfront.game.GameUtils;
@@ -398,7 +399,14 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	@Override
 	public @NotNull SpectatorScope getSpectatorScope() {
-		return (isRoundInProgress() || isRoundWaiting()) ? SpectatorScope.SAME_TEAM : SpectatorScope.ANYONE;
+		if (status != GameStatus.GAME ||
+			playerManager.counterTerrorists().numPlayers() == 0 ||
+			playerManager.terrorists().numPlayers() == 0
+		) {
+			return SpectatorScope.ANYONE;
+		} else {
+			return SpectatorScope.SAME_TEAM;
+		}
 	}
 
 	@Override

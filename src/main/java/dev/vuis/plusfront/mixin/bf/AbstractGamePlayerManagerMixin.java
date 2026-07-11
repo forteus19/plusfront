@@ -1,6 +1,7 @@
 package dev.vuis.plusfront.mixin.bf;
 
 import com.boehmod.blockfront.common.BFAbstractManager;
+import com.boehmod.blockfront.common.player.BFAbstractPlayerData;
 import com.boehmod.blockfront.game.AbstractGame;
 import com.boehmod.blockfront.game.AbstractGamePlayerManager;
 import dev.vuis.plusfront.PFTemp;
@@ -58,5 +59,18 @@ public abstract class AbstractGamePlayerManagerMixin<G extends AbstractGame<G, ?
 		if (PFTemp.voicechatLoaded) {
 			PFVoicechat.getInstance().removeFromGroup(player.getUUID());
 		}
+	}
+
+	@Inject(
+		method = "tickSpectator",
+		at = @At(
+			value = "INVOKE_ASSIGN",
+			target = "Lcom/boehmod/blockfront/common/player/BFAbstractPlayerData;method_8879()Lcom/boehmod/blockfront/util/math/BFPose;",
+			ordinal = 0
+		),
+		cancellable = true
+	)
+	private void preventSpectatorPositionLock(@NotNull ServerPlayer player, @NotNull BFAbstractPlayerData<?, ?, ?, ?> playerData, CallbackInfo ci) {
+		ci.cancel();
 	}
 }
