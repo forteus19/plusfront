@@ -18,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class BFWeaponItemMixin {
 	@Shadow
 	public static void setOriginalOwner(@NotNull ItemStack var0, @NotNull String var1) {
-		throw new UnsupportedOperationException("Implemented via mixin");
 	}
 
 	@Inject(

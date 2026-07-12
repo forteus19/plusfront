@@ -9,7 +9,7 @@
   "mixins": [
     "bf.AbstractGameMixin",
     "bf.AbstractGamePlayerManagerMixin",
-    "bf.BFAbstractManagerMixin",
+    "bf.BFCoreCommandMixin",
     "bf.BFLivingDamageSubscriberMixin",
     "bf.BFPopupStatMixin",
     "bf.BFUpdaterMixin",

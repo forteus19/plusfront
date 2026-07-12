@@ -20,8 +20,9 @@ public abstract class MapEffectCodecsMixin {
 	private static @NotNull Map<String, MapCodec<? extends AbstractMapEffect>> CODECS;
 
 	@Shadow
+	@SuppressWarnings("DataFlowIssue")
 	private static @NotNull <T extends AbstractMapEffect> MapCodec<T> wrapCodec(@NotNull MapCodec<T> codec) {
-		throw new UnsupportedOperationException("Implemented via mixin");
+		return null;
 	}
 
 	@Inject(

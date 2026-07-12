@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MapEffectRegistryMixin {
 	@Shadow
 	public static void register(@NotNull String key, @NotNull Class<? extends AbstractMapEffect> mapEffectClass) {
-		throw new UnsupportedOperationException("Implemented via mixin");
 	}
 
 	@Inject(
