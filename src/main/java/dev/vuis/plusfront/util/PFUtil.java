@@ -5,10 +5,12 @@ import com.boehmod.blockfront.common.BFAbstractManager;
 import com.boehmod.blockfront.common.player.BFAbstractPlayerData;
 import com.boehmod.blockfront.common.player.PlayerDataHandler;
 import com.boehmod.blockfront.game.AbstractGame;
+import com.boehmod.blockfront.game.GameStatus;
 import com.boehmod.blockfront.game.GameTeam;
 import com.boehmod.blockfront.game.GameUtils;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import dev.vuis.plusfront.PlusFront;
+import dev.vuis.plusfront.game.impl.def.DefusalGame;
 import dev.vuis.plusfront.net.payload.PFFeatureFlagsPayload;
 import dev.vuis.plusfront.world.PFSavedData;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
@@ -24,6 +26,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class PFUtil {
@@ -88,6 +91,13 @@ public final class PFUtil {
 
 	public static SuggestionProvider<CommandSourceStack> suggestGames() {
 		return (context, builder) -> SharedSuggestionProvider.suggest(blockfrontManager().getGames().keySet(), builder);
+	}
+
+	public static boolean allowStatChanges(@NotNull AbstractGame<?, ?, ?> game) {
+		return switch (game) {
+			case DefusalGame defusalGame -> defusalGame.isRoundInProgress();
+			default -> game.getStatus() == GameStatus.GAME;
+		};
 	}
 
 	public static void updateFeatureFlags(Map<String, Boolean> featureFlags) {
