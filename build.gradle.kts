@@ -146,9 +146,10 @@ val remapBlockfrontTask = tasks.register<RemapTask>("remapBlockfront") {
 }
 
 val decompileBlockfrontTask = tasks.register<DecompileTask>("decompileBlockfront") {
-    dependsOn(remapBlockfrontTask)
+    dependsOn(remapBlockfrontTask, extractBlockfrontLibrariesTask)
 
     input.set(remapBlockfrontTask.get().outputs.files.first())
+    libraries.from(configurations["compileClasspath"], blockfrontLibraries)
     output.set(layout.buildDirectory.file("generated/bf-sources.jar"))
 }
 
