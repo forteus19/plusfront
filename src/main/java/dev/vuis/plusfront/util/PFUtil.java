@@ -95,7 +95,7 @@ public final class PFUtil {
 
 	public static boolean allowStatChanges(@NotNull AbstractGame<?, ?, ?> game) {
 		return switch (game) {
-			case DefusalGame defusalGame -> defusalGame.isRoundInProgress();
+			case DefusalGame defusalGame -> defusalGame.isGameStage();
 			default -> game.getStatus() == GameStatus.GAME;
 		};
 	}

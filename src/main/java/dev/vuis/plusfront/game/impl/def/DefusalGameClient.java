@@ -97,14 +97,18 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 
 	private final List<AABB> bombSiteBoxes = new ObjectArrayList<>();
 
-	private boolean isRoundInProgress = false;
-	private boolean isRoundFinished = false;
+	private boolean isGameStage = false;
+	private boolean finishedRound = false;
 	private int bombItemBlinkTimer = 0;
 
 	public DefusalGameClient(@NotNull BFClientManager manager, @NotNull DefusalGame game, @NotNull ClientPlayerDataHandler dataHandler) {
 		super(manager, game, dataHandler);
 
 		manager.getCinematics().method_2205(new BF_552(game));
+	}
+
+	public boolean isFinishedRound() {
+		return finishedRound;
 	}
 
 	@Override
@@ -125,7 +129,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	protected void addLocalNotifications(@NotNull Minecraft minecraft, @NotNull LocalPlayer player, @NotNull List<GameNotification> target) {
 		super.addLocalNotifications(minecraft, player, target);
 
-		if (!isRoundInProgress) {
+		if (!isGameStage) {
 			return;
 		}
 
@@ -399,8 +403,8 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	public void read(@NotNull ByteBuf buf) throws IOException {
 		super.read(buf);
 
-		isRoundInProgress = buf.readBoolean();
-		isRoundFinished = buf.readBoolean();
+		isGameStage = buf.readBoolean();
+		finishedRound = buf.readBoolean();
 
 		onGamePacket();
 	}
@@ -410,10 +414,6 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		for (BombSite bombSite : game.getBombSites()) {
 			bombSiteBoxes.add(bombSite.getBoundaryAABB());
 		}
-	}
-
-	public boolean isRoundFinished() {
-		return isRoundFinished;
 	}
 
 	@Override

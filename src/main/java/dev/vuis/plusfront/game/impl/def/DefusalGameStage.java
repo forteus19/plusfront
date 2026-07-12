@@ -18,6 +18,15 @@ public final class DefusalGameStage extends AbstractGameStage<DefusalGame, Defus
 	}
 
 	@Override
+	public void onStageEnd(@NotNull GameStageContext<DefusalGame, DefusalPlayerManager> context) {
+		DefusalGame game = context.game();
+
+		if (!game.finishedRound()) {
+			game.onRoundWin(context.players(), true, false);
+		}
+	}
+
+	@Override
 	public void onSecond(@NotNull GameStageContext<DefusalGame, DefusalPlayerManager> context) {
 		GameStageTimer currentTimer = getStageTimer(context.game());
 		if (currentTimer != null) {

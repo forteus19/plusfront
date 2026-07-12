@@ -18,8 +18,8 @@ public final class DefusalFinishedStage extends AbstractGameStage<DefusalGame, D
 
 		GameUtils.discardMatchEntities(context.serverLevel(), game, playerManager);
 
-		game.onRoundFinished();
-		playerManager.onRoundFinished();
+		game.onRoundReset();
+		playerManager.onRoundReset();
 	}
 
 	@Override

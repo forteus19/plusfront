@@ -171,6 +171,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	private boolean isBombPlanted = false;
 	private @Nullable Integer bombItemId = null;
+	private boolean finishedRound = false;
 
 	public DefusalGame(@NotNull BFAbstractManager<?, ?, ?> manager) {
 		super(manager, "def", "Defusal");
@@ -224,6 +225,10 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		}
 	}
 
+	public boolean finishedRound() {
+		return finishedRound;
+	}
+
 	@Override
 	public @NotNull AssetCommandBuilder getCommand() {
 		return super.getCommand().inherit(command);
@@ -253,30 +258,28 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		return stageManager.getCurrentStage().getClass() == DefusalPreStage.class;
 	}
 
-	public boolean isRoundWaiting() {
+	public boolean isWaitingStage() {
 		return stageManager.getCurrentStage().getClass() == DefusalWaitingStage.class;
 	}
 
-	public boolean isRoundInProgress() {
+	public boolean isGameStage() {
 		return stageManager.getCurrentStage().getClass() == DefusalGameStage.class;
 	}
 
 	public @Nullable GameStageTimer getInProgressTimer() {
-		if (isRoundInProgress()) {
+		if (isGameStage()) {
 			return ((DefusalGameStage) stageManager.getCurrentStage()).getStageTimer(this);
 		} else {
 			return null;
 		}
 	}
 
-	public boolean isRoundFinished() {
-		return stageManager.getCurrentStage().getClass() == DefusalFinishedStage.class;
-	}
-
-	public boolean finishRound() {
-		if (isRoundInProgress()) {
-			stageManager.forceAdvance();
-			playerManager.preventEliminationWins();
+	public boolean finishRound(boolean advanceStage) {
+		if (isGameStage()) {
+			finishedRound = true;
+			if (advanceStage) {
+				stageManager.forceAdvance();
+			}
 			return true;
 		} else {
 			return false;
@@ -308,7 +311,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	@Override
 	public void specificReset(@Nullable Level level) {
-		onRoundFinished();
+		onRoundReset();
 	}
 
 	@Override
@@ -383,8 +386,8 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	public void writeForClient(@NotNull ByteBuf buf) throws IOException {
 		super.writeForClient(buf);
 
-		buf.writeBoolean(isRoundInProgress());
-		buf.writeBoolean(isRoundFinished());
+		buf.writeBoolean(isGameStage());
+		buf.writeBoolean(finishedRound);
 	}
 
 	@Override
@@ -427,7 +430,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 			return false;
 		}
 
-		if (isRoundWaiting() || isRoundInProgress()) {
+		if (isWaitingStage() || isGameStage()) {
 			return (!isSenderUnavailable && !isTeamMessage) || senderTeam == receivingTeam;
 		} else {
 			return !isTeamMessage || senderTeam == receivingTeam;
@@ -539,7 +542,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		isBombPlanted = false;
 		playerManager.setBombPlanter(null);
 
-		onRoundWin(playerManager.getPlayers(), false);
+		onRoundWin(playerManager.getPlayers(), false, true);
 	}
 
 	private void doBombExplosion(BombEntity bomb, Level level) {
@@ -592,7 +595,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 			"bomb.defused"
 		);
 
-		onRoundWin(players, true);
+		onRoundWin(players, true, true);
 	}
 
 	@Override
@@ -686,11 +689,12 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	/**
 	 * Called when a team wins the current round. Marks the current round as finished, and does nothing if a round is not in progress.
 	 *
-	 * @param players all players in the match
-	 * @param ctWin   {@code true} if the Counter-Terrorists won, {@code false} if the Terrorists won
+	 * @param players      all players in the match
+	 * @param ctWin        {@code true} if the Counter-Terrorists won, {@code false} if the Terrorists won
+	 * @param advanceStage whether to force advance the stage
 	 */
-	public void onRoundWin(Set<UUID> players, boolean ctWin) {
-		if (!finishRound()) {
+	public void onRoundWin(Set<UUID> players, boolean ctWin, boolean advanceStage) {
+		if (!finishRound(advanceStage)) {
 			return;
 		}
 
@@ -729,8 +733,8 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	 *
 	 * @param players all players in the match
 	 */
-	public void onRoundDraw(Set<UUID> players) {
-		if (!finishRound()) {
+	public void onRoundDraw(Set<UUID> players, boolean advanceStage) {
+		if (!finishRound(advanceStage)) {
 			return;
 		}
 
@@ -749,9 +753,10 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		);
 	}
 
-	public void onRoundFinished() {
+	public void onRoundReset() {
 		isBombPlanted = false;
 		bombItemId = null;
+		finishedRound = false;
 	}
 
 	@Override

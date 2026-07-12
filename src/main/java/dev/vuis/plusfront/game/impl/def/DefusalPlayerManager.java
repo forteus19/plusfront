@@ -61,7 +61,6 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	private final GameTeam counterTerrorists = new GameTeam(game, CT_NAME, CT_STYLE, CT_ICON_STYLE, 8);
 	private final GameTeam terrorists = new GameTeam(game, T_NAME, T_STYLE, T_ICON_STYLE, 8);
 
-	private boolean preventEliminationWins = false;
 	private @Nullable UUID bombHolder = null;
 	private @Nullable Player bombPlanter = null;
 
@@ -80,10 +79,6 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		return terrorists;
 	}
 
-	public void preventEliminationWins() {
-		preventEliminationWins = true;
-	}
-
 	public void clearBombHolder() {
 		bombHolder = null;
 	}
@@ -100,8 +95,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		bombPlanter = uuid;
 	}
 
-	public void onRoundFinished() {
-		preventEliminationWins = false;
+	public void onRoundReset() {
 		clearBombHolder();
 		setBombPlanter(null);
 	}
@@ -110,7 +104,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	public void reset() {
 		super.reset();
 
-		onRoundFinished();
+		onRoundReset();
 	}
 
 	@Override
@@ -127,7 +121,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	public void update(@NotNull Set<UUID> players) {
 		super.update(players);
 
-		if (game.isRoundInProgress() && !preventEliminationWins) {
+		if (game.isGameStage() && !game.finishedRound()) {
 			handleEliminations(
 				PFUtil.playerDataHandler(),
 				players
@@ -144,18 +138,18 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 
 		if (ctOut && tOut) {
 			if (game.isBombPlanted()) {
-				game.onRoundWin(players, false);
+				game.onRoundWin(players, false, true);
 			} else {
-				game.onRoundDraw(players);
+				game.onRoundDraw(players, true);
 			}
 			return;
 		}
 
 		if (ctOut) {
-			game.onRoundWin(players, false);
+			game.onRoundWin(players, false, true);
 		}
 		if (tOut && !game.isBombPlanted()) {
-			game.onRoundWin(players, true);
+			game.onRoundWin(players, true, true);
 		}
 	}
 
@@ -310,7 +304,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		@NotNull DamageSource source,
 		@NotNull Set<UUID> players
 	) {
-		if (!game.isRoundInProgress()) {
+		if (!game.isGameStage()) {
 			return;
 		}
 
@@ -492,7 +486,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 			return source.is(DamageTypeTags.IS_EXPLOSION) || source.is(DamageTypeTags.IS_FIRE);
 		}
 
-		if (game.isRoundInProgress()) {
+		if (game.isGameStage()) {
 			GameStageTimer timer = game.getInProgressTimer();
 			if (timer == null) {
 				return true;
@@ -508,7 +502,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 			}
 		}
 
-		if (game.isRoundWaiting()) {
+		if (game.isWaitingStage()) {
 			return false;
 		}
 

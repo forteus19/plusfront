@@ -31,10 +31,12 @@ public class DefusalTimeGameElement extends ClientGameElement<DefusalGame, Defus
 		@NotNull Minecraft minecraft,
 		@NotNull DefusalGame game,
 		@NotNull DefusalPlayerManager playerManager,
-		@NotNull AbstractGameClient<DefusalGame, DefusalPlayerManager> gameClient,
+		@NotNull AbstractGameClient<DefusalGame, DefusalPlayerManager> abstractGameClient,
 		@NotNull LocalPlayer player
 	) {
-		if (game.isBombPlanted() && !((DefusalGameClient) gameClient).isRoundFinished()) {
+		DefusalGameClient gameClient = (DefusalGameClient) abstractGameClient;
+
+		if (game.isBombPlanted() && !gameClient.isFinishedRound()) {
 			if (!showBombPlanted) {
 				blinkTimer = 0;
 			}
