@@ -248,11 +248,6 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		DefusalPlayerManager playerManager = game.getPlayerManager();
 		Camera camera = minecraft.gameRenderer.getMainCamera();
 
-		GameTeam counterTerrorists = playerManager.counterTerrorists();
-		GameTeam terrorists = playerManager.terrorists();
-
-		boolean isTerrorist = terrorists.hasPlayer(player.getUUID());
-
 		if (PFKeyMappings.showBombSites.isDown()) {
 			for (BombSite bombSite : game.getBombSites()) {
 				if (bombSite.waypoints.isEmpty()) {
@@ -268,7 +263,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 			}
 		}
 
-		if (isTerrorist) {
+		if (playerManager.terrorists().hasPlayer(player.getUUID())) {
 			ItemEntity bombItem = game.getBombItem(level);
 
 			if (bombItem != null) {
@@ -289,34 +284,11 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 			playerHeadsY += 104;
 		}
 
-		poseStack.pushPose();
-		poseStack.translate(12, playerHeadsY, 0);
-
-		graphics.drawString(font, CT_LABEL, -font.width(CT_LABEL) / 2, 4, 0xFFFFFFFF, true);
-
-		{
-			poseStack.pushPose();
-			poseStack.translate(8, 0, 0);
-
-			renderPlayerHeadList(connection, playerManager, counterTerrorists.getPlayers(), graphics, false);
-
-			poseStack.popPose();
-		}
-
-		poseStack.translate(0, 17, 0);
-
-		graphics.drawString(font, T_LABEL, -font.width(T_LABEL) / 2, 4, 0xFFFFFFFF, true);
-
-		{
-			poseStack.pushPose();
-			poseStack.translate(8, 0, 0);
-
-			renderPlayerHeadList(connection, playerManager, terrorists.getPlayers(), graphics, isTerrorist);
-
-			poseStack.popPose();
-		}
-
-		poseStack.popPose();
+		renderPlayerHeadLists(
+			connection, playerManager, player,
+			poseStack, graphics, font,
+			playerHeadsY
+		);
 	}
 
 	private void renderBombSiteWaypoint(
@@ -383,6 +355,48 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 			screenClampData.screenX(), screenClampData.screenY(),
 			32f, 16f
 		);
+	}
+
+	private void renderPlayerHeadLists(
+		ClientPacketListener connection,
+		DefusalPlayerManager playerManager,
+		LocalPlayer player,
+		PoseStack poseStack,
+		GuiGraphics graphics,
+		Font font,
+		int y
+	) {
+		GameTeam counterTerrorists = playerManager.counterTerrorists();
+		GameTeam terrorists = playerManager.terrorists();
+
+		poseStack.pushPose();
+		poseStack.translate(12, y, 0);
+
+		graphics.drawString(font, CT_LABEL, -font.width(CT_LABEL) / 2, 4, 0xFFFFFFFF, true);
+
+		{
+			poseStack.pushPose();
+			poseStack.translate(8, 0, 0);
+
+			renderPlayerHeadList(connection, playerManager, counterTerrorists.getPlayers(), graphics, false);
+
+			poseStack.popPose();
+		}
+
+		poseStack.translate(0, 17, 0);
+
+		graphics.drawString(font, T_LABEL, -font.width(T_LABEL) / 2, 4, 0xFFFFFFFF, true);
+
+		{
+			poseStack.pushPose();
+			poseStack.translate(8, 0, 0);
+
+			renderPlayerHeadList(connection, playerManager, terrorists.getPlayers(), graphics, terrorists.hasPlayer(player.getUUID()));
+
+			poseStack.popPose();
+		}
+
+		poseStack.popPose();
 	}
 
 	private void renderPlayerHeadList(
