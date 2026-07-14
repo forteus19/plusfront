@@ -41,7 +41,9 @@ public class DefusalTimeGameElement extends ClientGameElement<DefusalGame, Defus
 				blinkTimer = 0;
 			}
 			showBombPlanted = true;
-			blinkTimer = ++blinkTimer % 20;
+			if (++blinkTimer >= 20) {
+				blinkTimer = 0;
+			}
 		} else {
 			showBombPlanted = false;
 			timerText = gameClient.getStageTimer().getComponent().getVisualOrderText();

@@ -29,6 +29,7 @@ import com.boehmod.blockfront.util.PacketUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.vuis.plusfront.PlusFront;
+import dev.vuis.plusfront.client.PFKeyMappings;
 import dev.vuis.plusfront.client.def.DefusalTeamGameElement;
 import dev.vuis.plusfront.client.def.DefusalTimeGameElement;
 import dev.vuis.plusfront.client.render.PFGuiRenderUtil;
@@ -56,7 +57,10 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -83,8 +87,6 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	private static final ResourceLocation DEAD_TEXTURE = BFRes.loc("textures/gui/dead.png");
 	private static final ResourceLocation INDICATOR_TEXTURE = BFRes.loc("textures/gui/indicator.png");
 
-	private static final Component BOMBSITE_LABEL = Component.literal("BOMBSITE");
-
 	private static final int BOMBSITE_CAGE_COLOR = 0xFFFC4141;
 	private static final BFRendering.CageSettings BOMBSITE_CAGE_SETTINGS =
 		BFRendering.CageSettings.create()
@@ -99,7 +101,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 
 	private boolean isGameStage = false;
 	private boolean finishedRound = false;
-	private int bombItemBlinkTimer = 0;
+	private int blinkTimer = 0;
 
 	public DefusalGameClient(@NotNull BFClientManager manager, @NotNull DefusalGame game, @NotNull ClientPlayerDataHandler dataHandler) {
 		super(manager, game, dataHandler);
@@ -168,7 +170,9 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	) {
 		super.update(minecraft, random, randomSource, player, level, manager, playerData, players, renderTime, cameraPos, cameraBlockPos);
 
-		bombItemBlinkTimer = ++bombItemBlinkTimer % 20;
+		if (++blinkTimer >= 20) {
+			blinkTimer = 0;
+		}
 	}
 
 	@Override
@@ -190,17 +194,14 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	) {
 		super.renderWorld(playerManager, minecraft, level, player, renderEvent, bufferSource, poseStack, frustum, font, graphics, camera, debug, renderTime, partialTick);
 
-		if (BFClientSettings.UI_RENDER_WAYPOINTS.isEnabled()) {
-			renderBombSites(player, poseStack, frustum, font, graphics, camera);
+		if (player.getMainHandItem().getItem() == BFItems.BOMB.value()) {
+			renderBombSiteCages(poseStack, frustum, camera);
 		}
 	}
 
-	private void renderBombSites(
-		LocalPlayer player,
+	private void renderBombSiteCages(
 		PoseStack poseStack,
 		Frustum frustum,
-		Font font,
-		GuiGraphics graphics,
 		Camera camera
 	) {
 		List<BombSite> bombSites = game.getBombSites();
@@ -210,51 +211,18 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 			PlusFront.LOGGER.warn("Mismatched bomb sites and boundary AABBs!");
 		}
 
-		boolean showBoundary = player.getMainHandItem().getItem() == BFItems.BOMB.value();
-
 		for (int i = 0; i < numBombSites; i++) {
 			BombSite bombSite = bombSites.get(i);
-			AABB bombSiteAABB = bombSiteBoxes.get(i);
+			AABB bombSiteBox = bombSiteBoxes.get(i);
 
-			renderBombSite(
-				poseStack, frustum, font, graphics, camera,
-				bombSite, showBoundary, bombSiteAABB
-			);
-		}
-	}
-
-	private static void renderBombSite(
-		PoseStack poseStack,
-		Frustum frustum,
-		Font font,
-		GuiGraphics graphics,
-		Camera camera,
-		BombSite bombSite,
-		boolean showBoundary,
-		AABB boundaryAABB
-	) {
-		if (showBoundary && frustum.isVisible(boundaryAABB)) {
-			BFRendering.cageGameBoundary(
-				camera, poseStack,
-				bombSite.boundary,
-				bombSite.visibleY, bombSite.visibleY + BombSite.VISIBLE_HEIGHT,
-				BOMBSITE_CAGE_SETTINGS
-			);
-		}
-
-		for (Vec3 waypoint : bombSite.waypoints) {
-			BFRendering.component(
-				poseStack, font, camera, graphics,
-				Component.literal(bombSite.name).withStyle(BFStyles.BOLD),
-				waypoint.x, waypoint.y + 2.5f, waypoint.z,
-				2.0f, 0xFFFFFFFF, true
-			);
-			BFRendering.component(
-				poseStack, font, camera, graphics,
-				BOMBSITE_LABEL,
-				waypoint.x, waypoint.y + 1.75f, waypoint.z,
-				1.0f, 0xFFFFFFFF, true
-			);
+			if (frustum.isVisible(bombSiteBox)) {
+				BFRendering.cageGameBoundary(
+					camera, poseStack,
+					bombSite.boundary,
+					bombSite.visibleY, bombSite.visibleY + BombSite.VISIBLE_HEIGHT,
+					BOMBSITE_CAGE_SETTINGS
+				);
+			}
 		}
 	}
 
@@ -278,18 +246,34 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		float partialTick
 	) {
 		DefusalPlayerManager playerManager = game.getPlayerManager();
+		Camera camera = minecraft.gameRenderer.getMainCamera();
 
 		GameTeam counterTerrorists = playerManager.counterTerrorists();
 		GameTeam terrorists = playerManager.terrorists();
 
 		boolean isTerrorist = terrorists.hasPlayer(player.getUUID());
 
+		if (PFKeyMappings.showBombSites.isDown()) {
+			for (BombSite bombSite : game.getBombSites()) {
+				if (bombSite.waypoints.isEmpty()) {
+					continue;
+				}
+
+				for (Vec3 siteWaypoint : bombSite.waypoints) {
+					renderBombSiteWaypoint(
+						poseStack, graphics, font, camera, width, height, partialTick,
+						siteWaypoint.add(0.0, 1.5, 0.0), bombSite.name
+					);
+				}
+			}
+		}
+
 		if (isTerrorist) {
 			ItemEntity bombItem = game.getBombItem(level);
 
 			if (bombItem != null) {
 				renderBombItemWaypoint(
-					poseStack, minecraft.gameRenderer.getMainCamera(), width, height, partialTick,
+					poseStack, camera, width, height, partialTick,
 					bombItem.getPosition(partialTick).add(0.0, 0.5, 0.0)
 				);
 			}
@@ -305,13 +289,82 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 			playerHeadsY += 104;
 		}
 
-		graphics.drawString(font, CT_LABEL, 12 - font.width(CT_LABEL) / 2, playerHeadsY + 4, 0xFFFFFFFF, true);
-		renderPlayerHeadList(connection, playerManager, counterTerrorists.getPlayers(), graphics, 20, playerHeadsY, false);
+		poseStack.pushPose();
+		poseStack.translate(12, playerHeadsY, 0);
 
-		playerHeadsY += 17;
+		graphics.drawString(font, CT_LABEL, -font.width(CT_LABEL) / 2, 4, 0xFFFFFFFF, true);
 
-		graphics.drawString(font, T_LABEL, 12 - font.width(T_LABEL) / 2, playerHeadsY + 4, 0xFFFFFFFF, true);
-		renderPlayerHeadList(connection, playerManager, terrorists.getPlayers(), graphics, 20, playerHeadsY, isTerrorist);
+		{
+			poseStack.pushPose();
+			poseStack.translate(8, 0, 0);
+
+			renderPlayerHeadList(connection, playerManager, counterTerrorists.getPlayers(), graphics, false);
+
+			poseStack.popPose();
+		}
+
+		poseStack.translate(0, 17, 0);
+
+		graphics.drawString(font, T_LABEL, -font.width(T_LABEL) / 2, 4, 0xFFFFFFFF, true);
+
+		{
+			poseStack.pushPose();
+			poseStack.translate(8, 0, 0);
+
+			renderPlayerHeadList(connection, playerManager, terrorists.getPlayers(), graphics, isTerrorist);
+
+			poseStack.popPose();
+		}
+
+		poseStack.popPose();
+	}
+
+	private void renderBombSiteWaypoint(
+		PoseStack poseStack,
+		GuiGraphics graphics,
+		Font font,
+		Camera camera,
+		int width,
+		int height,
+		float partialTick,
+		Vec3 position,
+		String name
+	) {
+		BFRendering.ScreenClampData screenClampData = BFRendering.screenClamp(position, camera, width, height, 48, partialTick);
+
+		TextColor textColor = blinkTimer < 10 ? DefusalPlayerManager.T_TEXT_COLOR : null;
+
+		poseStack.pushPose();
+		poseStack.translate(screenClampData.screenX(), screenClampData.screenY(), 0f);
+
+		{
+			poseStack.pushPose();
+			poseStack.scale(2f, 2f, 1f);
+
+			Component nameText = Component.literal(name)
+				.withStyle(BFStyles.BOLD.withColor(textColor));
+
+			graphics.drawString(
+				font,
+				nameText,
+				-font.width(nameText) / 2, -9,
+				0xFFFFFFFF, true
+			);
+
+			poseStack.popPose();
+		}
+
+		Component distanceText = Component.literal(Mth.floor(camera.getPosition().distanceTo(position)) + "m")
+			.withStyle(Style.EMPTY.withColor(textColor));
+
+		graphics.drawString(
+			font,
+			distanceText,
+			-font.width(distanceText) / 2, 3,
+			0xFFFFFFFF, true
+		);
+
+		poseStack.popPose();
 	}
 
 	private void renderBombItemWaypoint(
@@ -326,7 +379,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 
 		PFGuiRenderUtil.centeredTexture(
 			poseStack,
-			bombItemBlinkTimer < 10 ? BOMB_TEXTURE : BOMB_BLINK_TEXTURE,
+			blinkTimer < 10 ? BOMB_TEXTURE : BOMB_BLINK_TEXTURE,
 			screenClampData.screenX(), screenClampData.screenY(),
 			32f, 16f
 		);
@@ -337,8 +390,6 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		DefusalPlayerManager playerManager,
 		Set<UUID> players,
 		GuiGraphics graphics,
-		int x,
-		int y,
 		boolean showBombIndicator
 	) {
 		int numPlayers = players.size();
@@ -346,16 +397,16 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		int headsWidth = Math.max(1, numPlayers) * 11 + Math.max(0, numPlayers - 1);
 
 		graphics.fill(
-			x, y, x + headsWidth + 4, y + 15,
+			0, 0, headsWidth + 4, 15,
 			0x4C000000
 		);
 		graphics.fill(
-			x + 1, y + 1, x + headsWidth + 3, y + 14,
+			1, 1, headsWidth + 3, 14,
 			0x7F000000
 		);
 
-		int headX = x + 2;
-		int headY = y + 2;
+		int headX = 2;
+		int headY = 2;
 
 		for (UUID playerUuid : players) {
 			PlayerInfo playerInfo = connection.getPlayerInfo(playerUuid);

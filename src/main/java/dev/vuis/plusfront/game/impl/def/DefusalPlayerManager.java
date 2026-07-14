@@ -30,6 +30,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -51,12 +52,14 @@ import org.jetbrains.annotations.Nullable;
 
 public final class DefusalPlayerManager extends AbstractGamePlayerManager<DefusalGame> {
 	public static final String CT_NAME = "Counter-Terrorists";
-	public static final String T_NAME = "Terrorists";
-
 	public static final Style CT_STYLE = Style.EMPTY.withColor(0x546A91);
-	public static final Style CT_ICON_STYLE = Style.EMPTY.withColor(0xDCE2EA);
+	public static final TextColor CT_TEXT_COLOR = TextColor.fromRgb(0xDCE2EA);
+	public static final Style CT_ICON_STYLE = Style.EMPTY.withColor(CT_TEXT_COLOR);
+
+	public static final String T_NAME = "Terrorists";
 	public static final Style T_STYLE = Style.EMPTY.withColor(0x7E3831);
-	public static final Style T_ICON_STYLE = Style.EMPTY.withColor(0xE4D5D4);
+	public static final TextColor T_TEXT_COLOR = TextColor.fromRgb(0xE4D5D4);
+	public static final Style T_ICON_STYLE = Style.EMPTY.withColor(T_TEXT_COLOR);
 
 	private final GameTeam counterTerrorists = new GameTeam(game, CT_NAME, CT_STYLE, CT_ICON_STYLE, 8);
 	private final GameTeam terrorists = new GameTeam(game, T_NAME, T_STYLE, T_ICON_STYLE, 8);

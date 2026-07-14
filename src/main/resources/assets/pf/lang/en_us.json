@@ -1,5 +1,7 @@
 {
   "bf.popup.message.score.negative": "%s Score",
+  "key.categories.pf": "PlusFront",
+  "key.pf.showBombSites": "Show Bomb Sites",
   "pf.gamemode.def": "Defusal",
   "pf.message.command.armory.clear.card.success": "Cleared card for %s players",
   "pf.message.command.armory.clear.card.success.single": "Cleared card for %s",

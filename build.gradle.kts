@@ -23,6 +23,8 @@ val veilVersion = "4.3.0"
 val sodiumVersion = "0.8.12+mc1.21.1"
 val voicechatApiVersion = "2.6.20"
 
+val mcdevAnnotationsVersion = "2.1.0"
+
 val blockfrontOriginal = configurations.create("blockfrontOriginal")
 
 repositories {
@@ -110,6 +112,8 @@ dependencies {
 
     // optional dependencies
     modCompileOnly("de.maxhenkel.voicechat:voicechat-api:$voicechatApiVersion")
+
+    compileOnly("com.demonwav.mcdev:annotations:$mcdevAnnotationsVersion")
 }
 
 // https://github.com/ThatCuteOne/bfapi/blob/docker/build.gradle.kts
