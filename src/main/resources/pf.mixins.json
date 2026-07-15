@@ -38,6 +38,7 @@
     "bf.client.BFClientScreenSubscriberMixin",
     "bf.client.BFConsumableItemMixin",
     "bf.client.FakeEnvironmentMixin",
+    "bf.client.FlyByMapEffectMixin",
     "bf.client.MatchGuiLayerMixin",
     "bf.client.PlayerCloudInventoryMixin",
     "bf.client.TeamScoreGameElementMixin",
