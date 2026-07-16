@@ -12,10 +12,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.vuis.plusfront.ex.MapEnvironmentEx;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
@@ -25,33 +27,25 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.NotNull;
 
+@AllArgsConstructor
 public class BrightnessMapEffect extends AbstractMapEffect {
 	public static final String ID = "pf_brightness";
 	public static final MapCodec<BrightnessMapEffect> CODEC = RecordCodecBuilder.mapCodec(instance ->
 		instance.group(
-			Codec.floatRange(0f, 1f).fieldOf("brightness").forGetter(mapEffect -> mapEffect.brightness)
+			Codec.floatRange(0f, 1f).fieldOf("brightness").forGetter(BrightnessMapEffect::getBrightness)
 		).apply(
 			instance, BrightnessMapEffect::new
 		));
 
 	private static final ResourceLocation DEBUG_TEXTURE = BFRes.loc("textures/misc/debug/mapeffect/sky_settings.png");
 
-	private float brightness = 0.5f;
+	@Getter
+	@Setter
+	private float brightness;
 
 	@SuppressWarnings("unused")
 	public BrightnessMapEffect() {
-	}
-
-	public BrightnessMapEffect(float brightness) {
-		this.brightness = brightness;
-	}
-
-	public float getBrightness() {
-		return brightness;
-	}
-
-	public void setBrightness(float brightness) {
-		this.brightness = brightness;
+		this(0.5f);
 	}
 
 	@Override
@@ -69,7 +63,7 @@ public class BrightnessMapEffect extends AbstractMapEffect {
 
 	@Override
 	public @NotNull List<AbstractPromptField<?>> getEditableFields() {
-		List<AbstractPromptField<?>> fields = new ObjectArrayList<>(super.getEditableFields());
+		List<AbstractPromptField<?>> fields = super.getEditableFields();
 
 		fields.add(new BoundedFloatPromptField(
 			Component.literal("Brightness"),

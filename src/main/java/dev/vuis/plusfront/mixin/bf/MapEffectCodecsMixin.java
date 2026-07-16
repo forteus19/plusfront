@@ -4,6 +4,7 @@ import com.boehmod.blockfront.map.effect.AbstractMapEffect;
 import com.boehmod.blockfront.map.effect.MapEffectCodecs;
 import com.mojang.serialization.MapCodec;
 import dev.vuis.plusfront.mapeffect.BrightnessMapEffect;
+import dev.vuis.plusfront.mapeffect.PositionedRandomSoundMapEffect;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
@@ -31,5 +32,6 @@ public abstract class MapEffectCodecsMixin {
 	)
 	private static void registerCustom(CallbackInfo ci) {
 		CODECS.put(BrightnessMapEffect.ID, wrapCodec(BrightnessMapEffect.CODEC));
+		CODECS.put(PositionedRandomSoundMapEffect.ID, wrapCodec(PositionedRandomSoundMapEffect.CODEC));
 	}
 }

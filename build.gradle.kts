@@ -1,5 +1,6 @@
 plugins {
     id("dev.architectury.loom-remap") version "1.17-SNAPSHOT"
+    id("io.freefair.lombok") version "9.5.0"
 }
 
 group = "dev.vuis"
