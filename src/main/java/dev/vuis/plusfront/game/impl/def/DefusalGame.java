@@ -44,6 +44,7 @@ import com.mojang.brigadier.context.CommandContext;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.data.PFDefusalData;
 import dev.vuis.plusfront.ex.TeamDeathmatchCodecEx;
+import dev.vuis.plusfront.game.tag.IConditionalCombatStats;
 import dev.vuis.plusfront.util.PFUtil;
 import dev.vuis.plusfront.world.BombDamageSource;
 import io.netty.buffer.ByteBuf;
@@ -54,6 +55,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import lombok.Getter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.particles.ParticleTypes;
@@ -64,7 +66,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -83,6 +87,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	IAllowsPings,
 	IAllowsSoundboard,
 	ICanSwitchTeams,
+	IConditionalCombatStats,
 	IHasBombs,
 	IHasClasses,
 	IHasConsumables,
@@ -93,6 +98,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	private static final float BOMB_EXPLOSION_RADIUS = 16f;
 
+	@Getter
 	private final List<BombSite> bombSites = new ObjectArrayList<>();
 
 	private final AssetCommandBuilder command = new AssetCommandBuilder()
@@ -169,16 +175,13 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 				CommandUtils.sendBfa(source, Component.literal(teamName + " team's spawns cleared."));
 			})));
 
+	@Getter
 	private boolean isBombPlanted = false;
 	private @Nullable Integer bombItemId = null;
 	private boolean finishedRound = false;
 
 	public DefusalGame(@NotNull BFAbstractManager<?, ?, ?> manager) {
 		super(manager, "def", "Defusal");
-	}
-
-	public List<BombSite> getBombSites() {
-		return bombSites;
 	}
 
 	private Collection<String> suggestBombSites(CommandContext<CommandSourceStack> context, String[] args) {
@@ -193,10 +196,6 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		}
 
 		return null;
-	}
-
-	public boolean isBombPlanted() {
-		return isBombPlanted;
 	}
 
 	public @Nullable ItemEntity getBombItem(Level level) {
@@ -527,6 +526,50 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	@Override
 	public int getTeamSwitchCooldown() {
 		return 2 * 60 * 20;
+	}
+
+	@Override
+	public boolean shouldCountDeath(@NotNull ServerPlayer player, @NotNull DamageSource source) {
+		if (!isGameStage()) {
+			return false;
+		}
+
+		if (source instanceof BombDamageSource) {
+			return true;
+		}
+
+		if (!(source.getEntity() instanceof ServerPlayer sourcePlayer)) {
+			return true;
+		}
+
+		if (player.equals(sourcePlayer)) {
+			return true;
+		}
+
+		return !PFUtil.isSameTeam(
+			playerManager.getPlayerTeam(player.getUUID()),
+			playerManager.getPlayerTeam(sourcePlayer.getUUID())
+		);
+	}
+
+	@Override
+	public boolean shouldCountKill(@NotNull ServerPlayer player, @NotNull LivingEntity killedEntity) {
+		if (!isGameStage()) {
+			return false;
+		}
+
+		if (player.equals(killedEntity)) {
+			return false;
+		}
+
+		if (!(killedEntity instanceof ServerPlayer)) {
+			return false;
+		}
+
+		return !PFUtil.isSameTeam(
+			playerManager.getPlayerTeam(player.getUUID()),
+			playerManager.getPlayerTeam(killedEntity.getUUID())
+		);
 	}
 
 	@Override

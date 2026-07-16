@@ -17,7 +17,6 @@ import com.boehmod.blockfront.util.RandomUtils;
 import com.boehmod.blockfront.util.math.BFPose;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.util.PFUtil;
-import dev.vuis.plusfront.world.BombDamageSource;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.IOException;
@@ -27,6 +26,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Optionull;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -307,22 +307,28 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		@NotNull DamageSource source,
 		@NotNull Set<UUID> players
 	) {
-		if (!game.isGameStage()) {
-			return;
-		}
-
 		if (isBombHolder(killedUuid)) {
 			onBombDrop(killedPlayer);
 		}
 
-		if (sourcePlayer != null &&
-			sourceUuid != null &&
-			!killedUuid.equals(sourceUuid) &&
-			isFriendlyKill(killedUuid, sourceUuid, source)
+		GameTeam killedTeam = getPlayerTeam(killedUuid);
+		GameTeam sourceTeam = Optionull.map(sourceUuid, this::getPlayerTeam);
+
+		if (game.isGameStage() &&
+			!killedPlayer.equals(sourcePlayer) &&
+			sourceTeam != null &&
+			PFUtil.isSameTeam(killedTeam, sourceTeam)
 		) {
 			onFriendlyKill(manager, sourcePlayer, sourceUuid, players);
-		} else {
-			super.handlePlayerDeath(manager, level, killedPlayer, killedUuid, sourcePlayer, sourceUuid, source, players);
+		}
+
+		if (game.shouldCountDeath(killedPlayer, source)) {
+			PFUtil.incrementTeamStat(killedTeam, BFStats.DEATHS);
+		}
+
+		if (sourcePlayer != null && game.shouldCountKill(sourcePlayer, killedPlayer)) {
+			PFUtil.incrementTeamStat(sourceTeam, BFStats.KILLS);
+			GameUtils.incrementPlayerStat(manager, game, sourcePlayer.getUUID(), BFStats.SCORE);
 		}
 	}
 
@@ -337,20 +343,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		@NotNull DamageSource source,
 		@NotNull Set<UUID> players
 	) {
-		if (sourceUuid != null && !sourceUuid.equals(killedUuid)) {
-			GameUtils.incrementPlayerStat(manager, game, sourceUuid, BFStats.SCORE);
-		}
-	}
-
-	private boolean isFriendlyKill(UUID killedUuid, UUID sourceUuid, DamageSource source) {
-		if (source instanceof BombDamageSource) {
-			return false;
-		}
-
-		GameTeam killedTeam = getPlayerTeam(killedUuid);
-		GameTeam sourceTeam = getPlayerTeam(sourceUuid);
-
-		return PFUtil.isSameTeam(killedTeam, sourceTeam);
+		throw new AssertionError();
 	}
 
 	private void onFriendlyKill(BFAbstractManager<?, ?, ?> manager, ServerPlayer sourcePlayer, UUID sourceUuid, Set<UUID> players) {

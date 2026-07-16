@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import lombok.Getter;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -100,6 +101,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	private final List<AABB> bombSiteBoxes = new ObjectArrayList<>();
 
 	private boolean isGameStage = false;
+	@Getter
 	private boolean finishedRound = false;
 	private int blinkTimer = 0;
 
@@ -107,10 +109,6 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		super(manager, game, dataHandler);
 
 		manager.getCinematics().method_2205(new BF_552(game));
-	}
-
-	public boolean isFinishedRound() {
-		return finishedRound;
 	}
 
 	@Override

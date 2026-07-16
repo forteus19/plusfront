@@ -81,9 +81,7 @@ public final class PFServerEvents {
 		Item targetItem = BFItems.BOMB.value();
 
 		for (ItemEntity itemEntity : event.getDrops()) {
-			Item droppedItem = itemEntity.getItem().getItem();
-
-			if (droppedItem == targetItem) {
+			if (itemEntity.getItem().getItem() == targetItem) {
 				itemEntity.setInvulnerable(true);
 				defusalGame.setBombItem(itemEntity);
 				break;

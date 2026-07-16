@@ -13815,8 +13815,20 @@ c	com/boehmod/blockfront/oL	com/boehmod/blockfront/unnamed/BF_684	com/boehmod/bl
 	f	I	mW	field_2927	field_2927
 	f	I	mX	field_2928	field_2928
 	m	(Lcom/boehmod/blockfront/ju;Lcom/boehmod/blockfront/common/player/c;Lcom/boehmod/blockfront/pp;Lnet/minecraft/world/entity/Entity;)V	a	method_7278	method_7278
-	m	(Lcom/boehmod/blockfront/ju;Lcom/boehmod/blockfront/common/player/c;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/world/entity/Entity;Ljava/util/Set;)V	a	method_2803	method_2803
-	m	(Lcom/boehmod/blockfront/ju;Lcom/boehmod/blockfront/common/player/c;Lnet/minecraft/world/damagesource/DamageSource;Lnet/minecraft/server/level/ServerPlayer;Ljava/util/UUID;Lnet/minecraft/world/entity/LivingEntity;Ljava/util/Set;)V	a	method_2804	method_2804
+	m	(Lcom/boehmod/blockfront/ju;Lcom/boehmod/blockfront/common/player/c;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/world/entity/Entity;Ljava/util/Set;)V	a	method_2803	handlePlayerDeath
+		p	1			manager
+		p	2			dataHandler
+		p	3			player
+		p	4			sourceEntity
+		p	5			players
+	m	(Lcom/boehmod/blockfront/ju;Lcom/boehmod/blockfront/common/player/c;Lnet/minecraft/world/damagesource/DamageSource;Lnet/minecraft/server/level/ServerPlayer;Ljava/util/UUID;Lnet/minecraft/world/entity/LivingEntity;Ljava/util/Set;)V	a	method_2804	handlePlayerKill
+		p	1			manager
+		p	2			dataHandler
+		p	3			source
+		p	4			player
+		p	5			uuid
+		p	6			killedEntity
+		p	7			players
 	m	(Lcom/boehmod/blockfront/ju;Lcom/boehmod/blockfront/common/player/c;Lnet/minecraft/world/entity/LivingEntity;Lcom/boehmod/blockfront/pp;Lnet/minecraft/world/entity/Entity;)V	a	method_2805	addAssistSections
 		p	1			manager
 		p	2			dataHandler
@@ -13827,9 +13839,22 @@ c	com/boehmod/blockfront/oL	com/boehmod/blockfront/unnamed/BF_684	com/boehmod/bl
 		p	4			source
 		p	5			broadcast
 		p	6			sendKilledMessage
-	m	(Lcom/boehmod/blockfront/ju;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/server/level/ServerPlayer;Ljava/util/UUID;Ljava/util/Set;)V	a	method_2807	method_2807
-	m	(Lcom/boehmod/blockfront/ju;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/server/level/ServerPlayer;Ljava/util/UUID;Ljava/util/Set;)V	a	method_5492	method_5492
-	m	(Lcom/boehmod/blockfront/ju;Lnet/neoforged/neoforge/event/entity/living/LivingDeathEvent;Ljava/util/Set;)V	a	method_2808	method_2808
+	m	(Lcom/boehmod/blockfront/ju;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/server/level/ServerPlayer;Ljava/util/UUID;Ljava/util/Set;)V	a	method_2807	incrementKillStreak
+		p	1			manager
+		p	2			killedPlayer
+		p	3			player
+		p	4			uuid
+		p	5			players
+	m	(Lcom/boehmod/blockfront/ju;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/server/level/ServerPlayer;Ljava/util/UUID;Ljava/util/Set;)V	a	method_5492	handleStreakLost
+		p	1			manager
+		p	2			sourceEntity
+		p	3			killedPlayer
+		p	4			killedUuid
+		p	5			players
+	m	(Lcom/boehmod/blockfront/ju;Lnet/neoforged/neoforge/event/entity/living/LivingDeathEvent;Ljava/util/Set;)V	a	method_2808	onPlayerDeath
+		p	1			manager
+		p	2			event
+		p	3			players
 	m	(Lcom/boehmod/blockfront/oF;)V	<init>	<init>	<init>
 		p	1			game
 c	com/boehmod/blockfront/oM	com/boehmod/blockfront/unnamed/BF_1279	com/boehmod/blockfront/util/CompoundTagWrapper
