@@ -162,7 +162,8 @@ public abstract class TroubleTownGameMixin implements TroubleTownGameEx {
 		method = "spawnRandomDrops",
 		at = @At(
 			value = "NEW",
-			target = "(Lnet/minecraft/world/level/ItemLike;)Lnet/minecraft/world/item/ItemStack;"
+			target = "(Lnet/minecraft/world/level/ItemLike;)Lnet/minecraft/world/item/ItemStack;",
+			ordinal = 0
 		)
 	)
 	private ItemStack overrideDropStack(ItemLike ignored) {
