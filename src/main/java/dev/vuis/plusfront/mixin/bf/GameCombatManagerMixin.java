@@ -9,7 +9,6 @@ import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.vuis.plusfront.game.tag.IConditionalCombatStats;
-import java.util.Set;
 import java.util.UUID;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -34,8 +33,7 @@ public abstract class GameCombatManagerMixin {
 		@NotNull BFAbstractManager<?, ?, ?> manager,
 		@NotNull PlayerDataHandler<?> dataHandler,
 		@NotNull ServerPlayer player,
-		@Nullable Entity sourceEntity,
-		@NotNull Set<UUID> players
+		@Nullable Entity sourceEntity
 	);
 
 	@Shadow
@@ -45,15 +43,14 @@ public abstract class GameCombatManagerMixin {
 		@NotNull DamageSource source,
 		@NotNull ServerPlayer player,
 		@NotNull UUID uuid,
-		@NotNull LivingEntity killedEntity,
-		@NotNull Set<UUID> players
+		@NotNull LivingEntity killedEntity
 	);
 
 	@Redirect(
 		method = "onPlayerDeath",
 		at = @At(
 			value = "INVOKE",
-			target = "Lcom/boehmod/blockfront/game/GameCombatManager;handlePlayerDeath(Lcom/boehmod/blockfront/common/BFAbstractManager;Lcom/boehmod/blockfront/common/player/PlayerDataHandler;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/world/entity/Entity;Ljava/util/Set;)V",
+			target = "Lcom/boehmod/blockfront/game/GameCombatManager;handlePlayerDeath(Lcom/boehmod/blockfront/common/BFAbstractManager;Lcom/boehmod/blockfront/common/player/PlayerDataHandler;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/world/entity/Entity;)V",
 			ordinal = 0
 		)
 	)
@@ -63,11 +60,10 @@ public abstract class GameCombatManagerMixin {
 		@NotNull PlayerDataHandler<?> dataHandler,
 		@NotNull ServerPlayer player,
 		@Nullable Entity sourceEntity,
-		@NotNull Set<UUID> players,
 		@Local DamageSource source
 	) {
 		if (!(game instanceof IConditionalCombatStats conditionalGame) || conditionalGame.shouldCountDeath(player, source)) {
-			handlePlayerDeath(manager, dataHandler, player, sourceEntity, players);
+			handlePlayerDeath(manager, dataHandler, player, sourceEntity);
 		}
 	}
 
@@ -75,7 +71,7 @@ public abstract class GameCombatManagerMixin {
 		method = "onPlayerDeath",
 		at = @At(
 			value = "INVOKE",
-			target = "Lcom/boehmod/blockfront/game/GameCombatManager;handlePlayerKill(Lcom/boehmod/blockfront/common/BFAbstractManager;Lcom/boehmod/blockfront/common/player/PlayerDataHandler;Lnet/minecraft/world/damagesource/DamageSource;Lnet/minecraft/server/level/ServerPlayer;Ljava/util/UUID;Lnet/minecraft/world/entity/LivingEntity;Ljava/util/Set;)V",
+			target = "Lcom/boehmod/blockfront/game/GameCombatManager;handlePlayerKill(Lcom/boehmod/blockfront/common/BFAbstractManager;Lcom/boehmod/blockfront/common/player/PlayerDataHandler;Lnet/minecraft/world/damagesource/DamageSource;Lnet/minecraft/server/level/ServerPlayer;Ljava/util/UUID;Lnet/minecraft/world/entity/LivingEntity;)V",
 			ordinal = 0
 		)
 	)
@@ -86,11 +82,10 @@ public abstract class GameCombatManagerMixin {
 		@NotNull DamageSource source,
 		@NotNull ServerPlayer player,
 		@NotNull UUID uuid,
-		@NotNull LivingEntity killedEntity,
-		@NotNull Set<UUID> players
+		@NotNull LivingEntity killedEntity
 	) {
 		if (!(game instanceof IConditionalCombatStats conditionalGame) || conditionalGame.shouldCountKill(player, killedEntity)) {
-			handlePlayerKill(manager, dataHandler, source, player, uuid, killedEntity, players);
+			handlePlayerKill(manager, dataHandler, source, player, uuid, killedEntity);
 		}
 	}
 

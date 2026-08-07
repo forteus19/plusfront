@@ -4,6 +4,7 @@ import dev.vuis.plusfront.util.index.FeatureFlagIndex;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import java.util.Map;
+import lombok.Getter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -15,6 +16,7 @@ public final class PFSavedData extends SavedData {
 	private static final Factory<PFSavedData> FACTORY = new Factory<>(PFSavedData::new, PFSavedData::load);
 	private static final String NAME = "plusfront";
 
+	@Getter
 	private final Object2BooleanMap<String> featureFlags;
 
 	private PFSavedData(Object2BooleanMap<String> featureFlags) {
@@ -27,10 +29,6 @@ public final class PFSavedData extends SavedData {
 
 	public static PFSavedData get(ServerLevel level) {
 		return level.getDataStorage().computeIfAbsent(FACTORY, NAME);
-	}
-
-	public Object2BooleanMap<String> getFeatureFlags() {
-		return featureFlags;
 	}
 
 	@Override
@@ -54,11 +52,12 @@ public final class PFSavedData extends SavedData {
 			for (Map.Entry<String, Boolean> defaultEntry : FeatureFlagIndex.DEFAULT.entrySet()) {
 				String key = defaultEntry.getKey();
 
-				if (featureFlagsTag.contains(key, Tag.TAG_BYTE)) {
-					featureFlags.put(key, featureFlagsTag.getBoolean(key));
-				} else {
-					featureFlags.put(key, defaultEntry.getValue().booleanValue());
-				}
+				featureFlags.put(
+					key,
+					featureFlagsTag.contains(key, Tag.TAG_BYTE) ?
+						featureFlagsTag.getBoolean(key) :
+                        defaultEntry.getValue()
+				);
 			}
 		} else {
 			featureFlags = FeatureFlagIndex.mutableDefault();

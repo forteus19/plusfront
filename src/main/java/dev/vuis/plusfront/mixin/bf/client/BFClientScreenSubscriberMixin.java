@@ -1,6 +1,5 @@
 package dev.vuis.plusfront.mixin.bf.client;
 
-import com.boehmod.blockfront.client.ac.BFClientAntiCheat;
 import com.boehmod.blockfront.client.event.BFClientScreenSubscriber;
 import com.llamalad7.mixinextras.expression.Definition;
 import com.llamalad7.mixinextras.expression.Expression;
@@ -21,10 +20,6 @@ public abstract class BFClientScreenSubscriberMixin {
 		)
 	)
 	private static boolean preventLobbyScreenOverriding(boolean original) {
-		if (original) {
-			// no shenanigans (hopefully)
-			BFClientAntiCheat.enabled = true;
-		}
 		return false;
 	}
 }

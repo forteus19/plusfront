@@ -14,13 +14,13 @@ val minecraftVersion = "1.21.1"
 val parchmentVersion = "2024.11.17"
 
 val loaderVersionRange = "[1,)"
-val neoforgeVersion = "21.1.233"
+val neoforgeVersion = "21.1.244"
 
-val blockfrontVersion = "0.9.0.14b"
-val blockfrontModrinthVersion = "yh1JlKob"
+val blockfrontVersion = "0.9.0.23b"
+val blockfrontModrinthVersion = "QiySBGtK"
 
 val geckolibVersion = "4.7.3"
-val veilVersion = "4.3.0"
+val veilVersion = "4.4.1"
 val sodiumVersion = "0.8.12+mc1.21.1"
 val voicechatApiVersion = "2.6.20"
 
