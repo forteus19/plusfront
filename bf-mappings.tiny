@@ -10327,10 +10327,14 @@ c	com/boehmod/blockfront/kr	com/boehmod/blockfront/unnamed/BF_1349	com/boehmod/b
 	m	()Ljava/lang/String;	F	method_7128	getDirectory
 	m	()Lcom/mojang/serialization/Codec;	a	method_7118	getCodec
 	m	(Lcom/mojang/serialization/Codec;Lcom/google/gson/Gson;Ljava/util/Map;Ljava/util/function/BiFunction;Ljava/nio/file/Path;)V	a	method_7120	method_7120
-	m	(Ljava/lang/Class;Ljava/lang/String;Lcom/mojang/serialization/Codec;Ljava/util/function/BiFunction;)Ljava/util/Map;	a	method_7121	method_7121
+	m	(Ljava/lang/Class;Ljava/lang/String;Lcom/mojang/serialization/Codec;Ljava/util/function/BiFunction;)Ljava/util/Map;	a	method_7121	loadFromClasspath
+		p	0			resourceClass
+		p	1			path
+		p	2			codec
+		p	3			rlGetter
 	m	(Ljava/lang/Object;Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/resources/ResourceLocation;	a	method_7122	method_7122
 	m	(Ljava/lang/String;Lnet/minecraft/resources/ResourceLocation;Ljava/lang/String;)Ljava/lang/RuntimeException;	a	method_7123	method_7123
-	m	(Lnet/minecraft/server/packs/resources/ResourceManager;Ljava/lang/String;Lcom/mojang/serialization/Codec;Ljava/util/function/BiFunction;)Ljava/util/Map;	a	method_7119	method_7119
+	m	(Lnet/minecraft/server/packs/resources/ResourceManager;Ljava/lang/String;Lcom/mojang/serialization/Codec;Ljava/util/function/BiFunction;)Ljava/util/Map;	a	method_7119	loadFromResources
 	m	(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)Ljava/util/Map;	b	method_7125	prepare
 	m	(Ljava/nio/file/Path;Ljava/lang/String;)Ljava/lang/RuntimeException;	c	method_7126	method_7126
 	m	(Lnet/minecraft/resources/ResourceLocation;)Z	c	method_7124	method_7124
@@ -10355,19 +10359,28 @@ c	com/boehmod/blockfront/kt	com/boehmod/blockfront/unnamed/BF_1257	com/boehmod/b
 	f	Ljava/lang/String;	bn	field_8760	TEMPLATES_DIRECTORY
 	m	(Lcom/boehmod/blockfront/pt;Ljava/lang/String;)Lnet/minecraft/resources/ResourceLocation;	a	method_8158	method_8158
 	m	(Lcom/boehmod/blockfront/pt;Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/resources/ResourceLocation;	a	method_8160	method_8160
-	m	(Lcom/boehmod/blockfront/py;Ljava/util/Map;Lcom/boehmod/blockfront/tt;)Lcom/boehmod/blockfront/py;	a	method_8159	method_8159
+	m	(Lcom/boehmod/blockfront/py;Ljava/util/Map;Lcom/boehmod/blockfront/tt;)Lcom/boehmod/blockfront/py;	a	method_8159	applyTemplates
+		p	0			loadout
+		p	1			templateData
+		p	2			nationType
 	m	(Lcom/boehmod/blockfront/rI;Ljava/lang/String;)Lnet/minecraft/resources/ResourceLocation;	a	method_7138	method_7138
 	m	(Lcom/boehmod/blockfront/rI;Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/resources/ResourceLocation;	a	method_7139	method_7122
 	m	(Ljava/lang/String;Lcom/boehmod/blockfront/pC;)Z	a	method_8233	method_8233
-	m	(Ljava/util/Map;Ljava/util/Map;Lcom/boehmod/blockfront/tt;)Ljava/util/Map;	a	method_8161	method_8161
+	m	(Ljava/util/Map;Ljava/util/Map;Lcom/boehmod/blockfront/tt;)Ljava/util/Map;	a	method_8161	applyTemplates
+		p	0			data
+		p	1			templateData
+		p	2			nationType
 	m	(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V	a	method_6265	apply
 	m	(Ljava/lang/Object;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V	apply	apply	apply
 		p	1			data
 		p	2			resourceManager
 		p	3			profiler
-	m	(Ljava/util/Map;Ljava/util/Map;)V	b	method_6272	method_6272
+	m	(Ljava/util/Map;Ljava/util/Map;)V	b	method_6272	apply
+		p	0			data
+		p	1			templateData
 	m	()V	bw	method_6269	bootstrap
-	m	(Ljava/util/Map;)V	e	method_8234	method_8234
+	m	(Ljava/util/Map;)V	e	method_8234	checkTemplates
+		p	0			templateData
 	m	()Ljava/util/Map;	k	method_6273	getData
 c	com/boehmod/blockfront/ku	com/boehmod/blockfront/unnamed/BF_462	com/boehmod/blockfront/assets/AssetCommandBuilder
 	f	Ljava/util/Map;	F	field_2094	subCommands
@@ -15926,12 +15939,12 @@ c	com/boehmod/blockfront/ps	com/boehmod/blockfront/unnamed/BF_753	com/boehmod/bl
 		p	3			textureName
 		p	4			translation
 		p	5			buttonPosition
-c	com/boehmod/blockfront/pt	com/boehmod/blockfront/unnamed/BF_1475	com/boehmod/blockfront/unnamed/BF_1475
+c	com/boehmod/blockfront/pt	com/boehmod/blockfront/unnamed/BF_1475	com/boehmod/blockfront/common/data/ClassTemplate
 	f	Ljava/util/List;	aC	field_8827	items
 	f	Ljava/util/List;	aD	field_8828	slots
 	f	I	oX	field_8829	cost
 	f	I	oY	field_8830	exp
-	f	Lcom/mojang/serialization/Codec;	u	field_8831	field_8831
+	f	Lcom/mojang/serialization/Codec;	u	field_8831	CODEC
 	m	()Ljava/util/List;	D	method_8235	items
 	m	()Ljava/util/List;	E	method_8236	slots
 	m	(Lcom/boehmod/blockfront/tt;Ljava/util/Map;)Lcom/boehmod/blockfront/py;	a	method_8237	method_8237
@@ -16038,7 +16051,7 @@ c	com/boehmod/blockfront/px	com/boehmod/blockfront/unnamed/BF_757	com/boehmod/bl
 c	com/boehmod/blockfront/px$a	com/boehmod/blockfront/unnamed/BF_757$BF_758	com/boehmod/blockfront/game/impl/boot/BootcampNpcSpawn$BF_758
 	f	Lnet/minecraft/world/phys/Vec3;	o	field_3249	field_3249
 c	com/boehmod/blockfront/py	com/boehmod/blockfront/unnamed/BF_759	com/boehmod/blockfront/common/match/Loadout
-	f	Ljava/lang/String;	T	field_8761	field_8761
+	f	Ljava/lang/String;	T	field_8761	referencedTemplate
 	f	Ljava/util/List;	aH	field_3250	extra
 	f	Lnet/minecraft/world/item/ItemStack;	h	field_3251	primary
 	f	Lnet/minecraft/world/item/ItemStack;	i	field_3252	secondary
@@ -16048,17 +16061,19 @@ c	com/boehmod/blockfront/py	com/boehmod/blockfront/unnamed/BF_759	com/boehmod/bl
 	f	Lnet/minecraft/world/item/ItemStack;	m	field_3259	chest
 	f	Lnet/minecraft/world/item/ItemStack;	n	field_3260	legs
 	f	Lnet/minecraft/world/item/ItemStack;	o	field_3261	feet
-	f	I	oX	field_3255	field_3255
+	f	I	oX	field_3255	cost
 	f	I	oY	field_3257	minimumXp
 	f	I	pj	field_3256	field_3256
-	f	Lcom/mojang/serialization/Codec;	w	field_7401	field_7401
-	m	()Ljava/lang/String;	G	method_8165	method_8165
+	f	Lcom/mojang/serialization/Codec;	w	field_7401	CODEC
+	m	()Ljava/lang/String;	G	method_8165	getReferencedTemplate
 	m	()Ljava/util/List;	G	method_3176	getExtra
 	m	()Ljava/util/List;	H	method_3177	getItemStackList
-	m	(I)Lcom/boehmod/blockfront/py;	a	method_3154	method_3154
+	m	(I)Lcom/boehmod/blockfront/py;	a	method_3154	setCost
+		p	1			cost
 	m	(Lcom/boehmod/blockfront/py;)Ljava/util/List;	a	method_6444	method_6444
 	m	(Lcom/boehmod/blockfront/py;)Ljava/util/Optional;	a	method_8163	method_8163
-	m	(Ljava/lang/String;)Lcom/boehmod/blockfront/py;	a	method_8164	method_8164
+	m	(Ljava/lang/String;)Lcom/boehmod/blockfront/py;	a	method_8164	setReferencedTemplate
+		p	1			template
 	m	(Ljava/util/Collection;)Lcom/boehmod/blockfront/py;	a	method_3157	addExtra
 		p	1			itemStacks
 	m	(Ljava/util/List;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/util/Optional;)Lcom/boehmod/blockfront/py;	a	method_6445	method_6445
@@ -16072,7 +16087,7 @@ c	com/boehmod/blockfront/py	com/boehmod/blockfront/unnamed/BF_759	com/boehmod/bl
 	m	(Lnet/minecraft/world/item/ItemStack;)Lcom/boehmod/blockfront/py;	b	method_3165	setChest
 		p	1			itemStack
 	m	()Z	bE	method_3162	isInitialized
-	m	()I	bv	method_3160	method_3160
+	m	()I	bv	method_3160	getCost
 	m	()I	bw	method_3161	getMinimumXp
 	m	(Lnet/minecraft/world/item/ItemStack;)Z	c	method_6446	method_6446
 	m	()Lnet/minecraft/world/item/ItemStack;	d	method_3166	getPrimary

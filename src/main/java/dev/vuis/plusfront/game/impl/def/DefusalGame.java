@@ -573,6 +573,11 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	}
 
 	@Override
+	public boolean shouldRewardLongDistanceShot() {
+		return false;
+	}
+
+	@Override
 	public int method_3386() {
 		// unused
 		return 0;

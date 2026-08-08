@@ -19,4 +19,8 @@ public interface IConditionalCombatStats {
 	) {
 		return true;
 	}
+
+	default boolean shouldRewardLongDistanceShot() {
+		return true;
+	}
 }

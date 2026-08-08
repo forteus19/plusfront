@@ -2,11 +2,13 @@ package dev.vuis.plusfront.mixin.bf;
 
 import com.boehmod.blockfront.common.BFAbstractManager;
 import com.boehmod.blockfront.common.player.PlayerDataHandler;
+import com.boehmod.blockfront.common.stat.BFStat;
 import com.boehmod.blockfront.game.AbstractGame;
 import com.boehmod.blockfront.game.GameCombatManager;
 import com.llamalad7.mixinextras.expression.Definition;
 import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.vuis.plusfront.game.tag.IConditionalCombatStats;
 import java.util.UUID;
@@ -20,7 +22,6 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(GameCombatManager.class)
 public abstract class GameCombatManagerMixin {
@@ -28,25 +29,7 @@ public abstract class GameCombatManagerMixin {
 	@Final
 	private @NotNull AbstractGame<?, ?, ?> game;
 
-	@Shadow
-	protected abstract void handlePlayerDeath(
-		@NotNull BFAbstractManager<?, ?, ?> manager,
-		@NotNull PlayerDataHandler<?> dataHandler,
-		@NotNull ServerPlayer player,
-		@Nullable Entity sourceEntity
-	);
-
-	@Shadow
-	protected abstract void handlePlayerKill(
-		@NotNull BFAbstractManager<?, ?, ?> manager,
-		@NotNull PlayerDataHandler<?> dataHandler,
-		@NotNull DamageSource source,
-		@NotNull ServerPlayer player,
-		@NotNull UUID uuid,
-		@NotNull LivingEntity killedEntity
-	);
-
-	@Redirect(
+	@WrapWithCondition(
 		method = "onPlayerDeath",
 		at = @At(
 			value = "INVOKE",
@@ -54,7 +37,7 @@ public abstract class GameCombatManagerMixin {
 			ordinal = 0
 		)
 	)
-	private void skipDeathHandlerIfNotCounted(
+	private boolean checkDeathConditional(
 		GameCombatManager<?> instance,
 		@NotNull BFAbstractManager<?, ?, ?> manager,
 		@NotNull PlayerDataHandler<?> dataHandler,
@@ -62,12 +45,10 @@ public abstract class GameCombatManagerMixin {
 		@Nullable Entity sourceEntity,
 		@Local DamageSource source
 	) {
-		if (!(game instanceof IConditionalCombatStats conditionalGame) || conditionalGame.shouldCountDeath(player, source)) {
-			handlePlayerDeath(manager, dataHandler, player, sourceEntity);
-		}
+		return !(game instanceof IConditionalCombatStats conditionalGame) || conditionalGame.shouldCountDeath(player, source);
 	}
 
-	@Redirect(
+	@WrapWithCondition(
 		method = "onPlayerDeath",
 		at = @At(
 			value = "INVOKE",
@@ -75,7 +56,7 @@ public abstract class GameCombatManagerMixin {
 			ordinal = 0
 		)
 	)
-	private void skipKillHandlerIfNotCounted(
+	private boolean checkKillConditional(
 		GameCombatManager<?> instance,
 		@NotNull BFAbstractManager<?, ?, ?> manager,
 		@NotNull PlayerDataHandler<?> dataHandler,
@@ -84,9 +65,25 @@ public abstract class GameCombatManagerMixin {
 		@NotNull UUID uuid,
 		@NotNull LivingEntity killedEntity
 	) {
-		if (!(game instanceof IConditionalCombatStats conditionalGame) || conditionalGame.shouldCountKill(player, killedEntity)) {
-			handlePlayerKill(manager, dataHandler, source, player, uuid, killedEntity);
-		}
+		return !(game instanceof IConditionalCombatStats conditionalGame) || conditionalGame.shouldCountKill(player, killedEntity);
+	}
+
+	@WrapWithCondition(
+		method = "handlePlayerKill",
+		at = @At(
+			value = "INVOKE",
+			target = "Lcom/boehmod/blockfront/game/GameUtils;changePlayerStat(Lcom/boehmod/blockfront/common/BFAbstractManager;Lcom/boehmod/blockfront/game/AbstractGame;Ljava/util/UUID;Lcom/boehmod/blockfront/common/stat/BFStat;I)V",
+			ordinal = 0
+		)
+	)
+	private boolean checkLongDistanceShotReward(
+		@NotNull BFAbstractManager<?, ?, ?> manager,
+		@NotNull AbstractGame<?, ?, ?> game,
+		@NotNull UUID player,
+		@NotNull BFStat stat,
+		int change
+	) {
+		return !(game instanceof IConditionalCombatStats conditionalGame) || conditionalGame.shouldRewardLongDistanceShot();
 	}
 
 	@Definition(id = "entity", local = @Local(type = LivingEntity.class, ordinal = 0))
@@ -99,7 +96,7 @@ public abstract class GameCombatManagerMixin {
 			ordinal = 1
 		)
 	)
-	private boolean skipKillFeedEntryStatsIfNotCounted(
+	private boolean checkKillFeedEntryStats(
 		boolean original,
 		@Local(argsOnly = true) LivingEntity killedEntity,
 		@Local(ordinal = 1) ServerPlayer sourcePlayer
