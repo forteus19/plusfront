@@ -10,6 +10,7 @@ import com.boehmod.blockfront.client.render.game.element.TeamScoreGameElement;
 import com.boehmod.blockfront.client.render.minimap.MinimapWaypoint;
 import com.boehmod.blockfront.client.screen.match.summary.MatchSummaryScreen;
 import com.boehmod.blockfront.client.settings.BFClientSettings;
+import com.boehmod.blockfront.common.match.TeamType;
 import com.boehmod.blockfront.common.net.packet.BFRegularPingRequestPacket;
 import com.boehmod.blockfront.common.net.packet.BFRegularPingTriggerRequestPacket;
 import com.boehmod.blockfront.common.stat.BFStats;
@@ -97,6 +98,10 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 			.sides(true, false, false)
 			.verticalFade(BFRendering.BoundaryFadeDirection.TOP)
 			.occludedAlpha(0.25f);
+
+	public static final Set<ResourceLocation> SPECIALIST_UNIFORMS = Set.of(
+		BFRes.loc("ussr_infantry")
+	);
 
 	private final List<AABB> bombSiteBoxes = new ObjectArrayList<>();
 
@@ -565,6 +570,26 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		@NotNull ClientLevel level
 	) {
 		event.setCanRender(player.hasLineOfSight(event.getEntity()) ? TriState.TRUE : TriState.FALSE);
+	}
+
+	@Override
+	public @Nullable ResourceLocation getUniformTexture(@NotNull UUID uuid, @Nullable String classKey, @NotNull Set<UUID> players) {
+		if (classKey == null || !players.contains(uuid)) {
+			return null;
+		}
+
+		GameTeam team = game.getPlayerManager().getPlayerTeam(uuid);
+		if (team == null) {
+			return null;
+		}
+
+		TeamType teamType = team.getDivisionData(game);
+
+		if (classKey.equals("specialist") && !SPECIALIST_UNIFORMS.contains(teamType.getResourceLocation())) {
+			classKey = "anti_tank";
+		}
+
+		return BFRes.loc("textures/skins/game/nations/" + teamType.getCountry().getTag() + "/" + teamType.getSkin() + "/" + classKey + ".png");
 	}
 
 	@Override

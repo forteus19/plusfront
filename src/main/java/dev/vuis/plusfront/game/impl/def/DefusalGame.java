@@ -9,6 +9,7 @@ import com.boehmod.blockfront.common.entity.BombEntity;
 import com.boehmod.blockfront.common.item.BFConsumableItem;
 import com.boehmod.blockfront.common.match.MatchCallout;
 import com.boehmod.blockfront.common.match.MatchClass;
+import com.boehmod.blockfront.common.match.TeamType;
 import com.boehmod.blockfront.common.net.packet.BFRegularPingPacket;
 import com.boehmod.blockfront.common.net.packet.BFRegularPingTriggerPacket;
 import com.boehmod.blockfront.common.player.PlayerDataHandler;
@@ -44,6 +45,7 @@ import com.mojang.brigadier.context.CommandContext;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.data.PFDefusalData;
 import dev.vuis.plusfront.ex.TeamDeathmatchCodecEx;
+import dev.vuis.plusfront.game.TransformedTeamTypes;
 import dev.vuis.plusfront.game.tag.IConditionalCombatStats;
 import dev.vuis.plusfront.util.PFUtil;
 import dev.vuis.plusfront.world.BombDamageSource;
@@ -287,6 +289,16 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	public boolean isPostStage() {
 		return stageManager.getCurrentStage().getClass() == DefusalPostStage.class;
+	}
+
+	@Override
+	public @NotNull TeamType getAlliesDivision() {
+		return TransformedTeamTypes.getDefusal(super.getAlliesDivision());
+	}
+
+	@Override
+	public @NotNull TeamType getAxisDivision() {
+		return TransformedTeamTypes.getDefusal(super.getAxisDivision());
 	}
 
 	@Override
@@ -839,16 +851,16 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	@Override
 	public @NotNull Set<MatchClass> getBannedClasses() {
+		MatchClass medic = MatchClass.getByKey("medic");
+		assert medic != null;
 		MatchClass gunner = MatchClass.getByKey("gunner");
 		assert gunner != null;
 		MatchClass antiTank = MatchClass.getByKey("anti_tank");
 		assert antiTank != null;
-		MatchClass specialist = MatchClass.getByKey("specialist");
-		assert specialist != null;
 		MatchClass commander = MatchClass.getByKey("commander");
 		assert commander != null;
 
-		return Set.of(gunner, antiTank, specialist, commander);
+		return Set.of(medic, gunner, antiTank, commander);
 	}
 
 	@Override

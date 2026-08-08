@@ -28,13 +28,15 @@
     "bf.MapEffectCodecsMixin",
     "bf.MapEffectRegistryMixin",
     "bf.MapEnvironmentMixin",
+    "bf.TeamTypeAccessor",
+    "bf.TeamTypeMixin",
     "bf.TroubleTownGameMixin",
     "bf.TroubleTownPlayerManagerMixin",
     "bf.TroubleTownWaitingStageMixin"
   ],
   "client": [
-    "bf.client.AbstractGameClientMixin",
     "bf.client.BFClientMixin",
+    "bf.client.BFClientPlayerDataMixin",
     "bf.client.BFClientScreenSubscriberMixin",
     "bf.client.BFConsumableItemMixin",
     "bf.client.FakeEnvironmentMixin",
