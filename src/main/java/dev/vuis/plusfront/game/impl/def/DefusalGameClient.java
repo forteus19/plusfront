@@ -589,7 +589,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 			classKey = "anti_tank";
 		}
 
-		return BFRes.loc("textures/skins/game/nations/" + teamType.getCountry().getTag() + "/" + teamType.getSkin() + "/" + classKey + ".png");
+		return BFRes.loc("textures/skins/game/nations/" + teamType.getNationType().getTag() + "/" + teamType.getSkin() + "/" + classKey + ".png");
 	}
 
 	@Override

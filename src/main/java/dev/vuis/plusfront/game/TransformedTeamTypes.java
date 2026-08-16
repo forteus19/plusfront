@@ -36,7 +36,7 @@ public final class TransformedTeamTypes {
 
 		DISABLE_INDEX.set(true);
 		TeamType transformed = new TeamType(
-			original.getId(), original.getCountry(), original.getSkin()
+			original.getId(), original.getNationType(), original.getSkin()
 		);
 		DISABLE_INDEX.set(false);
 
@@ -45,7 +45,7 @@ public final class TransformedTeamTypes {
 		Map<MatchClass, ObjectList<Loadout>> loadouts = ((TeamTypeAccessor) (Object) transformed).getRawLoadouts();
 		loadouts.putAll(originalAccessor.getRawLoadouts());
 
-		switch (transformed.getCountry().getTag()) {
+		switch (transformed.getNationType().getTag()) {
 			case "fr" -> {
 				putSpecialist(
 					loadouts,
