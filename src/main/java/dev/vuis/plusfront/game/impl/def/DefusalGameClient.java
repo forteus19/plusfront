@@ -249,9 +249,10 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		float partialTick
 	) {
 		DefusalPlayerManager playerManager = game.getPlayerManager();
-		Camera camera = minecraft.gameRenderer.getMainCamera();
 
-		if (PFKeyMappings.showBombSites.isDown()) {
+		if (PFKeyMappings.showWaypoints.isDown()) {
+			Camera camera = minecraft.gameRenderer.getMainCamera();
+
 			for (BombSite bombSite : game.getBombSites()) {
 				if (bombSite.waypoints.isEmpty()) {
 					continue;
@@ -264,16 +265,16 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 					);
 				}
 			}
-		}
 
-		if (playerManager.terrorists().hasPlayer(player.getUUID())) {
-			ItemEntity bombItem = game.getBombItem(level);
+			if (playerManager.terrorists().hasPlayer(player.getUUID())) {
+				ItemEntity bombItem = game.getBombItem(level);
 
-			if (bombItem != null) {
-				renderBombItemWaypoint(
-					poseStack, camera, width, height, partialTick,
-					bombItem.getPosition(partialTick).add(0.0, 0.5, 0.0)
-				);
+				if (bombItem != null) {
+					renderBombItemWaypoint(
+						poseStack, camera, width, height, partialTick,
+						bombItem.getPosition(partialTick).add(0.0, 0.5, 0.0)
+					);
+				}
 			}
 		}
 

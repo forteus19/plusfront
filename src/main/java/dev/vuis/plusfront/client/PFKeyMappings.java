@@ -8,15 +8,15 @@ import org.lwjgl.glfw.GLFW;
 public final class PFKeyMappings {
 	private static final String CATEGORY_NAME = "key.categories.pf";
 
-	public static KeyMapping showBombSites;
+	public static KeyMapping showWaypoints;
 
 	private PFKeyMappings() {
 		throw new AssertionError();
 	}
 
 	public static void register(Consumer<KeyMapping> registrar) {
-		registrar.accept(showBombSites = new KeyMapping(
-			"key.pf.showBombSites",
+		registrar.accept(showWaypoints = new KeyMapping(
+			"key.pf.showWaypoints",
 			InputConstants.Type.KEYSYM,
 			GLFW.GLFW_KEY_Z,
 			CATEGORY_NAME
