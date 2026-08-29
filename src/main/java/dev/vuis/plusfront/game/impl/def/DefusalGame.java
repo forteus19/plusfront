@@ -655,6 +655,12 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 			"bomb.defused"
 		);
 
+		GameUtils.playSound(
+			players,
+			BFSounds.MISC_VC_STOP.value(),
+			SoundSource.NEUTRAL
+		);
+
 		onRoundWin(players, true, true);
 	}
 
@@ -705,13 +711,17 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 			return;
 		}
 
-		isBombPlanted = true;
+		BombEntity bomb = BFEntityTypes.BOMB.value().create(level);
+		if (bomb == null) {
+			PlusFront.LOGGER.error("Failed to create bomb entity!");
+			return;
+		}
 
-		BombEntity bomb = new BombEntity(BFEntityTypes.BOMB.value(), level);
 		bomb.setGame(this);
 		bomb.moveTo(player.position(), player.getYRot(), 0f);
 
 		level.addFreshEntity(bomb);
+		isBombPlanted = true;
 
 		player.getInventory().removeItem(heldStack);
 		playerManager.clearBombHolder();
@@ -731,19 +741,9 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 		GameUtils.playSound(
 			players,
-			BFSounds.ITEM_BOMB_PLANT.value(),
+			BFSounds.MISC_VC_START.value(),
 			SoundSource.NEUTRAL
 		);
-		for (UUID playerUuid : players) {
-			if (!playerUuid.equals(player.getUUID())) {
-				GameUtils.playSound(
-					playerUuid,
-					SoundEvents.ENDER_DRAGON_FLAP,
-					SoundSource.NEUTRAL,
-					1.0f, 1.5f
-				);
-			}
-		}
 	}
 
 	/**

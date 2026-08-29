@@ -58,9 +58,8 @@ public final class DefusalWaitingStage extends AbstractGameStage<DefusalGame, De
 
 		GameUtils.playSound(
 			players,
-			BFSounds.MATCH_CLASSES_CHANGE.value(),
-			SoundSource.NEUTRAL,
-			1f, 1f
+			BFSounds.BLOCK_FIELD_CRATE_USE.value(),
+			SoundSource.NEUTRAL
 		);
 
 		playerManager.refreshTerroristBomb();
