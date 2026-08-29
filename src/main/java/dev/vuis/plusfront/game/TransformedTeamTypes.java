@@ -1,9 +1,9 @@
 package dev.vuis.plusfront.game;
 
 import com.boehmod.blockfront.common.item.GunItem;
-import com.boehmod.blockfront.common.match.Loadout;
-import com.boehmod.blockfront.common.match.MatchClass;
-import com.boehmod.blockfront.common.match.TeamType;
+import com.boehmod.blockfront.game.ClassType;
+import com.boehmod.blockfront.game.Loadout;
+import com.boehmod.blockfront.game.TeamType;
 import com.boehmod.blockfront.registry.BFItems;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.mixin.bf.TeamTypeAccessor;
@@ -42,7 +42,7 @@ public final class TransformedTeamTypes {
 
 		transformed.races(originalAccessor.getRaces());
 
-		Map<MatchClass, ObjectList<Loadout>> loadouts = ((TeamTypeAccessor) (Object) transformed).getRawLoadouts();
+		Map<ClassType, ObjectList<Loadout>> loadouts = ((TeamTypeAccessor) (Object) transformed).getRawLoadouts();
 		loadouts.putAll(originalAccessor.getRawLoadouts());
 
 		switch (transformed.getNationType().getTag()) {
@@ -124,13 +124,13 @@ public final class TransformedTeamTypes {
 	}
 
 	private static void putSpecialist(
-		Map<MatchClass, ObjectList<Loadout>> loadouts,
+		Map<ClassType, ObjectList<Loadout>> loadouts,
 		DeferredHolder<Item, ? extends GunItem> primary,
 		DeferredHolder<Item, ? extends GunItem> secondary,
 		DeferredHolder<Item, ? extends Item> atGrenade,
 		DeferredHolder<Item, ? extends Item> smokeGrenade
 	) {
-		MatchClass specialist = MatchClass.getByKey("specialist");
+		ClassType specialist = ClassType.getByKey("specialist");
 		assert specialist != null;
 
 		loadouts.put(

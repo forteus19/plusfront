@@ -8,8 +8,6 @@ import com.boehmod.blockfront.common.BFAbstractManager;
 import com.boehmod.blockfront.common.entity.BombEntity;
 import com.boehmod.blockfront.common.item.BFConsumableItem;
 import com.boehmod.blockfront.common.match.MatchCallout;
-import com.boehmod.blockfront.common.match.MatchClass;
-import com.boehmod.blockfront.common.match.TeamType;
 import com.boehmod.blockfront.common.net.packet.BFRegularPingPacket;
 import com.boehmod.blockfront.common.net.packet.BFRegularPingTriggerPacket;
 import com.boehmod.blockfront.common.player.PlayerDataHandler;
@@ -17,6 +15,7 @@ import com.boehmod.blockfront.common.stat.BFStats;
 import com.boehmod.blockfront.game.AbstractGame;
 import com.boehmod.blockfront.game.AbstractGameClient;
 import com.boehmod.blockfront.game.AbstractGameStage;
+import com.boehmod.blockfront.game.ClassType;
 import com.boehmod.blockfront.game.GameBoundary;
 import com.boehmod.blockfront.game.GameStageManager;
 import com.boehmod.blockfront.game.GameStageTimer;
@@ -27,6 +26,7 @@ import com.boehmod.blockfront.game.GameUtils;
 import com.boehmod.blockfront.game.IdleGameStage;
 import com.boehmod.blockfront.game.SpectatorScope;
 import com.boehmod.blockfront.game.TeamJoinType;
+import com.boehmod.blockfront.game.TeamType;
 import com.boehmod.blockfront.game.tag.IAllowsCallouts;
 import com.boehmod.blockfront.game.tag.IAllowsPings;
 import com.boehmod.blockfront.game.tag.IAllowsSoundboard;
@@ -840,24 +840,14 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 	}
 
 	@Override
-	public int getClassLimit(@NotNull MatchClass matchClass) {
-		return switch (matchClass.getKey()) {
-			case "assault" -> 3;
-			case "support", "medic", "sniper" -> 2;
-			case "gunner", "specialist", "anti_tank", "commander" -> 1;
-			default -> 0;
-		};
-	}
-
-	@Override
-	public @NotNull Set<MatchClass> getBannedClasses() {
-		MatchClass medic = MatchClass.getByKey("medic");
+	public @NotNull Set<ClassType> getBannedClasses() {
+		ClassType medic = ClassType.getByKey("medic");
 		assert medic != null;
-		MatchClass gunner = MatchClass.getByKey("gunner");
+		ClassType gunner = ClassType.getByKey("gunner");
 		assert gunner != null;
-		MatchClass antiTank = MatchClass.getByKey("anti_tank");
+		ClassType antiTank = ClassType.getByKey("anti_tank");
 		assert antiTank != null;
-		MatchClass commander = MatchClass.getByKey("commander");
+		ClassType commander = ClassType.getByKey("commander");
 		assert commander != null;
 
 		return Set.of(medic, gunner, antiTank, commander);

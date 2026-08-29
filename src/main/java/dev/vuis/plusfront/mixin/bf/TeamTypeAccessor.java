@@ -1,9 +1,9 @@
 package dev.vuis.plusfront.mixin.bf;
 
 import com.boehmod.blockfront.common.match.BFRace;
-import com.boehmod.blockfront.common.match.Loadout;
-import com.boehmod.blockfront.common.match.MatchClass;
-import com.boehmod.blockfront.common.match.TeamType;
+import com.boehmod.blockfront.game.ClassType;
+import com.boehmod.blockfront.game.Loadout;
+import com.boehmod.blockfront.game.TeamType;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import java.util.List;
 import java.util.Map;
@@ -16,5 +16,5 @@ public interface TeamTypeAccessor {
     List<BFRace> getRaces();
 
     @Accessor("loadouts")
-    Map<MatchClass, ObjectList<Loadout>> getRawLoadouts();
+    Map<ClassType, ObjectList<Loadout>> getRawLoadouts();
 }

@@ -1,6 +1,6 @@
 package dev.vuis.plusfront.mixin.bf;
 
-import com.boehmod.blockfront.common.match.TeamType;
+import com.boehmod.blockfront.game.TeamType;
 import dev.vuis.plusfront.game.TransformedTeamTypes;
 import java.util.List;
 import java.util.Map;
