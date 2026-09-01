@@ -31,10 +31,14 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.client.PFKeyMappings;
+import dev.vuis.plusfront.client.config.GameGuiStyle;
+import dev.vuis.plusfront.client.config.PFClientConfig;
 import dev.vuis.plusfront.client.def.DefusalTeamGameElement;
 import dev.vuis.plusfront.client.def.DefusalTimeGameElement;
 import dev.vuis.plusfront.client.render.PFGuiRenderUtil;
+import dev.vuis.plusfront.client.render.game.PFGameGuiRendering;
 import dev.vuis.plusfront.game.ScoreboardFormats;
+import dev.vuis.plusfront.game.tag.IModifyRendering;
 import dev.vuis.plusfront.util.PFUtil;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -77,7 +81,7 @@ import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class DefusalGameClient extends AbstractGameClient<DefusalGame, DefusalPlayerManager> implements IAllowsPingsClient {
+public final class DefusalGameClient extends AbstractGameClient<DefusalGame, DefusalPlayerManager> implements IAllowsPingsClient, IModifyRendering {
 	private static final Component CT_LABEL = Component.literal("CT").withStyle(DefusalPlayerManager.CT_STYLE);
 	private static final Component T_LABEL = Component.literal("T").withStyle(DefusalPlayerManager.T_STYLE);
 
@@ -250,6 +254,19 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	) {
 		DefusalPlayerManager playerManager = game.getPlayerManager();
 
+		GameGuiStyle guiStyle = PFClientConfig.getGameGuiStyle();
+
+		switch (guiStyle) {
+			case OLD -> {
+				PFGameGuiRendering.oldScoreOnly(
+					minecraft, dataHandler,
+					graphics, poseStack, font,
+					getStageTimer(), game.getPlayerManager(),
+					midX
+				);
+			}
+		}
+
 		if (PFKeyMappings.showWaypoints.isDown()) {
 			Camera camera = minecraft.gameRenderer.getMainCamera();
 
@@ -279,20 +296,19 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		}
 
 		ClientPacketListener connection = minecraft.getConnection();
-		if (connection == null) {
-			return;
-		}
 
-		int playerHeadsY = 25;
-		if (BFClientSettings.UI_RENDER_GAME_MINIMAP.isEnabled()) {
-			playerHeadsY += 104;
-		}
+		if (connection != null && !guiStyle.hasBuiltInPlayerHeads()) {
+			int playerHeadsY = 25;
+			if (BFClientSettings.UI_RENDER_GAME_MINIMAP.isEnabled()) {
+				playerHeadsY += 104;
+			}
 
-		renderPlayerHeadLists(
-			connection, playerManager, player,
-			poseStack, graphics, font,
-			playerHeadsY
-		);
+			renderPlayerHeadLists(
+				connection, playerManager, player,
+				poseStack, graphics, font,
+				playerHeadsY
+			);
+		}
 	}
 
 	private void renderBombSiteWaypoint(
@@ -628,5 +644,10 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	@Override
 	public boolean shouldMovePing(@NotNull AbstractPing ping, @NotNull UUID playerUuid, @NotNull Vec3 newPosition) {
 		return ping.getPlayerUuid().equals(playerUuid) && ping.getPosition().distanceToSqr(newPosition) <= (2.0 * 2.0);
+	}
+
+	@Override
+	public int getKillFeedOffset() {
+		return !PFClientConfig.getGameGuiStyle().hasBuiltInPlayerHeads() ? 38 : 0;
 	}
 }

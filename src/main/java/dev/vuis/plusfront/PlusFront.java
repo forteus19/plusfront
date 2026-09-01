@@ -18,10 +18,10 @@ public final class PlusFront {
 		LOGGER.info("Registering attachment types...");
 		PFAttachmentTypes.register(modBus);
 
-		LOGGER.info("Registering config...");
+		LOGGER.info("Registering server config...");
 		PFServerConfig.register(container);
 
-		LOGGER.info("PlusFront initialized!");
+		LOGGER.info("PlusFront common initialized!");
 	}
 
 	public static ResourceLocation res(String path) {

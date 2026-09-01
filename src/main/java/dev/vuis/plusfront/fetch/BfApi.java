@@ -56,7 +56,7 @@ public final class BfApi {
 	}
 
 	private static @NotNull URI getPlayerInventoryUri(@NotNull UUID playerUuid) {
-		return URI.create(PFServerConfig.INSTANCE.getBfApiHost() + "/api/v1/player_inventory?uuid=" + playerUuid);
+		return URI.create(PFServerConfig.getBfApiHost() + "/api/v1/player_inventory?uuid=" + playerUuid);
 	}
 
 	public record Inventory(

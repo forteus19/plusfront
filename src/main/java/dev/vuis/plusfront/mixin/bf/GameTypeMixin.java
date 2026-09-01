@@ -1,9 +1,8 @@
 package dev.vuis.plusfront.mixin.bf;
 
-import com.boehmod.bflib.cloud.common.mm.SearchGame;
 import com.boehmod.blockfront.game.GameType;
 import dev.vuis.plusfront.PlusFront;
-import dev.vuis.plusfront.game.impl.def.DefusalGame;
+import dev.vuis.plusfront.game.PFGameType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -16,16 +15,7 @@ public abstract class GameTypeMixin {
 		at = @At("TAIL")
 	)
 	private static void registerCustom(CallbackInfo ci) {
-		new GameType(
-			GameType.Category.VERSUS,
-			"pf.gamemode.def",
-			"def",
-			SearchGame.DEFUSAL,
-			DefusalGame.class
-		)
-			.experimental()
-			.hidden();
-
+		PFGameType.init();
 		PlusFront.LOGGER.info("Registered custom game types!");
 	}
 }

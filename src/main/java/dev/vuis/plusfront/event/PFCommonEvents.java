@@ -63,7 +63,7 @@ public final class PFCommonEvents {
 			return;
 		}
 
-		if (PFServerConfig.INSTANCE.getAutoFetchArmory()) {
+		if (PFServerConfig.isAutoFetchArmory()) {
 			PFArmory.Weapons weapons = player.getData(PFAttachmentTypes.ARMORY_WEAPONS);
 			PFArmory.Extra extra = player.getData(PFAttachmentTypes.ARMORY_EXTRA);
 

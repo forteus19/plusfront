@@ -7,6 +7,7 @@ import com.boehmod.blockfront.common.player.PlayerDataHandler;
 import com.boehmod.blockfront.common.stat.BFStat;
 import com.boehmod.blockfront.game.AbstractGame;
 import com.boehmod.blockfront.game.GameTeam;
+import com.boehmod.blockfront.game.GameType;
 import com.boehmod.blockfront.game.GameUtils;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import dev.vuis.plusfront.PlusFront;
@@ -87,12 +88,16 @@ public final class PFUtil {
 		manager.assignPlayerToGame(player.serverLevel(), player, targetGame);
 	}
 
+	public static void incrementTeamStat(GameTeam team, BFStat stat) {
+		team.putStatInt(stat, team.getStatInt(stat, 0) + 1);
+	}
+
 	public static SuggestionProvider<CommandSourceStack> suggestGames() {
 		return (context, builder) -> SharedSuggestionProvider.suggest(blockfrontManager().getGames().keySet(), builder);
 	}
 
-	public static void incrementTeamStat(GameTeam team, BFStat stat) {
-		team.putStatInt(stat, team.getStatInt(stat, 0) + 1);
+	public static @Nullable GameType getGameType(AbstractGame<?, ?, ?> game) {
+		return GameType.getByName(game.getType());
 	}
 
 	public static void updateFeatureFlags(Map<String, Boolean> featureFlags) {

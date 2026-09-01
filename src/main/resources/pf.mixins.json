@@ -18,6 +18,7 @@
     "bf.GameAssetMixin",
     "bf.GameBoundaryMixin",
     "bf.GameCombatManagerMixin",
+    "bf.GameStageTimerAccessor",
     "bf.GameTeamMixin",
     "bf.GameTypeCodecMixin",
     "bf.GameTypeCodecMixin$TeamDeathmatchMixin",
@@ -35,14 +36,17 @@
     "bf.TroubleTownWaitingStageMixin"
   ],
   "client": [
+    "bf.client.AbstractGameClientMixin",
     "bf.client.BFClientMixin",
     "bf.client.BFClientPlayerDataMixin",
     "bf.client.BFClientScreenSubscriberMixin",
     "bf.client.BFConsumableItemMixin",
     "bf.client.FakeEnvironmentMixin",
     "bf.client.FlyByMapEffectMixin",
+    "bf.client.FreeForAllGameClientMixin",
     "bf.client.MatchGuiLayerMixin",
     "bf.client.PlayerCloudInventoryMixin",
+    "bf.client.TeamDeathmatchGameClientMixin",
     "bf.client.TeamScoreGameElementMixin",
     "bf.client.TroubleTownGameClientMixin",
     "minecraft.client.LightTextureMixin"

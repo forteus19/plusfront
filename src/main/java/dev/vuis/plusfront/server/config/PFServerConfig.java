@@ -5,7 +5,7 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public final class PFServerConfig {
-	public static final PFServerConfig INSTANCE;
+	private static final PFServerConfig INSTANCE;
 	private static final ModConfigSpec SPEC;
 
 	static {
@@ -26,11 +26,11 @@ public final class PFServerConfig {
 		autoFetchArmory = builder.define("auto_fetch_armory", false);
 	}
 
-	public String getBfApiHost() {
-		return bfApiHost.get();
+	public static String getBfApiHost() {
+		return INSTANCE.bfApiHost.get();
 	}
 
-	public boolean getAutoFetchArmory() {
-		return autoFetchArmory.get();
+	public static boolean isAutoFetchArmory() {
+		return INSTANCE.autoFetchArmory.get();
 	}
 }

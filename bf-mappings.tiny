@@ -15092,7 +15092,7 @@ c	com/boehmod/blockfront/pQ	com/boehmod/blockfront/unnamed/BF_1379	com/boehmod/b
 	m	()Lnet/minecraft/world/phys/Vec3;	c	method_8706	getPosition
 	m	()I	getHeight	getHeight	getHeight
 	m	()Ljava/lang/String;	getKey	getKey	getKey
-	m	()Z	l	method_7253	method_7253
+	m	()Z	l	method_7253	update
 	m	()I	w	method_8707	getPointerColor
 	m	(Ljava/util/List;IZLjava/lang/String;)V	<init>	<init>	<init>
 		p	1			lines
@@ -15737,8 +15737,8 @@ c	com/boehmod/blockfront/pv	com/boehmod/blockfront/unnamed/BF_679	com/boehmod/bl
 	f	Ljava/util/List;	at	field_2864	tips
 	f	Ljava/util/List;	au	field_2865	killFeedEntries
 	f	Ljava/util/List;	av	field_2866	gameElements
-	f	Ljava/util/List;	aw	field_8115	field_8115
-	f	Ljava/util/List;	ax	field_8116	field_8116
+	f	Ljava/util/List;	aw	field_8115	serverNotifications
+	f	Ljava/util/List;	ax	field_8116	clientNotifications
 	f	Ljava/util/List;	ay	field_2867	popups
 	f	Ljava/util/List;	az	field_2855	minimapWaypoints
 	f	Lcom/boehmod/blockfront/gp;	b	field_2868	dataHandler
@@ -15861,7 +15861,13 @@ c	com/boehmod/blockfront/pv	com/boehmod/blockfront/unnamed/BF_679	com/boehmod/bl
 		p	1			lines
 		p	2			time
 		p	3			key
-	m	(Ljava/util/List;ILjava/lang/String;Lnet/minecraft/world/phys/Vec3;II)V	a	method_8682	method_8682
+	m	(Ljava/util/List;ILjava/lang/String;Lnet/minecraft/world/phys/Vec3;II)V	a	method_8682	addNotification
+		p	1			lines
+		p	2			time
+		p	3			key
+		p	4			position
+		p	5			pointerColor
+		p	6			backgroundColor
 	m	(Ljava/util/List;Ljava/lang/String;)Lcom/boehmod/blockfront/pQ;	a	method_7264	method_7264
 	m	(Ljava/util/List;Ljava/lang/String;Lnet/minecraft/network/chat/Component;)V	a	method_7265	addNotification
 		p	1			target
@@ -16011,7 +16017,7 @@ c	com/boehmod/blockfront/pv	com/boehmod/blockfront/unnamed/BF_679	com/boehmod/bl
 	m	(Lnet/minecraft/client/player/LocalPlayer;)V	n	method_2734	method_2734
 	m	()V	stop	stop	stop
 	m	()Ljava/util/List;	x	method_2735	getTips
-	m	()Ljava/util/List;	y	method_7273	method_7273
+	m	()Ljava/util/List;	y	method_7273	getUnseenTips
 	m	()Ljava/util/List;	z	method_2736	getGameElements
 	m	(Lcom/boehmod/blockfront/m;Lcom/boehmod/blockfront/pu;Lcom/boehmod/blockfront/gp;)V	<init>	<init>	<init>
 		p	1			manager
