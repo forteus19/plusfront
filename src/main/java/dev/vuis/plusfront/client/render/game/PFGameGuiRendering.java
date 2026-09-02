@@ -4,9 +4,12 @@ import com.boehmod.blockfront.client.render.BFRendering;
 import com.boehmod.blockfront.common.player.BFAbstractPlayerData;
 import com.boehmod.blockfront.common.player.PlayerDataHandler;
 import com.boehmod.blockfront.common.stat.BFStats;
+import com.boehmod.blockfront.game.AbstractCapturePoint;
+import com.boehmod.blockfront.game.AbstractGame;
 import com.boehmod.blockfront.game.AbstractGamePlayerManager;
 import com.boehmod.blockfront.game.GameStageTimer;
 import com.boehmod.blockfront.game.GameTeam;
+import com.boehmod.blockfront.game.tag.IHasCapturePoints;
 import com.boehmod.blockfront.util.BFRes;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.vuis.plusfront.mixin.bf.GameStageTimerAccessor;
@@ -22,6 +25,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,6 +36,8 @@ public final class PFGameGuiRendering {
 	public static final Component GAME_OVER_MESSAGE = Component.translatable("bf.message.match.title.gameover");
 
 	private static final ResourceLocation DEAD_TEXTURE = BFRes.loc("textures/gui/dead.png");
+	private static final ResourceLocation ARROW_LEFT_TEXTURE = BFRes.loc("textures/gui/game/domination/cpoint_arrow_left_black.png");
+	private static final ResourceLocation ARROW_RIGHT_TEXTURE = BFRes.loc("textures/gui/game/domination/cpoint_arrow_right_black.png");
 
 	private PFGameGuiRendering() {
 		throw new AssertionError();
@@ -93,7 +99,7 @@ public final class PFGameGuiRendering {
 		}
 	}
 
-	public static void oldTopElements(
+	private static void oldTopElements(
 		Minecraft minecraft,
 		PlayerDataHandler<?> dataHandler,
 		GuiGraphics graphics,
@@ -214,6 +220,118 @@ public final class PFGameGuiRendering {
 		);
 	}
 
+	private static void oldScoreBar(
+		GuiGraphics graphics,
+		PoseStack poseStack,
+		GameTeam team,
+		int arrows,
+		int x,
+		int y,
+		boolean alignRight,
+		float renderTime
+	) {
+		int width = 78, height = 8;
+
+		int filledWidth = (int) (width * (team.getStatInt(BFStats.SCORE) / 500f));
+		int filledX = alignRight ? 78 - filledWidth : 0;
+		int color = team.getColor();
+
+		ResourceLocation arrowTexture = alignRight ? ARROW_LEFT_TEXTURE : ARROW_RIGHT_TEXTURE;
+		float arrowAlpha = Math.min(0.5f + Mth.sin(renderTime / 15f) / 2f, 0.5f);
+
+		poseStack.pushPose();
+		poseStack.translate(x, y, 0f);
+
+		BFRendering.rectangle(graphics, -1, -1, width + 2, height + 2, BFRendering.translucentBlack());
+		BFRendering.rectangle(graphics, 0, 0, width, height, 0x59000000);
+		BFRendering.rectangle(graphics, 0, 0, width, height, FastColor.ARGB32.color(0x59, color));
+		BFRendering.rectangle(graphics, filledX, 0, filledWidth, height, FastColor.ARGB32.opaque(color));
+
+		for (int i = 0; i < arrows; i++) {
+			BFRendering.texture(poseStack, graphics, arrowTexture, alignRight ? (width - 7 * i - 7) : (1 + 7 * i), 1, 6, 6, arrowAlpha);
+		}
+
+		poseStack.popPose();
+	}
+
+	private static void oldScoreBars(
+		Minecraft minecraft,
+		PlayerDataHandler<?> dataHandler,
+		GuiGraphics graphics,
+		PoseStack poseStack,
+		Font font,
+		GameStageTimer timer,
+		@Nullable GameTeam axisTeam,
+		@Nullable GameTeam alliesTeam,
+		int axisArrows,
+		int alliesArrows,
+		int midX,
+		float renderTime
+	) {
+		oldScoreOnly(
+			minecraft, dataHandler,
+			graphics, poseStack, font,
+			timer, axisTeam, alliesTeam,
+			midX
+		);
+
+		if (axisTeam != null) {
+			oldScoreBar(
+				graphics, poseStack,
+				axisTeam, axisArrows,
+				midX - 99, 16,
+				false,
+				renderTime
+			);
+		}
+
+		if (alliesTeam != null) {
+			oldScoreBar(
+				graphics, poseStack,
+				alliesTeam, alliesArrows,
+				midX + 21, 16,
+				true,
+				renderTime
+			);
+		}
+	}
+
+	public static <G extends AbstractGame<G, ?, ?> & IHasCapturePoints<?, ?>> void oldScoreBars(
+		Minecraft minecraft,
+		PlayerDataHandler<?> dataHandler,
+		GuiGraphics graphics,
+		PoseStack poseStack,
+		Font font,
+		GameStageTimer timer,
+		G game,
+		int midX,
+		float renderTime
+	) {
+		AbstractGamePlayerManager<?> playerManager = game.getPlayerManager();
+
+		GameTeam axisTeam = playerManager.getTeamByName(BFStats.AXIS_TEAM_NAME);
+		GameTeam alliesTeam = playerManager.getTeamByName(BFStats.ALLIES_TEAM_NAME);
+		int axisArrows = 0;
+		int alliesArrows = 0;
+
+		for (AbstractCapturePoint<?> capturePoint : game.getCapturePoints()) {
+			if (capturePoint.cbTeam == axisTeam) {
+				axisArrows++;
+			} else if (capturePoint.cbTeam == alliesTeam) {
+				alliesArrows++;
+			}
+		}
+
+		oldScoreBars(
+			minecraft, dataHandler,
+			graphics, poseStack, font,
+			timer,
+			axisTeam, alliesTeam,
+			axisArrows, alliesArrows,
+			midX, renderTime
+		);
+	}
+
 	@SuppressWarnings("deprecation")
 	public static void oldWaitingMessage(
 		AbstractGamePlayerManager<?> playerManager,
@@ -235,7 +353,7 @@ public final class PFGameGuiRendering {
 		if (localPlayer != null) {
 			GameTeam team = playerManager.getPlayerTeam(localPlayer.getUUID());
 			if (team != null) {
-				lineColor = FastColor.ARGB32.color(0xFF, team.getColor());
+				lineColor = FastColor.ARGB32.opaque(team.getColor());
 			}
 		}
 

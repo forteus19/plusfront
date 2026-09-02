@@ -13,6 +13,7 @@ public enum GameGuiStyle {
 	OLD(
 		new Settings()
 			.hiddenGameElementTypes(
+				GameType.DOMINATION,
 				GameType.TEAM_DEATHMATCH,
 				GameType.FREE_FOR_ALL,
 				PFGameType.DEFUSAL

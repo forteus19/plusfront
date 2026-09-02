@@ -41,6 +41,7 @@
     "bf.client.BFClientPlayerDataMixin",
     "bf.client.BFClientScreenSubscriberMixin",
     "bf.client.BFConsumableItemMixin",
+    "bf.client.DominationGameClientMixin",
     "bf.client.FakeEnvironmentMixin",
     "bf.client.FlyByMapEffectMixin",
     "bf.client.FreeForAllGameClientMixin",
