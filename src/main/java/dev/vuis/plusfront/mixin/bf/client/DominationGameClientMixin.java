@@ -53,7 +53,7 @@ public abstract class DominationGameClientMixin extends CapturePointGameClient<D
 
 		switch (PFClientConfig.getGameGuiStyle()) {
 			case OLD -> {
-				PFGameGuiRendering.oldScoreBars(
+				PFGameGuiRendering.oldCapturePointScore(
 					minecraft, dataHandler,
 					graphics, poseStack, font,
 					getStageTimer(), game,

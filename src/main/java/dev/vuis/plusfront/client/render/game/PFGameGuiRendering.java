@@ -13,6 +13,7 @@ import com.boehmod.blockfront.game.tag.IHasCapturePoints;
 import com.boehmod.blockfront.util.BFRes;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.vuis.plusfront.mixin.bf.GameStageTimerAccessor;
+import java.util.List;
 import java.util.UUID;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -38,6 +39,7 @@ public final class PFGameGuiRendering {
 	private static final ResourceLocation DEAD_TEXTURE = BFRes.loc("textures/gui/dead.png");
 	private static final ResourceLocation ARROW_LEFT_TEXTURE = BFRes.loc("textures/gui/game/domination/cpoint_arrow_left_black.png");
 	private static final ResourceLocation ARROW_RIGHT_TEXTURE = BFRes.loc("textures/gui/game/domination/cpoint_arrow_right_black.png");
+	private static final ResourceLocation NEUTRAL_ICON_TEXTURE = BFRes.loc("textures/misc/bfneutralicon.png");
 
 	private PFGameGuiRendering() {
 		throw new AssertionError();
@@ -254,7 +256,47 @@ public final class PFGameGuiRendering {
 		poseStack.popPose();
 	}
 
-	private static void oldScoreBars(
+	private static void oldCapturePointIcons(
+		GuiGraphics graphics,
+		PoseStack poseStack,
+		Font font,
+		List<? extends AbstractCapturePoint<?>> capturePoints,
+		int y,
+		int midX,
+		float renderTime
+	) {
+		int spacing = 18;
+
+		int numCapturePoints = capturePoints.size();
+
+		int startX = midX - (spacing / 2) * numCapturePoints + 1;
+		float capturingAlpha = Math.max(0.5f * Mth.sin(renderTime / 5f), 0.01f);
+
+		for (int i = 0; i < numCapturePoints; i++) {
+			AbstractCapturePoint<?> capturePoint = capturePoints.get(i);
+			GameTeam cbTeam = capturePoint.getCbTeam();
+			ResourceLocation icon = capturePoint.getIcon();
+			String name = capturePoint.name;
+
+			int x = startX + i * spacing;
+			float alpha = capturePoint.isBeingCaptured ? capturingAlpha : 0.5f;
+			int color = cbTeam != null ? cbTeam.getColor() : 0xFFFFFF;
+
+			BFRendering.tintedTexture(poseStack, graphics, NEUTRAL_ICON_TEXTURE, x, y, 14, 14, 0, alpha, color);
+			if (icon != null) {
+				BFRendering.texture(poseStack, graphics, icon, x, y, 14, 14, alpha);
+			}
+
+			poseStack.pushPose();
+			poseStack.translate(x + (spacing / 2f) - font.width(name) / 2f - 1f, y + 17, 0f);
+
+			graphics.drawString(font, name, 0, 0, 0xFFFFFFFF, false);
+
+			poseStack.popPose();
+		}
+	}
+
+	private static void oldCapturePointScore(
 		Minecraft minecraft,
 		PlayerDataHandler<?> dataHandler,
 		GuiGraphics graphics,
@@ -263,11 +305,21 @@ public final class PFGameGuiRendering {
 		GameStageTimer timer,
 		@Nullable GameTeam axisTeam,
 		@Nullable GameTeam alliesTeam,
-		int axisArrows,
-		int alliesArrows,
+		List<? extends AbstractCapturePoint<?>> capturePoints,
 		int midX,
 		float renderTime
 	) {
+		int axisArrows = 0;
+		int alliesArrows = 0;
+
+		for (AbstractCapturePoint<?> capturePoint : capturePoints) {
+			if (capturePoint.cbTeam == axisTeam) {
+				axisArrows++;
+			} else if (capturePoint.cbTeam == alliesTeam) {
+				alliesArrows++;
+			}
+		}
+
 		oldScoreOnly(
 			minecraft, dataHandler,
 			graphics, poseStack, font,
@@ -294,9 +346,16 @@ public final class PFGameGuiRendering {
 				renderTime
 			);
 		}
+
+		oldCapturePointIcons(
+			graphics, poseStack, font,
+			capturePoints,
+			27,
+			midX, renderTime
+		);
 	}
 
-	public static <G extends AbstractGame<G, ?, ?> & IHasCapturePoints<?, ?>> void oldScoreBars(
+	public static <G extends AbstractGame<G, ?, ?> & IHasCapturePoints<?, ?>> void oldCapturePointScore(
 		Minecraft minecraft,
 		PlayerDataHandler<?> dataHandler,
 		GuiGraphics graphics,
@@ -309,25 +368,13 @@ public final class PFGameGuiRendering {
 	) {
 		AbstractGamePlayerManager<?> playerManager = game.getPlayerManager();
 
-		GameTeam axisTeam = playerManager.getTeamByName(BFStats.AXIS_TEAM_NAME);
-		GameTeam alliesTeam = playerManager.getTeamByName(BFStats.ALLIES_TEAM_NAME);
-		int axisArrows = 0;
-		int alliesArrows = 0;
-
-		for (AbstractCapturePoint<?> capturePoint : game.getCapturePoints()) {
-			if (capturePoint.cbTeam == axisTeam) {
-				axisArrows++;
-			} else if (capturePoint.cbTeam == alliesTeam) {
-				alliesArrows++;
-			}
-		}
-
-		oldScoreBars(
+		oldCapturePointScore(
 			minecraft, dataHandler,
 			graphics, poseStack, font,
 			timer,
-			axisTeam, alliesTeam,
-			axisArrows, alliesArrows,
+			playerManager.getTeamByName(BFStats.AXIS_TEAM_NAME),
+			playerManager.getTeamByName(BFStats.ALLIES_TEAM_NAME),
+			game.getCapturePoints(),
 			midX, renderTime
 		);
 	}
