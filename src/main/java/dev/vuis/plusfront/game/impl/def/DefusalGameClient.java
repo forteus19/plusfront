@@ -7,6 +7,7 @@ import com.boehmod.blockfront.client.player.ClientPlayerDataHandler;
 import com.boehmod.blockfront.client.render.BFRendering;
 import com.boehmod.blockfront.client.render.game.element.ClientGameElement;
 import com.boehmod.blockfront.client.render.game.element.TeamScoreGameElement;
+import com.boehmod.blockfront.client.render.game.element.TimeGameElement;
 import com.boehmod.blockfront.client.render.minimap.MinimapWaypoint;
 import com.boehmod.blockfront.client.screen.match.summary.MatchSummaryScreen;
 import com.boehmod.blockfront.client.settings.BFClientSettings;
@@ -30,13 +31,14 @@ import com.boehmod.blockfront.util.PacketUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.vuis.plusfront.PlusFront;
+import dev.vuis.plusfront.client.PFClientTemp;
 import dev.vuis.plusfront.client.PFKeyMappings;
 import dev.vuis.plusfront.client.config.GameGuiStyle;
 import dev.vuis.plusfront.client.config.PFClientConfig;
 import dev.vuis.plusfront.client.def.DefusalTeamGameElement;
-import dev.vuis.plusfront.client.def.DefusalTimeGameElement;
-import dev.vuis.plusfront.client.render.PFGuiRenderUtil;
+import dev.vuis.plusfront.client.render.IconRenderers;
 import dev.vuis.plusfront.client.render.game.PFGameGuiRendering;
+import dev.vuis.plusfront.ex.GameStageTimerEx;
 import dev.vuis.plusfront.game.ScoreboardFormats;
 import dev.vuis.plusfront.game.tag.IModifyRendering;
 import dev.vuis.plusfront.util.PFUtil;
@@ -88,8 +90,6 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	private static final Component BOMB_PLANT_REMINDER =
 		Component.translatable("pf.message.gamemode.notification.bomb.reminder").withStyle(DefusalPlayerManager.T_STYLE);
 
-	public static final ResourceLocation BOMB_TEXTURE = PlusFront.res("textures/gui/defusal/bomb.png");
-	public static final ResourceLocation BOMB_BLINK_TEXTURE = PlusFront.res("textures/gui/defusal/bomb_blink.png");
 	private static final ResourceLocation DEAD_TEXTURE = BFRes.loc("textures/gui/dead.png");
 	private static final ResourceLocation INDICATOR_TEXTURE = BFRes.loc("textures/gui/indicator.png");
 
@@ -112,7 +112,6 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	private boolean isGameStage = false;
 	@Getter
 	private boolean finishedRound = false;
-	private int blinkTimer = 0;
 
 	public DefusalGameClient(@NotNull BFClientManager manager, @NotNull DefusalGame game, @NotNull ClientPlayerDataHandler dataHandler) {
 		super(manager, game, dataHandler);
@@ -130,7 +129,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		return List.of(
 			new DefusalTeamGameElement(),
 			new TeamScoreGameElement<>(),
-			new DefusalTimeGameElement()
+			new TimeGameElement<>()
 		);
 	}
 
@@ -176,10 +175,6 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		@NotNull BlockPos cameraBlockPos
 	) {
 		super.update(minecraft, random, randomSource, player, level, manager, playerData, players, renderTime, cameraPos, cameraBlockPos);
-
-		if (++blinkTimer >= 20) {
-			blinkTimer = 0;
-		}
 	}
 
 	@Override
@@ -288,7 +283,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 
 				if (bombItem != null) {
 					renderBombItemWaypoint(
-						poseStack, camera, width, height, partialTick,
+						poseStack, graphics, camera, width, height, partialTick,
 						bombItem.getPosition(partialTick).add(0.0, 0.5, 0.0)
 					);
 				}
@@ -324,7 +319,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	) {
 		BFRendering.ScreenClampData screenClampData = BFRendering.screenClamp(position, camera, width, height, 48, partialTick);
 
-		TextColor textColor = blinkTimer < 10 ? DefusalPlayerManager.T_TEXT_COLOR : null;
+		TextColor textColor = PFClientTemp.frameMillis % 1000 < 500 ? DefusalPlayerManager.T_TEXT_COLOR : null;
 
 		poseStack.pushPose();
 		poseStack.translate(screenClampData.screenX(), screenClampData.screenY(), 0f);
@@ -361,6 +356,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 
 	private void renderBombItemWaypoint(
 		PoseStack poseStack,
+		GuiGraphics graphics,
 		Camera camera,
 		int width,
 		int height,
@@ -369,11 +365,10 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	) {
 		BFRendering.ScreenClampData screenClampData = BFRendering.screenClamp(bombPosition, camera, width, height, 32, partialTick);
 
-		PFGuiRenderUtil.centeredTexture(
-			poseStack,
-			blinkTimer < 10 ? BOMB_TEXTURE : BOMB_BLINK_TEXTURE,
-			screenClampData.screenX(), screenClampData.screenY(),
-			32f, 16f
+		IconRenderers.renderAt(
+			graphics, poseStack,
+			IconRenderers.BOMB,
+			screenClampData.screenX(), screenClampData.screenY()
 		);
 	}
 
@@ -499,6 +494,10 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		for (BombSite bombSite : game.getBombSites()) {
 			bombSiteBoxes.add(bombSite.getBoundaryAABB());
 		}
+
+		((GameStageTimerEx) (Object) getStageTimer()).pf$setIconRenderer(
+			game.isBombPlanted() ? IconRenderers.BOMB : null
+		);
 	}
 
 	@Override

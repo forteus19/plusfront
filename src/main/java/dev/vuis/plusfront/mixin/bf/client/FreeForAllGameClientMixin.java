@@ -57,7 +57,7 @@ public abstract class FreeForAllGameClientMixin extends AbstractGameClient<FreeF
 			case OLD -> {
 				PFGameGuiRendering.oldTopElements(
 					minecraft, dataHandler,
-					graphics, font,
+					graphics, poseStack, font,
 					getStageTimer(), game.getPlayerManager(),
 					midX
 				);

@@ -19,6 +19,7 @@
     "bf.GameBoundaryMixin",
     "bf.GameCombatManagerMixin",
     "bf.GameStageTimerAccessor",
+    "bf.GameStageTimerMixin",
     "bf.GameTeamMixin",
     "bf.GameTypeCodecMixin",
     "bf.GameTypeCodecMixin$TeamDeathmatchMixin",
@@ -49,6 +50,7 @@
     "bf.client.PlayerCloudInventoryMixin",
     "bf.client.TeamDeathmatchGameClientMixin",
     "bf.client.TeamScoreGameElementMixin",
+    "bf.client.TimeGameElementMixin",
     "bf.client.TroubleTownGameClientMixin",
     "minecraft.client.LightTextureMixin"
   ],

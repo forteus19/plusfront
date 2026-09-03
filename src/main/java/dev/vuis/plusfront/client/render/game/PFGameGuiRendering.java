@@ -12,6 +12,9 @@ import com.boehmod.blockfront.game.GameTeam;
 import com.boehmod.blockfront.game.tag.IHasCapturePoints;
 import com.boehmod.blockfront.util.BFRes;
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.vuis.plusfront.client.render.IconRenderer;
+import dev.vuis.plusfront.client.render.IconRenderers;
+import dev.vuis.plusfront.ex.GameStageTimerEx;
 import dev.vuis.plusfront.mixin.bf.GameStageTimerAccessor;
 import java.util.List;
 import java.util.UUID;
@@ -58,13 +61,26 @@ public final class PFGameGuiRendering {
 
 	private static void oldTimer(
 		GuiGraphics graphics,
+		PoseStack poseStack,
 		Font font,
 		int midX,
 		int y,
 		GameStageTimer timer
 	) {
+		GameStageTimerEx timerEx = (GameStageTimerEx) (Object) timer;
+		IconRenderer iconRenderer = timerEx.pf$getIconRenderer();
+
 		BFRendering.rectangle(graphics, midX - 19, y, 38, 13, BFRendering.translucentBlack());
-		BFRendering.centeredString(font, graphics, oldTimerComponent(timer), midX, y + 3);
+
+		if (iconRenderer == null) {
+			BFRendering.centeredString(font, graphics, oldTimerComponent(timer), midX, y + 3);
+		} else {
+			IconRenderers.renderAt(
+				graphics, poseStack,
+				iconRenderer,
+				midX, y + 6.5f
+			);
+		}
 	}
 
 	private static void oldPlayerHead(
@@ -105,13 +121,14 @@ public final class PFGameGuiRendering {
 		Minecraft minecraft,
 		PlayerDataHandler<?> dataHandler,
 		GuiGraphics graphics,
+		PoseStack poseStack,
 		Font font,
 		GameStageTimer timer,
 		@Nullable GameTeam axisTeam,
 		@Nullable GameTeam alliesTeam,
 		int midX
 	) {
-		oldTimer(graphics, font, midX, 1, timer);
+		oldTimer(graphics, poseStack, font, midX, 1, timer);
 
 		if (axisTeam != null) {
 			UUID[] players = axisTeam.getPlayers().toArray(new UUID[0]);
@@ -144,6 +161,7 @@ public final class PFGameGuiRendering {
 		Minecraft minecraft,
 		PlayerDataHandler<?> dataHandler,
 		GuiGraphics graphics,
+		PoseStack poseStack,
 		Font font,
 		GameStageTimer timer,
 		AbstractGamePlayerManager<?> playerManager,
@@ -151,7 +169,7 @@ public final class PFGameGuiRendering {
 	) {
 		oldTopElements(
 			minecraft, dataHandler,
-			graphics, font,
+			graphics, poseStack, font,
 			timer,
 			playerManager.getTeamByName(BFStats.AXIS_TEAM_NAME),
 			playerManager.getTeamByName(BFStats.ALLIES_TEAM_NAME),
@@ -188,7 +206,7 @@ public final class PFGameGuiRendering {
 	) {
 		oldTopElements(
 			minecraft, dataHandler,
-			graphics, font,
+			graphics, poseStack, font,
 			timer, axisTeam, alliesTeam,
 			midX
 		);
@@ -287,12 +305,7 @@ public final class PFGameGuiRendering {
 				BFRendering.texture(poseStack, graphics, icon, x, y, 14, 14, alpha);
 			}
 
-			poseStack.pushPose();
-			poseStack.translate(x + (spacing / 2f) - font.width(name) / 2f - 1f, y + 17, 0f);
-
-			graphics.drawString(font, name, 0, 0, 0xFFFFFFFF, false);
-
-			poseStack.popPose();
+			graphics.drawString(font, name, x + spacing / 2 - font.width(name) / 2 - 1, y + 17, 0xFFFFFFFF, false);
 		}
 	}
 
