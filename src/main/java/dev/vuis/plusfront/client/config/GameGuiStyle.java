@@ -20,6 +20,7 @@ public enum GameGuiStyle {
 			)
 			.showNotificationsAsToasts()
 			.builtInPlayerHeads()
+			.oldKillFeed()
 	);
 
 	private final Settings settings;
@@ -36,10 +37,15 @@ public enum GameGuiStyle {
 		return settings.builtInPlayerHeads;
 	}
 
+	public boolean showOldKillFeed() {
+		return settings.oldKillFeed;
+	}
+
 	public static final class Settings {
 		private Set<GameType> hiddenGameElementTypes = Set.of();
 		private boolean showNotificationsInChat = false;
 		private boolean builtInPlayerHeads = false;
+		private boolean oldKillFeed = false;
 
 		private Settings() {
 		}
@@ -56,6 +62,11 @@ public enum GameGuiStyle {
 
 		private Settings builtInPlayerHeads() {
 			builtInPlayerHeads = true;
+			return this;
+		}
+
+		private Settings oldKillFeed() {
+			oldKillFeed = true;
 			return this;
 		}
 	}

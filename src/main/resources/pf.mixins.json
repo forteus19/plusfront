@@ -46,6 +46,8 @@
     "bf.client.FakeEnvironmentMixin",
     "bf.client.FlyByMapEffectMixin",
     "bf.client.FreeForAllGameClientMixin",
+    "bf.client.KillFeedEntryMixin",
+    "bf.client.KillSectionPlayerAndTextMixin",
     "bf.client.MatchGuiLayerMixin",
     "bf.client.PlayerCloudInventoryMixin",
     "bf.client.TeamDeathmatchGameClientMixin",

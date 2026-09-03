@@ -3,13 +3,27 @@ package dev.vuis.plusfront.mixin.bf.client;
 import com.boehmod.blockfront.client.gui.layer.MatchGuiLayer;
 import com.boehmod.blockfront.game.AbstractGame;
 import com.llamalad7.mixinextras.sugar.Local;
+import dev.vuis.plusfront.client.config.PFClientConfig;
 import dev.vuis.plusfront.game.tag.IModifyRendering;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(MatchGuiLayer.class)
 public abstract class MatchGuiLayerMixin {
+	@ModifyConstant(
+		method = "method_9183",
+		constant = @Constant(
+			intValue = 16,
+			ordinal = 0
+		)
+	)
+	private static int modifyKillFeedSpacing(int constant) {
+		return PFClientConfig.getGameGuiStyle().showOldKillFeed() ? 12 : constant;
+	}
+
 	@ModifyArg(
 		method = "method_503",
 		at = @At(
