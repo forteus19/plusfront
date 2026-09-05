@@ -1837,7 +1837,7 @@ c	com/boehmod/blockfront/bv	com/boehmod/blockfront/unnamed/BF_47	com/boehmod/blo
 	f	Lnet/minecraft/resources/ResourceLocation;	B	field_241	EMBER_TEXTURE
 	f	Lnet/minecraft/resources/ResourceLocation;	C	field_242	DEBUG_SKIN_TEXTURE
 	f	Lnet/minecraft/resources/ResourceLocation;	D	field_215	RANK_BG_TEXTURE
-	f	Lnet/minecraft/resources/ResourceLocation;	E	field_9159	field_9159
+	f	Lnet/minecraft/resources/ResourceLocation;	E	field_9159	DEAD_TEXTURE
 	f	Lnet/minecraft/resources/ResourceLocation;	F	field_216	DEFAULT_CALLINGCARD_TEXTURE
 	f	Lnet/minecraft/resources/ResourceLocation;	G	field_6299	SHADOWEFFECT_TEXTURE
 	f	Lnet/minecraft/resources/ResourceLocation;	H	field_217	RUNNING_TEXTURE
@@ -1905,7 +1905,7 @@ c	com/boehmod/blockfront/bv	com/boehmod/blockfront/unnamed/BF_47	com/boehmod/blo
 	m	(Lcom/boehmod/blockfront/pZ;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/Camera;Lnet/minecraft/client/multiplayer/ClientLevel;Lnet/minecraft/client/player/LocalPlayer;F)V	a	method_199	bootcampTexturePoint
 	m	(Lcom/boehmod/blockfront/pZ;Lnet/minecraft/client/player/LocalPlayer;)F	a	method_6799	method_6799
 	m	(Lcom/mojang/blaze3d/vertex/PoseStack;DDDDDDDDDDDDIF)V	a	method_6800	method_6800
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;FFFFII)V	a	method_200	orderedRectangle
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;FFFFII)V	a	method_200	triangleCorner
 		p	0			poseStack
 		p	1			x
 		p	2			y
@@ -2244,10 +2244,31 @@ c	com/boehmod/blockfront/bv	com/boehmod/blockfront/unnamed/BF_47	com/boehmod/blo
 		p	4			x
 		p	5			y
 		p	6			color
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;FF)V	a	method_6801	method_6801
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;FF)V	a	method_6801	centeredCharSequence
+		p	0			poseStack
+		p	1			font
+		p	2			graphics
+		p	3			charSequence
+		p	4			x
+		p	5			y
 	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;FFF)V	a	method_6802	method_6802
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;FFI)V	a	method_6803	method_6803
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;FFIF)V	a	method_6804	method_6804
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;FFI)V	a	method_6803	charSequence
+		p	0			poseStack
+		p	1			font
+		p	2			graphics
+		p	3			chatSequence
+		p	4			x
+		p	5			y
+		p	6			color
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;FFIF)V	a	method_6804	centeredCharSequence
+		p	0			poseStack
+		p	1			font
+		p	2			graphics
+		p	3			charSequence
+		p	4			x
+		p	5			y
+		p	6			color
+		p	7			scale
 	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/renderer/MultiBufferSource;Ljava/util/List;FFI)V	a	method_238	renderTextLines
 		p	0			poseStack
 		p	1			font
@@ -2645,8 +2666,19 @@ c	com/boehmod/blockfront/bv	com/boehmod/blockfront/unnamed/BF_47	com/boehmod/blo
 		p	3			x
 		p	4			y
 		p	5			color
-	m	(Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;II)V	a	method_6807	method_6807
-	m	(Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;III)V	a	method_6808	method_6808
+	m	(Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;II)V	a	method_6807	charSequence
+		p	0			font
+		p	1			graphics
+		p	2			charSequence
+		p	3			x
+		p	4			y
+	m	(Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;III)V	a	method_6808	charSequence
+		p	0			font
+		p	1			graphics
+		p	2			charSequence
+		p	3			x
+		p	4			y
+		p	5			color
 	m	(Lnet/minecraft/client/gui/GuiGraphics;FFFFFI)V	a	method_8287	method_8287
 	m	(Lnet/minecraft/client/gui/GuiGraphics;FFFFFIF)V	a	method_8288	method_8288
 	m	(Lnet/minecraft/client/gui/GuiGraphics;IIII)V	a	method_284	enableScissor
@@ -2856,8 +2888,15 @@ c	com/boehmod/blockfront/bv	com/boehmod/blockfront/unnamed/BF_47	com/boehmod/blo
 		p	4			x
 		p	5			y
 		p	6			scale
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;FFI)V	b	method_6810	method_6810
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;FFFFI)V	b	method_307	rectangleWithDarkShadow
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;FFI)V	b	method_6810	centeredCharSequence
+		p	0			poseStack
+		p	1			font
+		p	2			graphics
+		p	3			charSequence
+		p	4			x
+		p	5			y
+		p	6			color
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;FFFFI)V	b	method_307	rectangleWithShadow
 		p	0			poseStack
 		p	1			graphics
 		p	2			x
@@ -2996,10 +3035,34 @@ c	com/boehmod/blockfront/bv	com/boehmod/blockfront/unnamed/BF_47	com/boehmod/blo
 		p	3			x
 		p	4			y
 		p	5			color
-	m	(Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;II)V	b	method_6811	method_6811
-	m	(Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;III)V	b	method_6812	method_6812
-	m	(Lnet/minecraft/client/gui/GuiGraphics;IIIII)V	b	method_8369	method_8369
-	m	(Lnet/minecraft/client/gui/GuiGraphics;IIIIIF)V	b	method_8370	method_8370
+	m	(Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;II)V	b	method_6811	charSequenceWithShadow
+		p	0			font
+		p	1			graphics
+		p	2			charSequence
+		p	3			x
+		p	4			y
+	m	(Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;III)V	b	method_6812	charSequenceWithShadow
+		p	0			font
+		p	1			graphics
+		p	2			charSequence
+		p	3			x
+		p	4			y
+		p	5			color
+	m	(Lnet/minecraft/client/gui/GuiGraphics;IIIII)V	b	method_8369	fancyRectangle
+		p	0			graphics
+		p	1			x
+		p	2			y
+		p	3			width
+		p	4			height
+		p	5			color
+	m	(Lnet/minecraft/client/gui/GuiGraphics;IIIIIF)V	b	method_8370	fancyRectangle
+		p	0			graphics
+		p	1			x
+		p	2			y
+		p	3			width
+		p	4			height
+		p	5			color
+		p	6			alpha
 	m	(Lcom/mojang/blaze3d/vertex/PoseStack;IFFFFF)V	c	method_326	centeredTextureScaled
 		p	0			poseStack
 		p	1			textureId
@@ -3067,7 +3130,7 @@ c	com/boehmod/blockfront/bv	com/boehmod/blockfront/unnamed/BF_47	com/boehmod/blo
 		p	4			x
 		p	5			y
 		p	6			scale
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;FFFFIF)V	c	method_334	rectangleWithDarkShadow
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;FFFFIF)V	c	method_334	rectangleWithShadow
 		p	0			poseStack
 		p	1			graphics
 		p	2			x
@@ -3119,16 +3182,27 @@ c	com/boehmod/blockfront/bv	com/boehmod/blockfront/unnamed/BF_47	com/boehmod/blo
 		p	3			x
 		p	4			y
 		p	5			color
-	m	(Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;II)V	c	method_6813	method_6813
-	m	(Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;III)V	c	method_6814	method_6814
-	m	(Lnet/minecraft/client/gui/GuiGraphics;IIIII)V	c	method_323	rectangleWithDarkShadow
+	m	(Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;II)V	c	method_6813	centeredCharSequence
+		p	0			font
+		p	1			graphics
+		p	2			charSequence
+		p	3			x
+		p	4			y
+	m	(Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;III)V	c	method_6814	centeredCharSequence
+		p	0			font
+		p	1			graphics
+		p	2			charSequence
+		p	3			x
+		p	4			y
+		p	5			color
+	m	(Lnet/minecraft/client/gui/GuiGraphics;IIIII)V	c	method_323	rectangleWithShadow
 		p	0			graphics
 		p	1			x
 		p	2			y
 		p	3			width
 		p	4			height
 		p	5			color
-	m	(Lnet/minecraft/client/gui/GuiGraphics;IIIIIF)V	c	method_324	rectangleWithDarkShadow
+	m	(Lnet/minecraft/client/gui/GuiGraphics;IIIIIF)V	c	method_324	rectangleWithShadow
 		p	0			graphics
 		p	1			x
 		p	2			y

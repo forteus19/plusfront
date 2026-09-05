@@ -66,6 +66,10 @@ public abstract class AbstractGameClientMixin<G extends AbstractGame<G, P, ?>, P
 		float delta,
 		CallbackInfo ci
 	) {
+		if (!PFClientConfig.getGameGuiStyle().showOldWaitingMessage()) {
+			return;
+		}
+
 		Component waitingMessage = switch (game.getStatus()) {
 			case PRE_GAME -> PFGameGuiRendering.WAITING_MESSAGE.copy()
 				.append(" ")

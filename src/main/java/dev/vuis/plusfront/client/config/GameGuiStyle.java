@@ -12,6 +12,7 @@ public enum GameGuiStyle {
 	),
 	OLD(
 		new Settings()
+			.disableFancyRectangles()
 			.hiddenGameElementTypes(
 				GameType.DOMINATION,
 				GameType.TEAM_DEATHMATCH,
@@ -21,9 +22,14 @@ public enum GameGuiStyle {
 			.showNotificationsAsToasts()
 			.builtInPlayerHeads()
 			.oldKillFeed()
+			.oldWaitingMessage()
 	);
 
 	private final Settings settings;
+
+	public boolean disableFancyRectangles() {
+		return settings.disableFancyRectangles;
+	}
 
 	public boolean shouldHideGameElements(GameType gameType) {
 		return settings.hiddenGameElementTypes.contains(gameType);
@@ -41,17 +47,28 @@ public enum GameGuiStyle {
 		return settings.oldKillFeed;
 	}
 
+	public boolean showOldWaitingMessage() {
+		return settings.oldWaitingMessage;
+	}
+
 	public static final class Settings {
+		private boolean disableFancyRectangles = false;
 		private Set<GameType> hiddenGameElementTypes = Set.of();
 		private boolean showNotificationsInChat = false;
 		private boolean builtInPlayerHeads = false;
 		private boolean oldKillFeed = false;
+		private boolean oldWaitingMessage = false;
 
 		private Settings() {
 		}
 
-		private Settings hiddenGameElementTypes(GameType... disabledGameElementTypes) {
-			this.hiddenGameElementTypes = Set.of(disabledGameElementTypes);
+		private Settings disableFancyRectangles() {
+			disableFancyRectangles = true;
+			return this;
+		}
+
+		private Settings hiddenGameElementTypes(GameType... hiddenGameElementTypes) {
+			this.hiddenGameElementTypes = Set.of(hiddenGameElementTypes);
 			return this;
 		}
 
@@ -67,6 +84,11 @@ public enum GameGuiStyle {
 
 		private Settings oldKillFeed() {
 			oldKillFeed = true;
+			return this;
+		}
+
+		private Settings oldWaitingMessage() {
+			oldWaitingMessage = true;
 			return this;
 		}
 	}

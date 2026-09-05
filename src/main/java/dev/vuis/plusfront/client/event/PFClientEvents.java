@@ -5,6 +5,7 @@ import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.client.PFClientTemp;
 import dev.vuis.plusfront.client.PFKeyMappings;
 import dev.vuis.plusfront.client.command.PFClientCommand;
+import dev.vuis.plusfront.client.config.PFClientConfig;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.neoforged.api.distmarker.Dist;
@@ -42,5 +43,6 @@ public final class PFClientEvents {
 	@SubscribeEvent
 	public static void onRenderFramePre(RenderFrameEvent.Pre event) {
 		PFClientTemp.frameMillis = Util.getMillis();
+		PFClientTemp.disableFancyRectangles = PFClientConfig.getGameGuiStyle().disableFancyRectangles();
 	}
 }

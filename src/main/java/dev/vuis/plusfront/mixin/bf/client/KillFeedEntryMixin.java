@@ -24,7 +24,7 @@ public abstract class KillFeedEntryMixin {
 	)
 	private void renderOldBackground(GuiGraphics graphics, int width, CallbackInfo ci) {
 		if (PFClientConfig.getGameGuiStyle().showOldKillFeed()) {
-			PFGameGuiRendering.oldKillFeedBackground(graphics.pose(), graphics.bufferSource(), type, width);
+			PFGameGuiRendering.oldKillFeedBackground(graphics, type, width);
 			ci.cancel();
 		}
 	}

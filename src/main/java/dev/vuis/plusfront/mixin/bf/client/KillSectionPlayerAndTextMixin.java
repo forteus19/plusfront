@@ -18,7 +18,7 @@ public abstract class KillSectionPlayerAndTextMixin {
 		method = "render",
 		at = @At(
 			value = "INVOKE",
-			target = "Lcom/boehmod/blockfront/client/render/BFRendering;method_6801(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;FF)V"
+			target = "Lcom/boehmod/blockfront/client/render/BFRendering;centeredCharSequence(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;FF)V"
 		)
 	)
 	private void disableShadowOnText(PoseStack poseStack, Font font, GuiGraphics graphics, FormattedCharSequence text, float x, float y, Operation<Void> original) {

@@ -28,7 +28,6 @@ import net.minecraft.client.gui.components.PlayerFaceRenderer;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -422,14 +421,13 @@ public final class PFGameGuiRendering {
 			}
 		}
 
-		BFRendering.rectangleWithDarkShadow(poseStack, graphics, bgX, bgY, bgWidth, 15f, BFRendering.translucentBlack());
+		BFRendering.rectangleWithShadow(poseStack, graphics, bgX, bgY, bgWidth, 15f, BFRendering.translucentBlack());
 		BFRendering.centeredComponent2d(poseStack, font, graphics, message, midX, baseY - 4f, 1f);
 		BFRendering.rectangle(poseStack, graphics, bgX, bgY + 14f, bgWidth, 1f, lineColor);
 	}
 
 	public static void oldKillFeedBackground(
-		PoseStack poseStack,
-		MultiBufferSource bufferSource,
+		GuiGraphics graphics,
 		KillEntryType entryType,
 		float width
 	) {
@@ -441,12 +439,14 @@ public final class PFGameGuiRendering {
 			color -= 0x22000000;
 		}
 
-		Matrix4f matrix = poseStack.last().pose();
-		VertexConsumer consumer = bufferSource.getBuffer(RenderType.gui());
+		Matrix4f matrix = graphics.pose().last().pose();
+		VertexConsumer consumer = graphics.bufferSource().getBuffer(RenderType.gui());
 
 		consumer.addVertex(matrix, 0f, 0f, 0f).setColor(color);
 		consumer.addVertex(matrix, -shear, height, 0f).setColor(color);
 		consumer.addVertex(matrix, width, height, 0f).setColor(color);
 		consumer.addVertex(matrix, width + shear, 0f, 0f).setColor(color);
+
+		graphics.flush();
 	}
 }
