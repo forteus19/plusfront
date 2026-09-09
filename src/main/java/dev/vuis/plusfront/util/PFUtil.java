@@ -4,11 +4,8 @@ import com.boehmod.blockfront.BlockFront;
 import com.boehmod.blockfront.common.BFAbstractManager;
 import com.boehmod.blockfront.common.player.BFAbstractPlayerData;
 import com.boehmod.blockfront.common.player.PlayerDataHandler;
-import com.boehmod.blockfront.common.stat.BFStat;
 import com.boehmod.blockfront.game.AbstractGame;
-import com.boehmod.blockfront.game.GameTeam;
 import com.boehmod.blockfront.game.GameType;
-import com.boehmod.blockfront.game.GameUtils;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.net.payload.PFFeatureFlagsPayload;
@@ -16,8 +13,6 @@ import dev.vuis.plusfront.world.PFSavedData;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.server.MinecraftServer;
@@ -25,12 +20,17 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 public final class PFUtil {
 	private PFUtil() {
 		throw new AssertionError();
+	}
+
+	public static TriState triState(boolean value) {
+		return value ? TriState.TRUE : TriState.FALSE;
 	}
 
 	public static BFAbstractManager<?, ?, ?> blockfrontManager() {
@@ -49,31 +49,6 @@ public final class PFUtil {
 		return playerDataHandler().getPlayerData(player);
 	}
 
-	public static boolean isPlayerUnavailable(Player player) {
-		return GameUtils.isPlayerUnavailable(player, getPlayerData(player));
-	}
-
-	public static int getNumUnavailable(PlayerDataHandler<?> dataHandler, Set<UUID> players) {
-		int count = 0;
-
-		for (UUID playerUuid : players) {
-			ServerPlayer player = GameUtils.getPlayerByUUID(playerUuid);
-			if (player == null) {
-				continue;
-			}
-
-			if (GameUtils.isPlayerUnavailable(player, dataHandler.getPlayerData(player))) {
-				count++;
-			}
-		}
-
-		return count;
-	}
-
-	public static boolean isSameTeam(@Nullable GameTeam teamA, @Nullable GameTeam teamB) {
-		return teamA != null && teamB != null && teamA.getName().equals(teamB.getName());
-	}
-
 	public static void forceJoinGame(BFAbstractManager<?, ?, ?> manager, ServerPlayer player, AbstractGame<?, ?, ?> targetGame) {
 		AbstractGame<?, ?, ?> currentGame = manager.getPlayerGame(player);
 
@@ -86,10 +61,6 @@ public final class PFUtil {
 		}
 
 		manager.assignPlayerToGame(player.serverLevel(), player, targetGame);
-	}
-
-	public static void incrementTeamStat(GameTeam team, BFStat stat) {
-		team.putStatInt(stat, team.getStatInt(stat, 0) + 1);
 	}
 
 	public static SuggestionProvider<CommandSourceStack> suggestGames() {

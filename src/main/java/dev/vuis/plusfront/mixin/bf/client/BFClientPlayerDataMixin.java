@@ -4,7 +4,7 @@ import com.boehmod.blockfront.client.player.BFClientPlayerData;
 import com.boehmod.blockfront.game.ClassType;
 import com.boehmod.blockfront.game.TeamType;
 import com.llamalad7.mixinextras.sugar.Local;
-import dev.vuis.plusfront.game.impl.def.DefusalGameClient;
+import dev.vuis.plusfront.game.PFGameClientHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -22,7 +22,7 @@ public abstract class BFClientPlayerDataMixin {
 	private String fixMatchClassKey(ClassType instance, @Local(ordinal = 0) TeamType teamType) {
 		String originalKey = instance.getKey();
 		if (originalKey.equals("specialist")) {
-			return DefusalGameClient.SPECIALIST_UNIFORMS.contains(teamType.getResourceLocation()) ? originalKey : "anti_tank";
+			return PFGameClientHelper.SPECIALIST_UNIFORMS.contains(teamType.getResourceLocation()) ? originalKey : "anti_tank";
 		} else {
 			return originalKey;
 		}

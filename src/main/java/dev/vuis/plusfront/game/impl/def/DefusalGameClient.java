@@ -11,23 +11,16 @@ import com.boehmod.blockfront.client.render.game.element.TimeGameElement;
 import com.boehmod.blockfront.client.render.minimap.MinimapWaypoint;
 import com.boehmod.blockfront.client.screen.match.summary.MatchSummaryScreen;
 import com.boehmod.blockfront.client.settings.BFClientSettings;
-import com.boehmod.blockfront.common.net.packet.BFRegularPingRequestPacket;
-import com.boehmod.blockfront.common.net.packet.BFRegularPingTriggerRequestPacket;
 import com.boehmod.blockfront.common.stat.BFStats;
 import com.boehmod.blockfront.game.AbstractGameClient;
 import com.boehmod.blockfront.game.AbstractGamePlayerManager;
 import com.boehmod.blockfront.game.GameNotification;
-import com.boehmod.blockfront.game.GameStatus;
 import com.boehmod.blockfront.game.GameTeam;
-import com.boehmod.blockfront.game.GameUtils;
-import com.boehmod.blockfront.game.TeamType;
 import com.boehmod.blockfront.game.tag.client.IAllowsPingsClient;
 import com.boehmod.blockfront.registry.BFItems;
 import com.boehmod.blockfront.unnamed.BF_552;
 import com.boehmod.blockfront.util.BFRes;
 import com.boehmod.blockfront.util.BFStyles;
-import com.boehmod.blockfront.util.CollisionUtils;
-import com.boehmod.blockfront.util.PacketUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.vuis.plusfront.PlusFront;
@@ -39,6 +32,8 @@ import dev.vuis.plusfront.client.def.DefusalTeamGameElement;
 import dev.vuis.plusfront.client.render.IconRenderers;
 import dev.vuis.plusfront.client.render.game.PFGameGuiRendering;
 import dev.vuis.plusfront.ex.GameStageTimerEx;
+import dev.vuis.plusfront.game.PFGameClientHelper;
+import dev.vuis.plusfront.game.PFGameHelper;
 import dev.vuis.plusfront.game.ScoreboardFormats;
 import dev.vuis.plusfront.game.tag.IModifyRendering;
 import dev.vuis.plusfront.util.PFUtil;
@@ -75,11 +70,9 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderNameTagEvent;
-import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -102,10 +95,6 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 			.sides(true, false, false)
 			.verticalFade(BFRendering.BoundaryFadeDirection.TOP)
 			.occludedAlpha(0.25f);
-
-	public static final Set<ResourceLocation> SPECIALIST_UNIFORMS = Set.of(
-		BFRes.loc("ussr_infantry")
-	);
 
 	private final List<AABB> bombSiteBoxes = new ObjectArrayList<>();
 
@@ -502,7 +491,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 
 	@Override
 	public boolean canChangePerspective(@NotNull Player player) {
-		return game.getStatus() != GameStatus.GAME || player.getVehicle() != null;
+		return PFGameClientHelper.canChangePerspective(game, player);
 	}
 
 	@Override
@@ -532,12 +521,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 			return false;
 		}
 
-		DefusalPlayerManager playerManager = game.getPlayerManager();
-
-		GameTeam localTeam = playerManager.getPlayerTeam(localPlayer.getUUID());
-		GameTeam targetTeam = playerManager.getPlayerTeam(targetPlayer.getUUID());
-
-		return PFUtil.isSameTeam(localTeam, targetTeam);
+		return PFGameHelper.isSameTeam(game.getPlayerManager(), localPlayer.getUUID(), targetPlayer.getUUID());
 	}
 
 	@Override
@@ -552,30 +536,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		@NotNull LocalPlayer localPlayer,
 		@NotNull ClientLevel level
 	) {
-		DefusalPlayerManager playerManager = game.getPlayerManager();
-
-		UUID localUuid = localPlayer.getUUID();
-
-		GameTeam localTeam = playerManager.getPlayerTeam(localUuid);
-		if (localTeam == null) {
-			return List.of();
-		}
-		Set<UUID> localTeamPlayers = localTeam.getPlayers();
-
-		List<MinimapWaypoint> waypoints = new ObjectArrayList<>();
-
-		for (Player player : level.players()) {
-			UUID playerUuid = player.getUUID();
-
-			if (localTeamPlayers.contains(playerUuid) && !playerUuid.equals(localUuid)) {
-				waypoints.add(
-					new MinimapWaypoint(MinimapWaypoint.TEXTURE_PLAYER, player.position())
-						.setRotation(player.getYRot() - 180f)
-				);
-			}
-		}
-
-		return waypoints;
+		return PFGameClientHelper.getPlayerWaypoints(this, localPlayer.getUUID(), level);
 	}
 
 	@Override
@@ -585,27 +546,12 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		@NotNull Player player,
 		@NotNull ClientLevel level
 	) {
-		event.setCanRender(player.hasLineOfSight(event.getEntity()) ? TriState.TRUE : TriState.FALSE);
+		event.setCanRender(PFUtil.triState(player.hasLineOfSight(event.getEntity())));
 	}
 
 	@Override
 	public @Nullable ResourceLocation getUniformTexture(@NotNull UUID uuid, @Nullable String classKey, @NotNull Set<UUID> players) {
-		if (classKey == null || !players.contains(uuid)) {
-			return null;
-		}
-
-		GameTeam team = game.getPlayerManager().getPlayerTeam(uuid);
-		if (team == null) {
-			return null;
-		}
-
-		TeamType teamType = team.getDivisionData(game);
-
-		if (classKey.equals("specialist") && !SPECIALIST_UNIFORMS.contains(teamType.getResourceLocation())) {
-			classKey = "anti_tank";
-		}
-
-		return BFRes.loc("textures/skins/game/nations/" + teamType.getNationType().getTag() + "/" + teamType.getSkin() + "/" + classKey + ".png");
+		return PFGameClientHelper.getUniformTexture(game, uuid, classKey, players);
 	}
 
 	@Override
@@ -615,34 +561,12 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 
 	@Override
 	public void onPing(@NotNull Minecraft minecraft, @NotNull BFClientManager manager) {
-		LocalPlayer localPlayer = minecraft.player;
-		BFClientPlayerData localPlayerData = manager.getPlayerDataHandler().getPlayerData(minecraft);
-
-		if (localPlayer == null || GameUtils.isPlayerUnavailable(localPlayer, localPlayerData)) {
-			return;
-		}
-
-		HitResult hit = CollisionUtils.hitBlock(localPlayer, 64.0, minecraft.getTimer().getGameTimeDeltaPartialTick(false));
-		if (hit.getType() == HitResult.Type.MISS) {
-			return;
-		}
-		Vec3 hitPosition = hit.getLocation();
-
-		AbstractPing existingPing = getNearestPing(hitPosition, 2.0);
-		if (existingPing != null && existingPing.getPlayerUuid().equals(localPlayer.getUUID())) {
-			PacketUtils.sendToServer(new BFRegularPingTriggerRequestPacket(
-				existingPing.getUuid(), hitPosition
-			));
-		} else {
-			PacketUtils.sendToServer(new BFRegularPingRequestPacket(
-				hitPosition
-			));
-		}
+		PFGameClientHelper.sendPingRequest(this, minecraft, manager);
 	}
 
 	@Override
 	public boolean shouldMovePing(@NotNull AbstractPing ping, @NotNull UUID playerUuid, @NotNull Vec3 newPosition) {
-		return ping.getPlayerUuid().equals(playerUuid) && ping.getPosition().distanceToSqr(newPosition) <= (2.0 * 2.0);
+		return PFGameClientHelper.shouldMovePing(ping, playerUuid, newPosition);
 	}
 
 	@Override

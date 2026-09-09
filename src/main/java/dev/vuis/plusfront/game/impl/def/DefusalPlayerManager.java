@@ -16,6 +16,7 @@ import com.boehmod.blockfront.registry.BFSounds;
 import com.boehmod.blockfront.util.RandomUtils;
 import com.boehmod.blockfront.util.math.BFPose;
 import dev.vuis.plusfront.PlusFront;
+import dev.vuis.plusfront.game.PFGameHelper;
 import dev.vuis.plusfront.util.PFUtil;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -133,8 +134,8 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	}
 
 	private void handleEliminations(PlayerDataHandler<?> dataHandler, Set<UUID> players) {
-		int ctDead = PFUtil.getNumUnavailable(dataHandler, counterTerrorists.getPlayers());
-		int tDead = PFUtil.getNumUnavailable(dataHandler, terrorists.getPlayers());
+		int ctDead = PFGameHelper.getNumUnavailable(dataHandler, counterTerrorists.getPlayers());
+		int tDead = PFGameHelper.getNumUnavailable(dataHandler, terrorists.getPlayers());
 
 		boolean ctOut = ctDead >= counterTerrorists.numPlayers();
 		boolean tOut = tDead >= terrorists.numPlayers();
@@ -287,7 +288,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 
 	@Override
 	public void onRemovePlayer(@NotNull ServerPlayer player) {
-		if (player.getUUID().equals(bombHolder) && !PFUtil.isPlayerUnavailable(player)) {
+		if (player.getUUID().equals(bombHolder) && !PFGameHelper.isPlayerUnavailable(player)) {
 			refreshTerroristBomb();
 		}
 	}
@@ -317,17 +318,17 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		if (game.isGameStage() &&
 			!killedPlayer.equals(sourcePlayer) &&
 			sourceTeam != null &&
-			PFUtil.isSameTeam(killedTeam, sourceTeam)
+			PFGameHelper.isSameTeam(killedTeam, sourceTeam)
 		) {
 			onFriendlyKill(manager, sourcePlayer, sourceUuid, players);
 		}
 
 		if (game.shouldCountDeath(killedPlayer, source)) {
-			PFUtil.incrementTeamStat(killedTeam, BFStats.DEATHS);
+			PFGameHelper.incrementTeamStat(killedTeam, BFStats.DEATHS);
 		}
 
 		if (sourcePlayer != null && game.shouldCountKill(sourcePlayer, killedPlayer)) {
-			PFUtil.incrementTeamStat(sourceTeam, BFStats.KILLS);
+			PFGameHelper.incrementTeamStat(sourceTeam, BFStats.KILLS);
 			GameUtils.incrementPlayerStat(manager, game, sourcePlayer.getUUID(), BFStats.SCORE);
 		}
 	}
@@ -343,7 +344,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 		@NotNull DamageSource source,
 		@NotNull Set<UUID> players
 	) {
-		throw new AssertionError();
+		PlusFront.LOGGER.warn("onPlayerKilled called!");
 	}
 
 	private void onFriendlyKill(BFAbstractManager<?, ?, ?> manager, ServerPlayer sourcePlayer, UUID sourceUuid, Set<UUID> players) {
@@ -488,10 +489,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 				return true;
 			}
 
-			GameTeam damagedTeam = getPlayerTeam(uuid);
-			GameTeam sourceTeam = getPlayerTeam(sourceUuid);
-
-			if (PFUtil.isSameTeam(damagedTeam, sourceTeam)) {
+			if (PFGameHelper.isSameTeam(this, uuid, sourceUuid)) {
 				return timer.secondsPassed() >= 5;
 			} else {
 				return true;
@@ -511,10 +509,7 @@ public final class DefusalPlayerManager extends AbstractGamePlayerManager<Defusa
 	}
 
 	public boolean shouldAddAssistDamage(@NotNull UUID sourceUuid, @NotNull UUID targetUuid) {
-		GameTeam sourceTeam = getPlayerTeam(sourceUuid);
-		GameTeam targetTeam = getPlayerTeam(targetUuid);
-
-		return !PFUtil.isSameTeam(sourceTeam, targetTeam);
+		return !PFGameHelper.isSameTeam(this, sourceUuid, targetUuid);
 	}
 
 	@Override

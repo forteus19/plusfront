@@ -3,9 +3,9 @@ package dev.vuis.plusfront.util;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 import net.minecraft.network.VarInt;
+import net.minecraft.network.codec.StreamDecoder;
+import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.world.phys.Vec3;
 
 public final class PFPacketUtil {
@@ -13,18 +13,18 @@ public final class PFPacketUtil {
 		throw new AssertionError();
 	}
 
-	public static <T> void writeList(ByteBuf buf, List<T> list, BiConsumer<ByteBuf, T> elementEncoder) {
+	public static <B extends ByteBuf, T> void writeList(B buf, List<T> list, StreamEncoder<? super B, T> elementEncoder) {
 		VarInt.write(buf, list.size());
 		for (T element : list) {
-			elementEncoder.accept(buf, element);
+			elementEncoder.encode(buf, element);
 		}
 	}
 
-	public static <T> List<T> readList(ByteBuf buf, Function<ByteBuf, T> elementDecoder) {
+	public static <B extends ByteBuf, T> List<T> readList(B buf, StreamDecoder<? super B, T> elementDecoder) {
 		int numElements = VarInt.read(buf);
 		List<T> list = new ObjectArrayList<>(numElements);
 		for (int i = 0; i < numElements; i++) {
-			list.add(elementDecoder.apply(buf));
+			list.add(elementDecoder.decode(buf));
 		}
 		return list;
 	}

@@ -45,6 +45,7 @@ import com.mojang.brigadier.context.CommandContext;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.data.PFDefusalData;
 import dev.vuis.plusfront.ex.TeamDeathmatchCodecEx;
+import dev.vuis.plusfront.game.PFGameHelper;
 import dev.vuis.plusfront.game.TransformedTeamTypes;
 import dev.vuis.plusfront.game.tag.IConditionalCombatStats;
 import dev.vuis.plusfront.util.PFUtil;
@@ -481,7 +482,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	@Override
 	public void onPingRequest(@NotNull BFAbstractManager<?, ?, ?> manager, @NotNull ServerPlayer player, @NotNull Vec3 position) {
-		if (PFUtil.isPlayerUnavailable(player)) {
+		if (PFGameHelper.isPlayerUnavailable(player)) {
 			return;
 		}
 
@@ -558,10 +559,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 			return true;
 		}
 
-		return !PFUtil.isSameTeam(
-			playerManager.getPlayerTeam(player.getUUID()),
-			playerManager.getPlayerTeam(sourcePlayer.getUUID())
-		);
+		return !PFGameHelper.isSameTeam(playerManager, player.getUUID(), sourcePlayer.getUUID());
 	}
 
 	@Override
@@ -578,10 +576,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 			return false;
 		}
 
-		return !PFUtil.isSameTeam(
-			playerManager.getPlayerTeam(player.getUUID()),
-			playerManager.getPlayerTeam(killedEntity.getUUID())
-		);
+		return !PFGameHelper.isSameTeam(playerManager, player.getUUID(), killedEntity.getUUID());
 	}
 
 	@Override

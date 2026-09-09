@@ -5,6 +5,7 @@ import com.boehmod.blockfront.game.AbstractGame;
 import com.boehmod.blockfront.registry.BFItems;
 import dev.vuis.plusfront.PFTemp;
 import dev.vuis.plusfront.PlusFront;
+import dev.vuis.plusfront.game.PFGameHelper;
 import dev.vuis.plusfront.game.impl.def.DefusalGame;
 import dev.vuis.plusfront.net.payload.PFFeatureFlagsPayload;
 import dev.vuis.plusfront.util.PFUtil;
@@ -37,7 +38,7 @@ public final class PFServerEvents {
 
 		Player player = event.getPlayer();
 
-		if (PFUtil.isPlayerUnavailable(player)) {
+		if (PFGameHelper.isPlayerUnavailable(player)) {
 			return;
 		}
 
