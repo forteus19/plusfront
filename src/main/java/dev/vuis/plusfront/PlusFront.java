@@ -1,6 +1,7 @@
 package dev.vuis.plusfront;
 
 import dev.vuis.plusfront.registry.PFAttachmentTypes;
+import dev.vuis.plusfront.registry.PFItems;
 import dev.vuis.plusfront.server.config.PFServerConfig;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -17,6 +18,9 @@ public final class PlusFront {
 	public PlusFront(IEventBus modBus, ModContainer container) {
 		LOGGER.info("Registering attachment types...");
 		PFAttachmentTypes.register(modBus);
+
+		LOGGER.info("Registering items...");
+		PFItems.register(modBus);
 
 		LOGGER.info("Registering server config...");
 		PFServerConfig.register(container);

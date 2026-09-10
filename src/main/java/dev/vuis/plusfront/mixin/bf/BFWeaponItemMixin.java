@@ -4,20 +4,35 @@ import com.boehmod.blockfront.common.item.BFWeaponItem;
 import com.boehmod.blockfront.registry.BFDataComponents;
 import dev.vuis.plusfront.player.PFArmory;
 import dev.vuis.plusfront.registry.PFAttachmentTypes;
+import dev.vuis.plusfront.registry.PFItems;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BFWeaponItem.class)
 public abstract class BFWeaponItemMixin {
 	@Shadow
 	public static void setOriginalOwner(@NotNull ItemStack var0, @NotNull String var1) {
+	}
+
+	@Redirect(
+		method = "<init>",
+		at = @At(
+			value = "FIELD",
+			target = "Lcom/boehmod/blockfront/common/item/BFWeaponItem;field_3628:Ljava/lang/String;",
+			opcode = Opcodes.GETFIELD
+		)
+	)
+	private String overrideModelDataForCustomItems(BFWeaponItem<?> instance) {
+		return PFItems.fixInternalId(instance.method_3757());
 	}
 
 	@Inject(
