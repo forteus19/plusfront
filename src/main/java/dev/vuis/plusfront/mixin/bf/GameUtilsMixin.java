@@ -1,5 +1,6 @@
 package dev.vuis.plusfront.mixin.bf;
 
+import com.boehmod.blockfront.common.gun.GunMagType;
 import com.boehmod.blockfront.game.GameUtils;
 import com.boehmod.blockfront.game.Loadout;
 import dev.vuis.plusfront.game.impl.def.DefusalGame;
@@ -9,6 +10,7 @@ import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameUtils.class)
@@ -21,5 +23,18 @@ public abstract class GameUtilsMixin {
 		if (PFUtil.blockfrontManager().getPlayerGame(player) instanceof DefusalGame defusalGame) {
 			defusalGame.getPlayerManager().onGiveLoadout(player);
 		}
+	}
+
+	@Redirect(
+		method = "method_2967",
+		at = @At(
+			value = "INVOKE",
+			target = "Lcom/boehmod/blockfront/common/gun/GunMagType;maxAmmo()I",
+			ordinal = 0
+		)
+	)
+	private static int minimumAmmoRefill(GunMagType instance) {
+		int maxAmmo = instance.maxAmmo();
+		return maxAmmo > 0 ? maxAmmo : 1;
 	}
 }

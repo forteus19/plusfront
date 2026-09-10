@@ -1,14 +1,19 @@
 package dev.vuis.plusfront.game;
 
 import com.boehmod.blockfront.common.item.GunItem;
+import com.boehmod.blockfront.common.match.BFRace;
 import com.boehmod.blockfront.game.ClassType;
 import com.boehmod.blockfront.game.Loadout;
+import com.boehmod.blockfront.game.NationType;
 import com.boehmod.blockfront.game.TeamType;
 import com.boehmod.blockfront.registry.BFItems;
+import com.boehmod.blockfront.util.BFRes;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.mixin.bf.TeamTypeAccessor;
+import dev.vuis.plusfront.registry.PFItems;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectList;
+import java.util.List;
 import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -16,13 +21,31 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 // hardcoded custom team types until i can find a better solution :P
-public final class TransformedTeamTypes {
+public final class CustomTeamTypes {
 	public static final ThreadLocal<Boolean> DISABLE_INDEX = ThreadLocal.withInitial(() -> false);
 
 	private static final Map<ResourceLocation, TeamType> DEFUSAL = new Object2ObjectOpenHashMap<>();
 
-	private TransformedTeamTypes() {
+	private CustomTeamTypes() {
 		throw new AssertionError();
+	}
+
+	public static void registerPermanent() {
+		NationType us = NationType.getByKey("us");
+		assert us != null;
+
+		new TeamType(100, us, "cowboy")
+			.races(List.of(BFRace.CAUCASIAN))
+			.setLoadouts(Map.of(
+				BFRes.loc("rifleman"),
+				List.of(
+					new Loadout(
+						PFItems.GUN_COWBOY_REVOLVER.toStack(),
+						null,
+						BFItems.MELEE_ITEM_KNIFE_M1905.toStack()
+					)
+				)
+			));
 	}
 
 	public static TeamType getDefusal(TeamType original) {
@@ -139,7 +162,7 @@ public final class TransformedTeamTypes {
 				new Loadout(
 					new ItemStack(primary.value()),
 					new ItemStack(secondary.value()),
-					new ItemStack(BFItems.MELEE_ITEM_WRENCH.value())
+					BFItems.MELEE_ITEM_WRENCH.toStack()
 				).addExtra(
 					new ItemStack(atGrenade.value())
 				).addExtra(

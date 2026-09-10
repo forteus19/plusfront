@@ -1,15 +1,25 @@
 package dev.vuis.plusfront.mixin.bf;
 
 import com.boehmod.blockfront.game.TeamType;
-import dev.vuis.plusfront.game.TransformedTeamTypes;
+import dev.vuis.plusfront.game.CustomTeamTypes;
 import java.util.List;
 import java.util.Map;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TeamType.class)
 public abstract class TeamTypeMixin {
+    @Inject(
+        method = "<clinit>",
+        at = @At("TAIL")
+    )
+    private static void registerCustom(CallbackInfo ci) {
+        CustomTeamTypes.registerPermanent();
+    }
+
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Redirect(
         method = "<init>",
@@ -20,7 +30,7 @@ public abstract class TeamTypeMixin {
         )
     )
     private boolean checkIndexDisabled1(List instance, Object e) {
-        if (!TransformedTeamTypes.DISABLE_INDEX.get()) {
+        if (!CustomTeamTypes.DISABLE_INDEX.get()) {
             return instance.add(e);
         }
         return false;
@@ -36,7 +46,7 @@ public abstract class TeamTypeMixin {
         )
     )
     private Object checkIndexDisabled2(Map instance, Object k, Object v) {
-        if (!TransformedTeamTypes.DISABLE_INDEX.get()) {
+        if (!CustomTeamTypes.DISABLE_INDEX.get()) {
             return instance.put(k, v);
         }
         return null;

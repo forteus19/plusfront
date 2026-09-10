@@ -46,7 +46,7 @@ import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.data.PFDefusalData;
 import dev.vuis.plusfront.ex.TeamDeathmatchCodecEx;
 import dev.vuis.plusfront.game.PFGameHelper;
-import dev.vuis.plusfront.game.TransformedTeamTypes;
+import dev.vuis.plusfront.game.CustomTeamTypes;
 import dev.vuis.plusfront.game.tag.IConditionalCombatStats;
 import dev.vuis.plusfront.util.PFUtil;
 import dev.vuis.plusfront.world.BombDamageSource;
@@ -294,12 +294,12 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 	@Override
 	public @NotNull TeamType getAlliesDivision() {
-		return TransformedTeamTypes.getDefusal(super.getAlliesDivision());
+		return CustomTeamTypes.getDefusal(super.getAlliesDivision());
 	}
 
 	@Override
 	public @NotNull TeamType getAxisDivision() {
-		return TransformedTeamTypes.getDefusal(super.getAxisDivision());
+		return CustomTeamTypes.getDefusal(super.getAxisDivision());
 	}
 
 	@Override
