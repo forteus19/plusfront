@@ -15,6 +15,7 @@
     "bf.BFUpdaterMixin",
     "bf.BFWeaponItemMixin",
     "bf.BombEntityMixin",
+    "bf.GameAssetCodecMixin",
     "bf.GameAssetMixin",
     "bf.GameBoundaryMixin",
     "bf.GameCombatManagerMixin",
