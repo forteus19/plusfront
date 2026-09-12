@@ -9,6 +9,7 @@ import com.boehmod.blockfront.game.impl.dom.DominationGameClient;
 import com.boehmod.blockfront.game.impl.dom.DominationPlayerManager;
 import com.boehmod.blockfront.game.tag.client.IAllowsPingsClient;
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.vuis.plusfront.client.config.GameGuiStyle;
 import dev.vuis.plusfront.client.config.PFClientConfig;
 import dev.vuis.plusfront.client.render.game.PFGameGuiRendering;
 import java.util.Set;
@@ -51,15 +52,13 @@ public abstract class DominationGameClientMixin extends CapturePointGameClient<D
 			minecraft, manager, player, level, playerData, graphics, font, poseStack, bufferSource, players, width, height, midX, midY, renderTime, delta
 		);
 
-		switch (PFClientConfig.getGameGuiStyle()) {
-			case OLD -> {
-				PFGameGuiRendering.oldCapturePointScore(
-					minecraft, dataHandler,
-					graphics, poseStack, font,
-					getStageTimer(), game,
-					midX, renderTime
-				);
-			}
+		if (PFClientConfig.getGameGuiStyle() == GameGuiStyle.OLD) {
+			PFGameGuiRendering.oldCapturePointScore(
+				minecraft, dataHandler,
+				graphics, poseStack, font,
+				getStageTimer(), game,
+				midX, renderTime
+			);
 		}
 	}
 }

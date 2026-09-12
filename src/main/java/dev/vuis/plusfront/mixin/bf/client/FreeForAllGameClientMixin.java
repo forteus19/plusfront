@@ -8,6 +8,7 @@ import com.boehmod.blockfront.game.impl.ffa.FreeForAllGame;
 import com.boehmod.blockfront.game.impl.ffa.FreeForAllGameClient;
 import com.boehmod.blockfront.game.impl.ffa.FreeForAllPlayerManager;
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.vuis.plusfront.client.config.GameGuiStyle;
 import dev.vuis.plusfront.client.config.PFClientConfig;
 import dev.vuis.plusfront.client.render.game.PFGameGuiRendering;
 import java.util.Set;
@@ -53,15 +54,12 @@ public abstract class FreeForAllGameClientMixin extends AbstractGameClient<FreeF
 		float delta,
 		CallbackInfo ci
 	) {
-		switch (PFClientConfig.getGameGuiStyle()) {
-			case OLD -> {
-				PFGameGuiRendering.oldTopElements(
-					minecraft, dataHandler,
-					graphics, poseStack, font,
-					getStageTimer(), game.getPlayerManager(),
-					midX
-				);
-			}
+		if (PFClientConfig.getGameGuiStyle() == GameGuiStyle.OLD) {
+			PFGameGuiRendering.oldTimer(
+				graphics, poseStack, font,
+				midX,
+				getStageTimer()
+			);
 		}
 	}
 }

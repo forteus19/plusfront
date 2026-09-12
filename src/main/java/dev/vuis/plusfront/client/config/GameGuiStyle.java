@@ -16,8 +16,10 @@ public enum GameGuiStyle {
 			.hiddenGameElementTypes(
 				GameType.DOMINATION,
 				GameType.TEAM_DEATHMATCH,
+				GameType.GUN_GAME,
 				GameType.FREE_FOR_ALL,
-				PFGameType.DEFUSAL
+				PFGameType.DEFUSAL,
+				PFGameType.CHAMBER
 			)
 			.showNotificationsAsToasts()
 			.builtInPlayerHeads()

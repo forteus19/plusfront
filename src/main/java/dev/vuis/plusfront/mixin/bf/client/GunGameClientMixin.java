@@ -4,9 +4,9 @@ import com.boehmod.blockfront.client.BFClientManager;
 import com.boehmod.blockfront.client.player.BFClientPlayerData;
 import com.boehmod.blockfront.client.player.ClientPlayerDataHandler;
 import com.boehmod.blockfront.game.AbstractGameClient;
-import com.boehmod.blockfront.game.impl.tdm.TeamDeathmatchGame;
-import com.boehmod.blockfront.game.impl.tdm.TeamDeathmatchGameClient;
-import com.boehmod.blockfront.game.impl.tdm.TeamDeathmatchPlayerManager;
+import com.boehmod.blockfront.game.impl.gg.GunGame;
+import com.boehmod.blockfront.game.impl.gg.GunGameClient;
+import com.boehmod.blockfront.game.impl.gg.GunGamePlayerManager;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.vuis.plusfront.client.config.GameGuiStyle;
 import dev.vuis.plusfront.client.config.PFClientConfig;
@@ -25,9 +25,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(TeamDeathmatchGameClient.class)
-public abstract class TeamDeathmatchGameClientMixin extends AbstractGameClient<TeamDeathmatchGame, TeamDeathmatchPlayerManager> {
-	public TeamDeathmatchGameClientMixin(@NotNull BFClientManager manager, @NotNull TeamDeathmatchGame game, @NotNull ClientPlayerDataHandler dataHandler) {
+@Mixin(GunGameClient.class)
+public abstract class GunGameClientMixin extends AbstractGameClient<GunGame, GunGamePlayerManager> {
+	public GunGameClientMixin(@NotNull BFClientManager manager, @NotNull GunGame game, @NotNull ClientPlayerDataHandler dataHandler) {
 		super(manager, game, dataHandler);
 	}
 
@@ -55,7 +55,7 @@ public abstract class TeamDeathmatchGameClientMixin extends AbstractGameClient<T
 		CallbackInfo ci
 	) {
 		if (PFClientConfig.getGameGuiStyle() == GameGuiStyle.OLD) {
-			PFGameGuiRendering.oldScoreOnly(
+			PFGameGuiRendering.oldTopElements(
 				minecraft, dataHandler,
 				graphics, poseStack, font,
 				getStageTimer(), game.getPlayerManager(),

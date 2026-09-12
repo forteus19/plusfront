@@ -63,14 +63,15 @@ public final class PFGameGuiRendering {
 			);
 	}
 
-	private static void oldTimer(
+	public static void oldTimer(
 		GuiGraphics graphics,
 		PoseStack poseStack,
 		Font font,
 		int midX,
-		int y,
 		GameStageTimer timer
 	) {
+		int y = 1;
+
 		GameStageTimerEx timerEx = (GameStageTimerEx) (Object) timer;
 		IconRenderer iconRenderer = timerEx.pf$getIconRenderer();
 
@@ -132,7 +133,7 @@ public final class PFGameGuiRendering {
 		@Nullable GameTeam alliesTeam,
 		int midX
 	) {
-		oldTimer(graphics, poseStack, font, midX, 1, timer);
+		oldTimer(graphics, poseStack, font, midX, timer);
 
 		if (axisTeam != null) {
 			UUID[] players = axisTeam.getPlayers().toArray(new UUID[0]);

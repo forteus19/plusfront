@@ -240,15 +240,13 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 
 		GameGuiStyle guiStyle = PFClientConfig.getGameGuiStyle();
 
-		switch (guiStyle) {
-			case OLD -> {
-				PFGameGuiRendering.oldScoreOnly(
-					minecraft, dataHandler,
-					graphics, poseStack, font,
-					getStageTimer(), game.getPlayerManager(),
-					midX
-				);
-			}
+		if (guiStyle == GameGuiStyle.OLD) {
+			PFGameGuiRendering.oldScoreOnly(
+				minecraft, dataHandler,
+				graphics, poseStack, font,
+				getStageTimer(), game.getPlayerManager(),
+				midX
+			);
 		}
 
 		if (PFKeyMappings.showWaypoints.isDown()) {

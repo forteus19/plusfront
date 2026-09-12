@@ -14,6 +14,9 @@ import com.boehmod.blockfront.game.AbstractGameClient;
 import com.boehmod.blockfront.unnamed.BF_552;
 import com.boehmod.blockfront.util.BFRes;
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.vuis.plusfront.client.config.GameGuiStyle;
+import dev.vuis.plusfront.client.config.PFClientConfig;
+import dev.vuis.plusfront.client.render.game.PFGameGuiRendering;
 import dev.vuis.plusfront.game.PFGameClientHelper;
 import dev.vuis.plusfront.game.ScoreboardFormats;
 import dev.vuis.plusfront.util.PFUtil;
@@ -81,6 +84,13 @@ public final class ChamberGameClient extends AbstractGameClient<ChamberGame, Cha
 		float renderTime,
 		float delta
 	) {
+		if (PFClientConfig.getGameGuiStyle() == GameGuiStyle.OLD) {
+			PFGameGuiRendering.oldTimer(
+				graphics, poseStack, font,
+				midX,
+				getStageTimer()
+			);
+		}
 	}
 
 	@Override
