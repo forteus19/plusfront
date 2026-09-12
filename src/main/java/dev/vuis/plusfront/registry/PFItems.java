@@ -64,6 +64,7 @@ public final class PFItems {
 			.method_8880(0.35f)
 			.camera(GunCameraConfigs.field_6769)
 			.shake(ShakeNodePresets.GUN_WEBLEY)
+			.secondary()
 			.holdCloser()
 			.scope(GunScopeConfig.Type.DEFAULT, new GunScopeConfig())
 			.spread(GunSpreadConfigs.REVOLVER)
