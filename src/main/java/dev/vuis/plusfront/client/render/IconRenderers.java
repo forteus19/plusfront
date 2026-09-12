@@ -1,6 +1,5 @@
 package dev.vuis.plusfront.client.render;
 
-import com.boehmod.blockfront.client.render.BFRendering;
 import com.boehmod.blockfront.util.BFRes;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.vuis.plusfront.PlusFront;
@@ -15,7 +14,6 @@ public final class IconRenderers {
 	private static final ResourceLocation OLD_BOMB_TEXTURE = BFRes.loc("textures/gui/game/defusal/bomb_planted.png");
 	private static final ResourceLocation OLD_BOMB_BLINK_TEXTURE = BFRes.loc("textures/gui/game/defusal/bomb_planted_blink.png");
 
-	@SuppressWarnings("deprecation")
 	public static final IconRenderer BOMB = (graphics, poseStack) -> {
 		ResourceLocation texture, blinkTexture;
 		float offset = 0f, scale = 1f;
@@ -40,9 +38,9 @@ public final class IconRenderers {
 		float height = 16f * scale;
 		boolean blink = PFClientTemp.frameMillis % 1000 < 500;
 
-		BFRendering.centeredTexture(poseStack, graphics, texture, 0f, offset, width, height);
+		PFGuiRenderUtil.centeredTexture(poseStack, texture, 0f, offset, width, height);
 		if (blink) {
-			BFRendering.centeredTexture(poseStack, graphics, blinkTexture, 0f, offset, width, height);
+			PFGuiRenderUtil.centeredTexture(poseStack, blinkTexture, 0f, offset, width, height);
 		}
 	};
 
