@@ -5,6 +5,7 @@
   "item.pf.gun_cowboy_revolver": "Cowboy Revolver",
   "pf.configuration.game_gui_style": "Match UI Style",
   "pf.gamemode.def": "Defusal",
+  "pf.gamemode.oitc": "One In The Chamber",
   "pf.message.command.armory.clear.card.success": "Cleared card for %s players",
   "pf.message.command.armory.clear.card.success.single": "Cleared card for %s",
   "pf.message.command.armory.clear.coin.success": "Cleared coin for %s players",

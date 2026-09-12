@@ -2,7 +2,6 @@ package dev.vuis.plusfront.registry;
 
 import com.boehmod.bflib.cloud.common.player.challenge.GunType;
 import com.boehmod.blockfront.common.gun.GunCameraConfigs;
-import com.boehmod.blockfront.common.gun.GunDamageConfigs;
 import com.boehmod.blockfront.common.gun.GunFireConfig;
 import com.boehmod.blockfront.common.gun.GunFireMode;
 import com.boehmod.blockfront.common.gun.GunScopeConfig;
@@ -14,6 +13,7 @@ import com.boehmod.blockfront.common.item.GunItem;
 import com.boehmod.blockfront.registry.BFSounds;
 import com.boehmod.blockfront.util.math.ShakeNodePresets;
 import dev.vuis.plusfront.PlusFront;
+import dev.vuis.plusfront.gun.PFGunDamageConfigs;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
@@ -28,7 +28,7 @@ public final class PFItems {
 		"gun_cowboy_revolver",
 		properties -> new GunItem("gun_cowboy_revolver", properties)
 			.defaultMag(1, 0)
-			.damage(GunDamageConfigs.WELROD)
+			.damage(PFGunDamageConfigs.ONE_TAP)
 			.sound(
 				GunSoundConfig.DEFAULT.clone()
 					.fire(BFSounds.ITEM_GUN_WEBLEY_MK6_FIRE)

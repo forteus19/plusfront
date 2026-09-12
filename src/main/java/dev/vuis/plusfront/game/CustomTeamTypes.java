@@ -22,7 +22,10 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 
 // hardcoded custom team types until i can find a better solution :P
 public final class CustomTeamTypes {
+	public static final ThreadLocal<Boolean> OVERRIDE_NAMESPACE = ThreadLocal.withInitial(() -> false);
 	public static final ThreadLocal<Boolean> DISABLE_INDEX = ThreadLocal.withInitial(() -> false);
+
+	public static TeamType US_COWBOY;
 
 	private static final Map<ResourceLocation, TeamType> DEFUSAL = new Object2ObjectOpenHashMap<>();
 
@@ -34,18 +37,22 @@ public final class CustomTeamTypes {
 		NationType us = NationType.getByKey("us");
 		assert us != null;
 
-		new TeamType(100, us, "cowboy")
-			.races(List.of(BFRace.CAUCASIAN))
-			.setLoadouts(Map.of(
-				BFRes.loc("rifleman"),
-				List.of(
-					new Loadout(
-						PFItems.GUN_COWBOY_REVOLVER.toStack(),
-						null,
-						BFItems.MELEE_ITEM_KNIFE_M1905.toStack()
-					)
+		OVERRIDE_NAMESPACE.set(true);
+
+		US_COWBOY = new TeamType(100, us, "cowboy")
+			.races(List.of(BFRace.CAUCASIAN));
+		US_COWBOY.setLoadouts(Map.of(
+			BFRes.loc("rifleman"),
+			List.of(
+				new Loadout(
+					PFItems.GUN_COWBOY_REVOLVER.toStack(),
+					null,
+					BFItems.MELEE_ITEM_KNIFE_M1905.toStack()
 				)
-			));
+			)
+		));
+
+		OVERRIDE_NAMESPACE.set(false);
 	}
 
 	public static TeamType getDefusal(TeamType original) {

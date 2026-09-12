@@ -1,5 +1,6 @@
 package dev.vuis.plusfront.mixin.bf;
 
+import com.boehmod.blockfront.game.GameSequence;
 import com.boehmod.blockfront.game.GameTypeCodec;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.mojang.serialization.MapCodec;
@@ -13,7 +14,9 @@ import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameTypeCodec.class)
 public interface GameTypeCodecMixin {
@@ -44,7 +47,18 @@ public interface GameTypeCodecMixin {
 	@Mixin(GameTypeCodec.TeamDeathmatch.class)
 	abstract class TeamDeathmatchMixin implements TeamDeathmatchCodecEx {
 		@Unique
-		private Optional<PFDefusalData> pf$defusalData = Optional.empty();
+		private Optional<PFDefusalData> pf$defusalData;
+		@Unique
+		private boolean pf$isChamber;
+
+		@Inject(
+			method = "<init>",
+			at = @At("TAIL")
+		)
+		private void initCustom(Optional<GameSequence> outroSequence, CallbackInfo ci) {
+			pf$defusalData = Optional.empty();
+			pf$isChamber = false;
+		}
 
 		@Override
 		public Optional<PFDefusalData> pf$getDefusalData() {
@@ -54,6 +68,16 @@ public interface GameTypeCodecMixin {
 		@Override
 		public void pf$setDefusalData(Optional<PFDefusalData> data) {
 			pf$defusalData = data;
+		}
+
+		@Override
+		public boolean pf$isChamber() {
+			return pf$isChamber;
+		}
+
+		@Override
+		public void pf$setChamber(boolean enabled) {
+			pf$isChamber = enabled;
 		}
 
 		@ModifyReturnValue(
@@ -68,7 +92,7 @@ public interface GameTypeCodecMixin {
 	@Mixin(GameTypeCodec.TroubleTown.class)
 	abstract class TroubleTownMixin implements TroubleTownCodecEx {
 		@Unique
-		private PFTroubleTownData pf$customData = PFTroubleTownData.EMPTY;
+		private PFTroubleTownData pf$customData;
 
 		@Override
 		public PFTroubleTownData pf$getCustomData() {

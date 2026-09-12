@@ -60,10 +60,21 @@ public abstract class GameAssetMixin {
 		if (codec instanceof GameTypeCodec.TeamDeathmatch tdmCodec) {
 			TeamDeathmatchCodecEx ex = TeamDeathmatchCodecEx.cast(tdmCodec);
 
+			boolean overwritten = false;
+
 			if (ex.pf$getDefusalData().isPresent()) {
 				PlusFront.LOGGER.info("Overriding TDM key with DEF.");
-
 				key = "def";
+				overwritten = true;
+			}
+
+			if (ex.pf$isChamber()) {
+				if (!overwritten) {
+					PlusFront.LOGGER.info("Overriding TDM key with OITC.");
+					key = "oitc";
+				} else {
+					throw new RuntimeException("Defusal and chamber data present!");
+				}
 			}
 		}
 

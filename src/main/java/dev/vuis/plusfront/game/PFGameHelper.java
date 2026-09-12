@@ -1,13 +1,16 @@
 package dev.vuis.plusfront.game;
 
+import com.boehmod.blockfront.client.sound.BFMusicType;
 import com.boehmod.blockfront.common.player.PlayerDataHandler;
 import com.boehmod.blockfront.common.stat.BFStat;
 import com.boehmod.blockfront.game.AbstractGamePlayerManager;
+import com.boehmod.blockfront.game.GameMusic;
 import com.boehmod.blockfront.game.GameTeam;
 import com.boehmod.blockfront.game.GameUtils;
 import dev.vuis.plusfront.util.PFUtil;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
@@ -16,6 +19,15 @@ import org.jetbrains.annotations.Nullable;
 public final class PFGameHelper {
 	private PFGameHelper() {
 		throw new AssertionError();
+	}
+
+	public static void forUuids(@NotNull Set<UUID> players, @NotNull Consumer<ServerPlayer> consumer) {
+		for (UUID uuid : players) {
+			ServerPlayer player = GameUtils.getPlayerByUUID(uuid);
+			if (player != null) {
+				consumer.accept(player);
+			}
+		}
 	}
 
 	public static boolean isPlayerUnavailable(@NotNull Player player) {
@@ -65,5 +77,9 @@ public final class PFGameHelper {
 		@NotNull BFStat stat
 	) {
 		team.putStatInt(stat, team.getStatInt(stat, 0) + 1);
+	}
+
+	public static @NotNull GameMusic genericStartMusic() {
+		return GameMusic.create().method_1540(BFMusicType.START_GENERIC).method_1536(5);
 	}
 }

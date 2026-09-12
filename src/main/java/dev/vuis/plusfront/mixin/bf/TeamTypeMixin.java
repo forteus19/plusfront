@@ -1,9 +1,12 @@
 package dev.vuis.plusfront.mixin.bf;
 
 import com.boehmod.blockfront.game.TeamType;
+import com.boehmod.blockfront.util.BFRes;
+import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.game.CustomTeamTypes;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,6 +21,18 @@ public abstract class TeamTypeMixin {
     )
     private static void registerCustom(CallbackInfo ci) {
         CustomTeamTypes.registerPermanent();
+    }
+
+    @Redirect(
+        method = "<init>",
+        at = @At(
+            value = "INVOKE",
+            target = "Lcom/boehmod/blockfront/util/BFRes;loc(Ljava/lang/String;)Lnet/minecraft/resources/ResourceLocation;",
+            ordinal = 0
+        )
+    )
+    private ResourceLocation overrideNamespace(String path) {
+        return CustomTeamTypes.OVERRIDE_NAMESPACE.get() ? PlusFront.res(path) : BFRes.loc(path);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})

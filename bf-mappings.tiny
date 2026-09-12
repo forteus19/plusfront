@@ -9856,7 +9856,7 @@ c	com/boehmod/blockfront/kH	com/boehmod/blockfront/unnamed/BF_1347	com/boehmod/b
 	m	(Lcom/boehmod/blockfront/vB;Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/resources/ResourceLocation;	a	method_7109	method_7122
 	m	(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V	a	method_7110	apply
 	m	(Ljava/lang/Object;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V	apply	apply	apply
-	m	()V	bB	method_7111	method_7111
+	m	()V	bB	method_7111	bootstrap
 c	com/boehmod/blockfront/kI	com/boehmod/blockfront/unnamed/BF_460	com/boehmod/blockfront/assets/IAsset
 	m	()Lcom/boehmod/blockfront/kP;	a	method_1642	getCommand
 	m	()V	bC	method_6100	onRemove
@@ -17333,8 +17333,10 @@ c	com/boehmod/blockfront/rJ	com/boehmod/blockfront/unnamed/BF_819	com/boehmod/bl
 	m	(Lnet/minecraft/world/entity/player/Player;Lcom/boehmod/blockfront/pR;)Z	a	method_3416	method_3416
 	m	(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/Item;)Lcom/boehmod/blockfront/pR;	a	method_3417	method_3417
 c	com/boehmod/blockfront/rK	com/boehmod/blockfront/unnamed/BF_820	com/boehmod/blockfront/game/tag/IAllowsRegeneration
-	m	(Lnet/minecraft/world/entity/player/Player;)F	a	method_3418	method_3418
-	m	(Lnet/minecraft/world/entity/player/Player;)I	a	method_3419	method_3419
+	m	(Lnet/minecraft/world/entity/player/Player;)F	a	method_3418	getRegenerationAmount
+		p	1			player
+	m	(Lnet/minecraft/world/entity/player/Player;)I	a	method_3419	getRegenerationTicks
+		p	1			player
 	m	(Lnet/minecraft/world/entity/player/Player;)Z	i	method_3420	playerCanRegenerate
 		p	1			player
 c	com/boehmod/blockfront/rL	com/boehmod/blockfront/unnamed/BF_821	com/boehmod/blockfront/game/tag/IHasInfectedEntities
@@ -17366,9 +17368,11 @@ c	com/boehmod/blockfront/rR	com/boehmod/blockfront/unnamed/BF_826	com/boehmod/bl
 	m	(Lnet/minecraft/server/level/ServerPlayer;)I	b	method_3432	getMaximumPlayerSounds
 	m	()I	bP	method_3431	getSoundboardCooldown
 c	com/boehmod/blockfront/rS	com/boehmod/blockfront/unnamed/BF_827	com/boehmod/blockfront/game/tag/IAllowsRespawning
-	m	()I	bQ	method_3433	getSpawnProLength
-	m	(Ljava/util/UUID;)Z	j	method_3434	method_3434
-	m	(Ljava/util/UUID;)Z	k	method_3435	method_3435
+	m	()I	bQ	method_3433	getSpawnProtectionTicks
+	m	(Ljava/util/UUID;)Z	j	method_3434	shouldCancelSpawnProtection
+		p	1			uuid
+	m	(Ljava/util/UUID;)Z	k	method_3435	shouldCancelSpawnProtectionOnShoot
+		p	1			uuid
 c	com/boehmod/blockfront/rT	com/boehmod/blockfront/unnamed/BF_828	com/boehmod/blockfront/game/tag/ICanSwitchTeams
 	m	(Lnet/minecraft/server/level/ServerPlayer;)Lnet/minecraft/network/chat/Component;	a	method_3436	getSwitchTeamMessage
 		p	1			player
@@ -20965,27 +20969,32 @@ c	com/boehmod/blockfront/vA$a	com/boehmod/blockfront/unnamed/BF_949$BF_950	com/b
 	m	(Ljava/lang/String;)Lcom/boehmod/blockfront/vA$a;	valueOf	valueOf	valueOf
 	m	()[Lcom/boehmod/blockfront/vA$a;	values	values	values
 c	com/boehmod/blockfront/vB	com/boehmod/blockfront/unnamed/BF_951	com/boehmod/blockfront/common/gun/GunDamageConfig
-	f	Lcom/mojang/serialization/Codec;	ak	field_8503	field_8503
-	f	Ljava/util/Map;	ap	field_8504	field_8504
+	f	Lcom/mojang/serialization/Codec;	ak	field_8503	CODEC
+	f	Ljava/util/Map;	ap	field_8504	INSTANCES
 	f	Lit/unimi/dsi/fastutil/floats/Float2ObjectMap;	b	field_3853	entries
-	f	Lcom/boehmod/blockfront/vB;	d	field_8505	field_8505
-	m	(F)Lcom/boehmod/blockfront/vB;	a	method_8011	method_8011
+	f	Lcom/boehmod/blockfront/vB;	d	field_8505	DEFAULT
+	m	(F)Lcom/boehmod/blockfront/vB;	a	method_8011	scale
+		p	1			scalar
 	m	(FFF)Lcom/boehmod/blockfront/vB;	a	method_3949	add
 		p	1			distance
 		p	2			body
 		p	3			head
 	m	(Lcom/boehmod/blockfront/vB;)Ljava/util/List;	a	method_8012	method_8012
 	m	(Ljava/util/List;)Lcom/boehmod/blockfront/vB;	a	method_8013	method_8013
-	m	(Lnet/minecraft/resources/ResourceLocation;)Lcom/boehmod/blockfront/vB;	a	method_8014	method_8014
-	m	(Lnet/minecraft/resources/ResourceLocation;Lcom/boehmod/blockfront/vB;)V	a	method_8015	method_8015
-	m	()V	bb	method_8016	method_8016
-	m	(F)Lit/unimi/dsi/fastutil/floats/FloatFloatPair;	c	method_3950	method_3950
+	m	(Lnet/minecraft/resources/ResourceLocation;)Lcom/boehmod/blockfront/vB;	a	method_8014	getByResourceLocation
+		p	0			rl
+	m	(Lnet/minecraft/resources/ResourceLocation;Lcom/boehmod/blockfront/vB;)V	a	method_8015	register
+		p	0			rl
+		p	1			config
+	m	()V	bb	method_8016	clearInstances
+	m	(F)Lit/unimi/dsi/fastutil/floats/FloatFloatPair;	c	method_3950	getEntry
+		p	1			distance
 	m	()Ljava/util/Map;	s	method_3951	getEntries
 	m	(FF)V	<init>	<init>	<init>
 		p	1			body
 		p	2			head
-c	com/boehmod/blockfront/vB$a	com/boehmod/blockfront/unnamed/BF_951$BF_1453	com/boehmod/blockfront/common/gun/GunDamageConfig$BF_1453
-	f	Lcom/mojang/serialization/Codec;	al	field_8506	field_8506
+c	com/boehmod/blockfront/vB$a	com/boehmod/blockfront/unnamed/BF_951$BF_1453	com/boehmod/blockfront/common/gun/GunDamageConfig$EntryCodec
+	f	Lcom/mojang/serialization/Codec;	al	field_8506	CODEC
 	f	F	pg	field_8507	distance
 	f	F	ph	field_8508	damage
 	f	F	pi	field_8509	damageHeadshot
