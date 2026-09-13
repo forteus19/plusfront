@@ -23,7 +23,7 @@ public abstract class KillSectionPlayerAndTextMixin {
 	)
 	private void disableShadowOnText(PoseStack poseStack, Font font, GuiGraphics graphics, FormattedCharSequence text, float x, float y, Operation<Void> original) {
 		if (PFClientConfig.getGameGuiStyle().showOldKillFeed()) {
-			graphics.drawString(font, text, x - font.width(text) / 2f, y, 0xFFFFFF, false);
+			graphics.drawString(font, text, 1f, y, 0xFFFFFF, false);
 		} else {
 			original.call(poseStack, font, graphics, text, x, y);
 		}
