@@ -2098,8 +2098,35 @@ c	com/boehmod/blockfront/bw	com/boehmod/blockfront/unnamed/BF_47	com/boehmod/blo
 		p	12			alpha
 		p	13			color
 		p	14			depthTest
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/Camera;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/resources/ResourceLocation;DDDIIFIZF)V	a	method_9097	method_9097
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/Camera;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/resources/ResourceLocation;DDDIIFIZFZ)V	a	method_8589	method_8589
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/Camera;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/resources/ResourceLocation;DDDIIFIZF)V	a	method_9097	tintedBillboardClippedTexture
+		p	0			poseStack
+		p	1			camera
+		p	2			guiGraphics
+		p	3			texture
+		p	4			x
+		p	6			y
+		p	8			z
+		p	10			width
+		p	11			height
+		p	12			alpha
+		p	13			color
+		p	14			depthTest
+		p	15			progress
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/Camera;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/resources/ResourceLocation;DDDIIFIZFZ)V	a	method_8589	tintedBillboardClippedTexture
+		p	0			poseStack
+		p	1			camera
+		p	2			graphics
+		p	3			texture
+		p	4			x
+		p	6			y
+		p	8			z
+		p	10			width
+		p	11			height
+		p	12			alpha
+		p	13			color
+		p	14			depthTest
+		p	15			progress
+		p	16			reverse
 	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/Camera;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/resources/ResourceLocation;DDDIIFZ)V	a	method_218	billboardTexture
 		p	0			poseStack
 		p	1			camera
@@ -2171,7 +2198,7 @@ c	com/boehmod/blockfront/bw	com/boehmod/blockfront/unnamed/BF_47	com/boehmod/blo
 		p	7			game
 		p	8			gameClient
 		p	9			uuid
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/Camera;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/network/chat/Component;DDD)V	a	method_226	component
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/Camera;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/network/chat/Component;DDD)V	a	method_226	billboardComponent
 		p	0			poseStack
 		p	1			font
 		p	2			camera
@@ -2180,7 +2207,7 @@ c	com/boehmod/blockfront/bw	com/boehmod/blockfront/unnamed/BF_47	com/boehmod/blo
 		p	5			x
 		p	7			y
 		p	9			z
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/Camera;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/network/chat/Component;DDDF)V	a	method_227	component
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/Camera;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/network/chat/Component;DDDF)V	a	method_227	billboardComponent
 		p	0			poseStack
 		p	1			font
 		p	2			camera
@@ -2190,7 +2217,7 @@ c	com/boehmod/blockfront/bw	com/boehmod/blockfront/unnamed/BF_47	com/boehmod/blo
 		p	7			y
 		p	9			z
 		p	11			scale
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/Camera;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/network/chat/Component;DDDFIZ)V	a	method_228	component
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/Camera;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/network/chat/Component;DDDFIZ)V	a	method_228	billboardComponent
 		p	0			poseStack
 		p	1			font
 		p	2			camera
@@ -2202,7 +2229,19 @@ c	com/boehmod/blockfront/bw	com/boehmod/blockfront/unnamed/BF_47	com/boehmod/blo
 		p	11			scale
 		p	12			color
 		p	13			depthTest
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/util/FormattedCharSequence;FDDDFIZ)V	a	method_9098	method_9098
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/util/FormattedCharSequence;FDDDFIZ)V	a	method_9098	billboardCharSequence
+		p	0			poseStack
+		p	1			font
+		p	2			camera
+		p	3			bufferSource
+		p	4			charSequence
+		p	5			textWidth
+		p	6			x
+		p	8			y
+		p	10			z
+		p	12			scale
+		p	13			color
+		p	14			displayModeNormal
 	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/network/chat/Component;FF)V	a	method_229	component2d
 		p	0			poseStack
 		p	1			font
@@ -8165,7 +8204,7 @@ c	com/boehmod/blockfront/hy	com/boehmod/blockfront/unnamed/BF_1600	com/boehmod/b
 	f	F	gl	field_9895	field_9895
 	f	F	gm	field_9896	field_9896
 	m	(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/multiplayer/ClientLevel;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;DDDFIZ)V	a	method_9309	method_9309
-	m	(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/multiplayer/ClientLevel;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/renderer/culling/Frustum;Lcom/boehmod/blockfront/pU;F)V	a	method_9310	method_9310
+	m	(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/multiplayer/ClientLevel;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/renderer/culling/Frustum;Lcom/boehmod/blockfront/pU;F)V	a	method_9310	render
 	m	(Lnet/minecraft/client/multiplayer/ClientLevel;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lcom/boehmod/blockfront/pU;DDDFIF)V	a	method_9311	method_9311
 	m	(Lnet/neoforged/neoforge/client/event/ModelEvent$RegisterAdditional;)V	b	method_9312	registerModels
 c	com/boehmod/blockfront/hz	com/boehmod/blockfront/unnamed/BF_338	com/boehmod/blockfront/client/render/geo/GenericGeoRenderer
@@ -14741,25 +14780,33 @@ c	com/boehmod/blockfront/pF$a	com/boehmod/blockfront/unnamed/BF_679$BF_680	com/b
 		p	2			func
 	m	()Ljava/util/Set;	h	method_2747	getColumns
 c	com/boehmod/blockfront/pG	com/boehmod/blockfront/unnamed/BF_681	com/boehmod/blockfront/game/CapturePointGameClient
-	f	Lcom/boehmod/blockfront/hy;	a	field_9898	field_9898
-	f	Ljava/lang/String;	bZ	field_2907	field_2907
+	f	Lcom/boehmod/blockfront/hy;	a	field_9898	flagPoleRenderer
+	f	Ljava/lang/String;	bZ	field_2907	CAPTURING_MESSAGE
 	f	Lcom/boehmod/blockfront/pU;	c	field_2906	currentCapturePoint
-	f	Ljava/lang/String;	ca	field_2908	field_2908
-	f	Ljava/lang/String;	cb	field_9798	field_9798
-	f	Lnet/minecraft/resources/ResourceLocation;	dZ	field_8762	field_8762
-	f	Lnet/minecraft/resources/ResourceLocation;	ea	field_8763	field_8763
-	f	Lnet/minecraft/resources/ResourceLocation;	eb	field_8764	field_8764
-	f	Lnet/minecraft/resources/ResourceLocation;	ec	field_8765	field_8765
+	f	Ljava/lang/String;	ca	field_2908	DEFENDING_MESSAGE
+	f	Ljava/lang/String;	cb	field_9798	BLOCKING_MESSAGE
+	f	Lnet/minecraft/resources/ResourceLocation;	dZ	field_8762	PROGRESS_TEXTURE
+	f	Lnet/minecraft/resources/ResourceLocation;	ea	field_8763	PROGRESS_AXIS_TEXTURE
+	f	Lnet/minecraft/resources/ResourceLocation;	eb	field_8764	PROGRESS_ALLIES_TEXTURE
+	f	Lnet/minecraft/resources/ResourceLocation;	ec	field_8765	currentProgressTexture
 	f	Z	gH	field_8766	field_8766
-	f	Lnet/minecraft/network/chat/Component;	iV	field_8128	field_8128
+	f	Lnet/minecraft/network/chat/Component;	iV	field_8128	currentStatusMessage
 	f	F	mw	field_8130	field_8130
 	f	F	mx	field_9256	field_9256
 	f	I	pl	field_8767	field_8767
 	f	I	pm	field_8768	field_8768
 	m	(F)F	D	method_7276	method_7276
 	m	(Lcom/boehmod/blockfront/pU;Lcom/boehmod/blockfront/pN;)Lcom/boehmod/blockfront/pN;	a	method_8495	method_8495
-	m	(Lcom/boehmod/blockfront/pU;Lcom/boehmod/blockfront/pN;)V	a	method_7277	method_7277
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;IIF)V	a	method_2748	method_2748
+	m	(Lcom/boehmod/blockfront/pU;Lcom/boehmod/blockfront/pN;)V	a	method_7277	updateRenderFields
+		p	1			capturePoint
+		p	2			team
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;IIF)V	a	method_2748	renderStatus
+		p	1			poseStack
+		p	2			graphics
+		p	3			font
+		p	4			height
+		p	5			midX
+		p	6			delta
 c	com/boehmod/blockfront/pH	com/boehmod/blockfront/unnamed/BF_682	com/boehmod/blockfront/game/AbstractGamePlayerManager
 	f	Ljava/util/List;	aC	field_2911	teams
 	f	Lcom/boehmod/blockfront/pP;	a	field_2912	matchStreakTracker
@@ -15924,8 +15971,8 @@ c	com/boehmod/blockfront/pT	com/boehmod/blockfront/unnamed/BF_1491	com/boehmod/b
 	m	(Ljava/lang/String;)Lcom/boehmod/blockfront/pT;	valueOf	valueOf	valueOf
 	m	()[Lcom/boehmod/blockfront/pT;	values	values	values
 c	com/boehmod/blockfront/pU	com/boehmod/blockfront/unnamed/BF_754	com/boehmod/blockfront/game/AbstractCapturePoint
-	f	Lnet/minecraft/util/FormattedCharSequence;	A	field_9623	field_9623
-	f	Lcom/boehmod/blockfront/pH;	b	field_6358	gameManager
+	f	Lnet/minecraft/util/FormattedCharSequence;	A	field_9623	distanceText
+	f	Lcom/boehmod/blockfront/pH;	b	field_6358	playerManager
 	f	Lnet/minecraft/world/phys/AABB;	c	field_3223	captureArea
 	f	Ljava/lang/String;	ch	field_8092	field_8092
 	f	Ljava/lang/String;	ci	field_3224	name
@@ -15933,22 +15980,22 @@ c	com/boehmod/blockfront/pU	com/boehmod/blockfront/unnamed/BF_754	com/boehmod/bl
 	f	I	dQ	field_3225	field_3225
 	f	Lcom/boehmod/blockfront/pN;	e	field_6360	cpTeam
 	f	Lit/unimi/dsi/fastutil/objects/Object2IntMap;	e	field_6363	field_6363
-	f	Lnet/minecraft/resources/ResourceLocation;	ed	field_3226	field_3226
+	f	Lnet/minecraft/resources/ResourceLocation;	ed	field_3226	WAYPOINT_TEXTURE
 	f	Lnet/minecraft/resources/ResourceLocation;	ee	field_9166	field_9166
 	f	Lcom/boehmod/blockfront/pN;	f	field_6361	field_6361
 	f	Lcom/boehmod/blockfront/pW;	f	field_9899	flagPosition
-	f	Lnet/minecraft/network/chat/Component;	gE	field_6362	field_6362
+	f	Lnet/minecraft/network/chat/Component;	gE	field_6362	nameComponent
 	f	Lcom/boehmod/blockfront/pN;	g	field_9799	field_9799
 	f	Lnet/minecraft/world/phys/AABB;	g	field_9257	captureBox
 	f	Z	gM	field_9900	flagHasBase
 	f	Z	gN	field_3222	isBeingCaptured
 	f	Lcom/boehmod/blockfront/pN;	h	field_9800	field_9800
 	f	Lnet/minecraft/resources/ResourceLocation;	icon	icon	icon
-	f	Lnet/minecraft/network/chat/Component;	jc	field_9624	field_9624
-	f	F	mA	field_9625	field_9625
-	f	F	mB	field_9626	field_9626
-	f	F	mC	field_3231	field_3231
-	f	F	mD	field_3232	field_3232
+	f	Lnet/minecraft/network/chat/Component;	jc	field_9624	nameRenderComponent
+	f	F	mA	field_9625	nameRenderTextWidth
+	f	F	mB	field_9626	distanceTextWidth
+	f	F	mC	field_3231	renderProgress
+	f	F	mD	field_3232	renderProgressPrev
 	f	F	my	field_8093	field_8093
 	f	F	mz	field_3230	field_3230
 	f	I	pJ	field_3233	field_3233
@@ -15959,8 +16006,9 @@ c	com/boehmod/blockfront/pU	com/boehmod/blockfront/unnamed/BF_754	com/boehmod/bl
 	f	I	pO	field_9167	field_9167
 	f	I	pP	field_9902	flagHeight
 	f	I	pQ	field_3239	field_3239
-	f	Lnet/minecraft/util/FormattedCharSequence;	z	field_9627	field_9627
-	m	(I)Lnet/minecraft/world/phys/AABB;	a	method_8695	method_8695
+	f	Lnet/minecraft/util/FormattedCharSequence;	z	field_9627	nameRenderText
+	m	(I)Lnet/minecraft/world/phys/AABB;	a	method_8695	getCaptureBox
+		p	1			radius
 	m	(Lcom/boehmod/blockfront/kl;Lcom/boehmod/blockfront/common/player/c;Lcom/boehmod/blockfront/pE;Lnet/minecraft/server/level/ServerLevel;Ljava/util/Set;)V	a	method_3138	onUpdate
 		p	1			manager
 		p	2			dataHandler
@@ -15971,19 +16019,36 @@ c	com/boehmod/blockfront/pU	com/boehmod/blockfront/unnamed/BF_754	com/boehmod/bl
 	m	(Lcom/boehmod/blockfront/pN;)Z	a	method_5499	method_5499
 	m	(Lcom/boehmod/blockfront/pN;Lcom/boehmod/blockfront/pE;)Z	a	method_8496	method_8496
 	m	(Lnet/minecraft/client/player/LocalPlayer;Lnet/minecraft/client/multiplayer/ClientLevel;Lcom/boehmod/blockfront/pE;)V	a	method_5501	updateClient
-	m	(Lnet/minecraft/client/renderer/culling/Frustum;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;)V	a	method_9102	method_9102
-	m	(Lnet/minecraft/client/renderer/culling/Frustum;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/Camera;F)V	a	method_5497	method_5497
-	m	(Lnet/minecraft/world/entity/Entity;I)Z	a	method_8696	method_8696
-	m	()Lcom/boehmod/blockfront/pH;	b	method_8697	method_8697
+	m	(Lnet/minecraft/client/renderer/culling/Frustum;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;)V	a	method_9102	renderDistanceText
+		p	1			frustum
+		p	2			poseStack
+		p	3			font
+		p	4			camera
+		p	5			bufferSource
+	m	(Lnet/minecraft/client/renderer/culling/Frustum;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/Camera;F)V	a	method_5497	renderWaypoint
+		p	1			frustum
+		p	2			graphics
+		p	3			camera
+		p	4			renderTime
+	m	(Lnet/minecraft/world/entity/Entity;I)Z	a	method_8696	isInRange
+		p	1			entity
+		p	2			radius
+	m	()Lcom/boehmod/blockfront/pH;	b	method_8697	getPlayerManager
 	m	()Lit/unimi/dsi/fastutil/objects/Object2IntMap;	b	method_5508	method_5508
 	m	(Lcom/boehmod/blockfront/pN;)Z	b	method_5502	method_5502
 	m	(Ljava/lang/String;)I	b	method_5500	method_5500
-	m	(Lnet/minecraft/client/renderer/culling/Frustum;)Z	b	method_9103	method_9103
-	m	(Lnet/minecraft/client/renderer/culling/Frustum;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;)V	b	method_9104	method_9104
-	m	()I	bE	method_8593	method_8593
+	m	(Lnet/minecraft/client/renderer/culling/Frustum;)Z	b	method_9103	isWaypointVisible
+		p	1			frustum
+	m	(Lnet/minecraft/client/renderer/culling/Frustum;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;)V	b	method_9104	renderNameText
+		p	1			frustum
+		p	2			poseStack
+		p	3			font
+		p	4			camera
+		p	5			bufferSource
+	m	()I	bE	method_8593	getMaxCaptureProgress
 	m	()Z	bU	method_8497	method_8497
 	m	()V	bj	method_5503	reset
-	m	()Lcom/boehmod/blockfront/pN;	c	method_5507	getCpTeam
+	m	()Lcom/boehmod/blockfront/pN;	c	method_5507	method_5507
 	m	()Lnet/minecraft/world/phys/AABB;	c	method_3142	createCaptureArea
 	m	(Lcom/boehmod/blockfront/pN;)V	c	method_9197	method_9197
 	m	(Lnet/minecraft/world/entity/LivingEntity;)Z	c	method_5506	method_5506
@@ -15991,12 +16056,12 @@ c	com/boehmod/blockfront/pU	com/boehmod/blockfront/unnamed/BF_754	com/boehmod/bl
 	m	()V	cQ	method_8594	method_8594
 	m	()Lcom/boehmod/blockfront/pN;	d	method_5505	getCbTeam
 	m	()Lnet/minecraft/world/phys/AABB;	d	method_3145	getCaptureArea
-	m	()Lcom/boehmod/blockfront/pN;	e	method_8698	method_8698
+	m	()Lcom/boehmod/blockfront/pN;	e	method_8698	getCpTeam
 	m	()I	getColor	getColor	getColor
 	m	()Lnet/minecraft/resources/ResourceLocation;	getIcon	getIcon	getIcon
 	m	(I)I	j	method_8595	method_8595
 	m	(Lcom/boehmod/blockfront/pH;Lnet/minecraft/world/entity/player/Player;Ljava/lang/String;)V	<init>	<init>	<init>
-		p	1			gameManager
+		p	1			playerManager
 		p	2			player
 		p	3			name
 c	com/boehmod/blockfront/pV	com/boehmod/blockfront/unnamed/BF_691	com/boehmod/blockfront/game/AmmoPoint

@@ -25,6 +25,7 @@ public enum GameGuiStyle {
 			.builtInPlayerHeads()
 			.oldKillFeed()
 			.oldWaitingMessage()
+			.oldCapturingStatus()
 	);
 
 	private final Settings settings;
@@ -53,6 +54,10 @@ public enum GameGuiStyle {
 		return settings.oldWaitingMessage;
 	}
 
+	public boolean showOldCapturingStatus() {
+		return settings.oldCapturingStatus;
+	}
+
 	public static final class Settings {
 		private boolean disableFancyRectangles = false;
 		private Set<GameType> hiddenGameElementTypes = Set.of();
@@ -60,6 +65,7 @@ public enum GameGuiStyle {
 		private boolean builtInPlayerHeads = false;
 		private boolean oldKillFeed = false;
 		private boolean oldWaitingMessage = false;
+		private boolean oldCapturingStatus = false;
 
 		private Settings() {
 		}
@@ -91,6 +97,11 @@ public enum GameGuiStyle {
 
 		private Settings oldWaitingMessage() {
 			oldWaitingMessage = true;
+			return this;
+		}
+
+		private Settings oldCapturingStatus() {
+			oldCapturingStatus = true;
 			return this;
 		}
 	}

@@ -450,4 +450,38 @@ public final class PFGameGuiRendering {
 
 		graphics.flush();
 	}
+
+	@SuppressWarnings("deprecation")
+	public static void oldCapturingStatus(
+		GuiGraphics graphics,
+		PoseStack poseStack,
+		Font font,
+		AbstractCapturePoint<?> capturePoint,
+		Component status,
+		int height,
+		int midX,
+		float partialTick
+	) {
+		int y = height - 90;
+
+		float progress = Mth.lerp(partialTick, capturePoint.renderProgressPrev, capturePoint.renderProgress);
+		GameTeam progressTeam = null;
+		if (capturePoint.cpTeam != null) {
+			progressTeam = capturePoint.cpTeam;
+		} else if (capturePoint.cbTeam != null) {
+			progressTeam = capturePoint.cbTeam;
+		}
+
+		BFRendering.rectangleWithShadow(graphics, midX - 60, y, 120, 12, BFRendering.translucentBlack());
+		if (progressTeam != null) {
+			BFRendering.rectangle(
+				poseStack, graphics,
+				midX - 60 + 1, y + 1,
+				progress * 120f / capturePoint.getMaxCaptureProgress() - 2f, 10f,
+				progressTeam.getColor(), 0.8f
+			);
+		}
+
+		BFRendering.centeredString(font, graphics, status, midX, y - 15);
+	}
 }
