@@ -34,16 +34,13 @@ public final class PFServerEvents {
 
 	@SubscribeEvent
 	public static void onItemEntityPickupPost(ItemEntityPickupEvent.Post event) {
-		BFAbstractManager<?, ?, ?> manager = PFUtil.blockfrontManager();
-
 		Player player = event.getPlayer();
 
 		if (PFGameHelper.isPlayerUnavailable(player)) {
 			return;
 		}
 
-		AbstractGame<?, ?, ?> game = manager.getPlayerGame(player);
-		if (!(game instanceof DefusalGame defusalGame)) {
+		if (!(PFUtil.playerGame(player) instanceof DefusalGame defusalGame)) {
 			return;
 		}
 
@@ -56,7 +53,7 @@ public final class PFServerEvents {
 	public static void onItemToss(ItemTossEvent event) {
 		Player player = event.getPlayer();
 
-		if (!(PFUtil.blockfrontManager().getPlayerGame(player) instanceof DefusalGame defusalGame)) {
+		if (!(PFUtil.playerGame(player) instanceof DefusalGame defusalGame)) {
 			return;
 		}
 
@@ -75,7 +72,7 @@ public final class PFServerEvents {
 			return;
 		}
 
-		if (!(PFUtil.blockfrontManager().getPlayerGame(player) instanceof DefusalGame defusalGame)) {
+		if (!(PFUtil.playerGame(player) instanceof DefusalGame defusalGame)) {
 			return;
 		}
 

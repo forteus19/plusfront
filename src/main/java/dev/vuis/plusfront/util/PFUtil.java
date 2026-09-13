@@ -41,6 +41,10 @@ public final class PFUtil {
 		return manager;
 	}
 
+	public static @Nullable AbstractGame<?, ?, ?> playerGame(Player player) {
+		return blockfrontManager().getPlayerGame(player.getUUID());
+	}
+
 	public static PlayerDataHandler<?> playerDataHandler() {
 		return blockfrontManager().getPlayerDataHandler();
 	}
@@ -50,7 +54,7 @@ public final class PFUtil {
 	}
 
 	public static void forceJoinGame(BFAbstractManager<?, ?, ?> manager, ServerPlayer player, AbstractGame<?, ?, ?> targetGame) {
-		AbstractGame<?, ?, ?> currentGame = manager.getPlayerGame(player);
+		AbstractGame<?, ?, ?> currentGame = manager.getPlayerGame(player.getUUID());
 
 		if (currentGame == targetGame) {
 			return;

@@ -424,7 +424,7 @@ public final class PFCommand {
 
 		BFAbstractManager<?, ?, ?> manager = PFUtil.blockfrontManager();
 
-		AbstractGame<?, ?, ?> currentGame = manager.getPlayerGame(player);
+		AbstractGame<?, ?, ?> currentGame = manager.getPlayerGame(player.getUUID());
 		if (currentGame != null) {
 			for (ServerPlayer otherPlayer : player.serverLevel().players()) {
 				PFUtil.forceJoinGame(manager, otherPlayer, currentGame);

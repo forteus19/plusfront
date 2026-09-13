@@ -4,6 +4,7 @@ import com.boehmod.bflib.cloud.common.player.challenge.GunType;
 import com.boehmod.blockfront.common.gun.GunCameraConfigs;
 import com.boehmod.blockfront.common.gun.GunFireConfig;
 import com.boehmod.blockfront.common.gun.GunFireMode;
+import com.boehmod.blockfront.common.gun.GunHeatSmokeConfigs;
 import com.boehmod.blockfront.common.gun.GunScopeConfig;
 import com.boehmod.blockfront.common.gun.GunSoundConfig;
 import com.boehmod.blockfront.common.gun.GunSpreadConfigs;
@@ -29,6 +30,7 @@ public final class PFItems {
 		properties -> new GunItem("gun_cowboy_revolver", properties)
 			.defaultMag(1, 0)
 			.damage(PFGunDamageConfigs.ONE_TAP)
+			.heatSmoke(GunHeatSmokeConfigs.REVOLVER)
 			.sound(
 				GunSoundConfig.DEFAULT.clone()
 					.fire(BFSounds.ITEM_GUN_WEBLEY_MK6_FIRE)

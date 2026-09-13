@@ -80,7 +80,7 @@ public final class PFVoicechat implements VoicechatPlugin {
 			return;
 		}
 
-		AbstractGame<?, ?, ?> game = manager.getPlayerGame(player);
+		AbstractGame<?, ?, ?> game = manager.getPlayerGame(player.getUUID());
 		if (!(game instanceof IAllowsRespawning)) {
 			return;
 		}

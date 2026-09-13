@@ -4,7 +4,6 @@ import com.boehmod.blockfront.map.effect.FlyByMapEffect;
 import com.boehmod.blockfront.map.effect.edit.AbstractPromptField;
 import com.boehmod.blockfront.map.effect.edit.ButtonPromptField;
 import com.boehmod.blockfront.map.effect.edit.SelectPromptField;
-import com.boehmod.blockfront.registry.BFBlocks;
 import com.llamalad7.mixinextras.expression.Definition;
 import com.llamalad7.mixinextras.expression.Expression;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -13,6 +12,7 @@ import java.util.function.Supplier;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -58,10 +58,7 @@ public abstract class FlyByMapEffectMixin {
 
 		instance.add(new ButtonPromptField(
 			Component.literal("Add Plane Block"),
-			() -> {
-				Block defaultBlock = BFBlocks.P51_MUSTANG.value();
-				blocks.add(() -> defaultBlock);
-			}
+			() -> blocks.add(() -> Blocks.AIR)
 		));
 
 		return true;

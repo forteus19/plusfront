@@ -16,11 +16,11 @@ val parchmentVersion = "2024.11.17"
 val loaderVersionRange = "[1,)"
 val neoforgeVersion = "21.1.248"
 
-val blockfrontVersion = "0.9.0.29b"
-val blockfrontModrinthVersion = "CwisLtVX"
+val blockfrontVersion = "0.9.0.30b"
+val blockfrontModrinthVersion = "IU7kpoR1"
 
 val geckolibVersion = "4.9.2"
-val veilVersion = "4.4.1"
+val veilVersion = "4.5.0"
 val voicechatApiVersion = "2.6.20"
 
 val mcdevAnnotationsVersion = "2.1.0"
