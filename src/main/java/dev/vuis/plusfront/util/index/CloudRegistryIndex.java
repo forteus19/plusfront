@@ -29,7 +29,7 @@ public final class CloudRegistryIndex {
 
 		CloudItems.registerItems(REGISTRY);
 
-		ITEMS = new Items(REGISTRY.getItems());
+		ITEMS = Items.create(REGISTRY.getItems());
 	}
 
 	private CloudRegistryIndex() {
@@ -41,8 +41,13 @@ public final class CloudRegistryIndex {
 		private final Map<String, CloudItemCallingCard> cards = new Object2ObjectOpenHashMap<>();
 		private final Map<String, AbstractCloudItemCoin<?>> coins = new Object2ObjectOpenHashMap<>();
 
-		private Items(Collection<CloudItem<?>> items) {
-			for (CloudItem<?> item : items) {
+		private Items() {
+		}
+
+		private static Items create(Collection<CloudItem<?>> allItems) {
+			Items index = new Items();
+
+			for (CloudItem<?> item : allItems) {
 				if (item.isDefault() || item.isDeprecated()) {
 					continue;
 				}
@@ -51,20 +56,22 @@ public final class CloudRegistryIndex {
 
 				switch (item.getItemType()) {
 					case GUN, MELEE -> {
-						weaponSkins.computeIfAbsent(BFRes.fromCloud(item.getMinecraftItem()), k -> new Object2ObjectOpenHashMap<>())
+						index.weaponSkins.computeIfAbsent(BFRes.fromCloud(item.getMinecraftItem()), k -> new Object2ObjectOpenHashMap<>())
 							.put(formattedSuffix, item);
 					}
 					case CARD -> {
-						cards.put(formattedSuffix, (CloudItemCallingCard) item);
+						index.cards.put(formattedSuffix, (CloudItemCallingCard) item);
 					}
 					case COIN -> {
-						coins.put(
+						index.coins.put(
 							item instanceof CloudItemTrophy ? "trophy_" + formattedSuffix : formattedSuffix,
 							(AbstractCloudItemCoin<?>) item
 						);
 					}
 				}
 			}
+
+			return index;
 		}
 
 		public @Nullable CloudItem<?> getWeaponSkin(ResourceLocation item, String skin) {
