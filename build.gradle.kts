@@ -1,5 +1,5 @@
 plugins {
-    id("dev.architectury.loom-remap") version "1.17-SNAPSHOT"
+    id("net.neoforged.moddev") version "2.0.147"
     id("io.freefair.lombok") version "9.5.0"
 }
 
@@ -11,6 +11,7 @@ val modName = "PlusFront"
 
 val minecraftVersion = "1.21.1"
 
+val parchmentMcVersion = "1.21.1"
 val parchmentVersion = "2024.11.17"
 
 val loaderVersionRange = "[1,)"
@@ -93,25 +94,33 @@ repositories {
     }
 }
 
-dependencies {
-    minecraft("net.minecraft:minecraft:$minecraftVersion")
-    mappings(loom.layered {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-$minecraftVersion:$parchmentVersion@zip")
-    })
-    neoForge("net.neoforged:neoforge:$neoforgeVersion")
+neoForge {
+    version = neoforgeVersion
 
+    parchment {
+        minecraftVersion = parchmentMcVersion
+        mappingsVersion = parchmentVersion
+    }
+
+    mods {
+        create(modId) {
+            sourceSet(sourceSets["main"])
+        }
+    }
+}
+
+dependencies {
     blockfrontOriginal("maven.modrinth:blockfront:$blockfrontModrinthVersion")
 
     // declared manually for sources
-    modCompileOnly("software.bernie.geckolib:geckolib-neoforge-$minecraftVersion:$geckolibVersion")
-    modCompileOnly("foundry.veil:veil-neoforge-$minecraftVersion:$veilVersion") {
+    compileOnly("software.bernie.geckolib:geckolib-neoforge-$minecraftVersion:$geckolibVersion")
+    compileOnly("foundry.veil:veil-neoforge-$minecraftVersion:$veilVersion") {
         exclude(group = "maven.modrinth")
         exclude(group = "me.fallenbreath")
     }
 
     // optional dependencies
-    modCompileOnly("de.maxhenkel.voicechat:voicechat-api:$voicechatApiVersion")
+    compileOnly("de.maxhenkel.voicechat:voicechat-api:$voicechatApiVersion")
 
     compileOnly("com.demonwav.mcdev:annotations:$mcdevAnnotationsVersion")
 }
@@ -162,7 +171,7 @@ val decompileBlockfrontTask = tasks.register<DecompileTask>("decompileBlockfront
 }
 
 dependencies {
-    modCompileOnly(files(remapBlockfrontTask))
+    compileOnly(files(remapBlockfrontTask))
     compileOnly(blockfrontLibraries)
 }
 
@@ -194,9 +203,9 @@ sourceSets.main {
 val remapModTask = tasks.register<RemapTask>("remapMod") {
     group = "build"
 
-    dependsOn(tasks["remapJar"], remapBlockfrontTask)
+    dependsOn(tasks["jar"], remapBlockfrontTask)
 
-    input = tasks["remapJar"].outputs.files.first()
+    input = tasks["jar"].outputs.files.first()
     output = layout.buildDirectory.file("libs/${base.archivesName.get()}-${project.version}-bfobf.jar")
     mappings = file("bf-mappings.tiny")
     classpath.from(remapBlockfrontTask.get().outputs.files.first())
@@ -215,11 +224,4 @@ val createLatestJarSymlinkTask = tasks.register<SymlinkTask>("createLatestJarSym
 
 tasks.build {
     dependsOn(remapModTask, createLatestJarSymlinkTask)
-}
-
-loom {
-    runs {
-        remove(getByName("client"))
-        remove(getByName("server"))
-    }
 }
