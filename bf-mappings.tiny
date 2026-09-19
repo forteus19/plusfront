@@ -1682,12 +1682,12 @@ c	com/boehmod/blockfront/bi	com/boehmod/blockfront/unnamed/BF_38	com/boehmod/blo
 	m	(Lnet/minecraft/client/Minecraft;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/Item;Ljava/util/Random;)V	a	method_168	method_168
 	m	(Lnet/minecraft/client/sounds/SoundManager;Lcom/boehmod/blockfront/iI;)Z	a	method_170	method_170
 	m	(Z)V	b	method_171	method_171
-c	com/boehmod/blockfront/bj	com/boehmod/blockfront/unnamed/BF_39	com/boehmod/blockfront/unnamed/BF_39
+c	com/boehmod/blockfront/bj	com/boehmod/blockfront/unnamed/BF_39	com/boehmod/blockfront/client/event/tick/HealthTickListener
 	f	F	cc	field_180	field_180
 	f	F	cd	field_181	field_181
 	f	F	ce	field_182	field_182
-	f	F	cf	field_183	field_183
-	f	F	cg	field_184	field_184
+	f	F	cf	field_183	health
+	f	F	cg	field_184	healthPrev
 	f	F	ch	field_185	field_185
 	f	F	ci	field_186	field_186
 	f	F	cj	field_187	field_187
@@ -1755,7 +1755,7 @@ c	com/boehmod/blockfront/bs	com/boehmod/blockfront/unnamed/BF_44	com/boehmod/blo
 	m	(F)Ljava/lang/String;	a	method_174	cyclingEllipsis
 		p	0			time
 	m	(F)Lnet/minecraft/network/chat/Component;	a	method_5900	method_5900
-c	com/boehmod/blockfront/bt	com/boehmod/blockfront/unnamed/BF_1570	com/boehmod/blockfront/client/render/CachedWeaponItemRenderer
+c	com/boehmod/blockfront/bt	com/boehmod/blockfront/unnamed/BF_1570	com/boehmod/blockfront/client/render/CachedItemRenderer
 	f	Lit/unimi/dsi/fastutil/ints/Int2ObjectOpenHashMap;	a	field_9615	TEXTURES
 	f	I	ce	field_9616	field_9616
 	f	I	cf	field_9617	field_9617
@@ -2323,7 +2323,14 @@ c	com/boehmod/blockfront/bw	com/boehmod/blockfront/unnamed/BF_47	com/boehmod/blo
 		p	3			charSequence
 		p	4			x
 		p	5			y
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;FFF)V	a	method_6802	method_6802
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;FFF)V	a	method_6802	centeredCharSequence
+		p	0			poseStack
+		p	1			font
+		p	2			graphics
+		p	3			charSequence
+		p	4			x
+		p	5			y
+		p	6			scale
 	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/FormattedCharSequence;FFI)V	a	method_6803	charSequence
 		p	0			poseStack
 		p	1			font
@@ -4698,28 +4705,28 @@ c	com/boehmod/blockfront/ct	com/boehmod/blockfront/unnamed/BF_109	com/boehmod/bl
 c	com/boehmod/blockfront/cu	com/boehmod/blockfront/unnamed/BF_110	com/boehmod/blockfront/client/render/game/element/TTTPlayerRoleGameElement
 	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/tz;Lcom/boehmod/blockfront/tB;Lcom/boehmod/blockfront/pF;Lnet/minecraft/client/player/LocalPlayer;)V	a	method_493	update
 c	com/boehmod/blockfront/cv	com/boehmod/blockfront/unnamed/BF_112	com/boehmod/blockfront/client/gui/layer/MatchGuiLayer
-	f	Ljava/lang/String;	O	field_9577	field_9577
+	f	Ljava/lang/String;	O	field_9577	formattedMph
 	f	Lcom/boehmod/blockfront/pN;	a	field_7780	field_7780
-	f	Ljava/text/DecimalFormat;	a	field_7781	field_7781
+	f	Ljava/text/DecimalFormat;	a	field_7781	MPH_FORMAT
 	f	Z	aW	field_7784	field_7784
 	f	Lnet/minecraft/network/chat/Component;	aX	field_498	field_498
 	f	Lnet/minecraft/network/chat/Component;	aY	field_8983	field_8983
-	f	Lnet/minecraft/network/chat/Component;	aZ	field_500	field_500
-	f	[Ljava/lang/String;	a	field_9578	field_9578
-	f	[Lnet/minecraft/util/FormattedCharSequence;	a	field_7785	field_7785
+	f	Lnet/minecraft/network/chat/Component;	aZ	field_500	RELOADING_MESSAGE
+	f	[Ljava/lang/String;	a	field_9578	vehiclePassengers
+	f	[Lnet/minecraft/util/FormattedCharSequence;	a	field_7785	utilityLabels
 	f	Lnet/minecraft/resources/ResourceLocation;	an	field_6355	HEALTH_BAR_TEXTURE
 	f	Lnet/minecraft/resources/ResourceLocation;	ao	field_487	HEALTH_TEXTURE
 	f	Lnet/minecraft/resources/ResourceLocation;	ap	field_6997	HEALTH_VEHICLE_TEXTURE
-	f	Lnet/minecraft/resources/ResourceLocation;	aq	field_9021	field_9021
-	f	Lnet/minecraft/resources/ResourceLocation;	ar	field_7782	field_7782
-	f	Lnet/minecraft/resources/ResourceLocation;	as	field_7783	field_7783
-	f	[Lnet/minecraft/util/FormattedCharSequence;	b	field_9579	field_9579
-	f	Lnet/minecraft/network/chat/Component;	ba	field_502	field_502
-	f	Lnet/minecraft/network/chat/Component;	bb	field_504	field_504
-	f	Lnet/minecraft/network/chat/Component;	bc	field_7787	field_7787
-	f	Lnet/minecraft/network/chat/Component;	bd	field_505	field_505
-	f	Lnet/minecraft/network/chat/Component;	be	field_7788	field_7788
-	f	[Lnet/minecraft/util/FormattedCharSequence;	c	field_7786	field_7786
+	f	Lnet/minecraft/resources/ResourceLocation;	aq	field_9021	SPECTATOR_TEXTURE
+	f	Lnet/minecraft/resources/ResourceLocation;	ar	field_7782	INJURED_TEXTURE
+	f	Lnet/minecraft/resources/ResourceLocation;	as	field_7783	INJURED_CALLOUT_TEXTURE
+	f	[Lnet/minecraft/util/FormattedCharSequence;	b	field_9579	vehiclePassengerTexts
+	f	Lnet/minecraft/network/chat/Component;	ba	field_502	NONE_MESSAGE
+	f	Lnet/minecraft/network/chat/Component;	bb	field_504	RESUPPLYING_MESSAGE
+	f	Lnet/minecraft/network/chat/Component;	bc	field_7787	PREPARING_MESSAGE
+	f	Lnet/minecraft/network/chat/Component;	bd	field_505	AMMO_LABEL
+	f	Lnet/minecraft/network/chat/Component;	be	field_7788	MPH_LABEL
+	f	[Lnet/minecraft/util/FormattedCharSequence;	c	field_7786	utilityCountLabels
 	f	F	dA	field_7791	field_7791
 	f	F	dB	field_7792	field_7792
 	f	F	dt	field_489	field_489
@@ -4732,8 +4739,8 @@ c	com/boehmod/blockfront/cv	com/boehmod/blockfront/unnamed/BF_112	com/boehmod/bl
 	f	I	eA	field_7797	field_7797
 	f	I	eB	field_9580	field_9580
 	f	I	eC	field_9581	field_9581
-	f	I	eD	field_9582	field_9582
-	f	I	eE	field_7798	field_7798
+	f	I	eD	field_9582	warCryPrev
+	f	I	eE	field_7798	health
 	f	I	eF	field_9022	field_9022
 	f	I	eG	field_9239	field_9239
 	f	I	eH	field_7799	field_7799
@@ -4763,26 +4770,29 @@ c	com/boehmod/blockfront/cv	com/boehmod/blockfront/unnamed/BF_112	com/boehmod/bl
 	f	I	ey	field_7795	field_7795
 	f	I	ez	field_7796	field_7796
 	f	Lnet/minecraft/util/FormattedCharSequence;	h	field_7803	field_7803
-	f	[I	h	field_7793	field_7793
-	f	Lnet/minecraft/util/FormattedCharSequence;	i	field_7804	field_7804
-	f	Lnet/minecraft/util/FormattedCharSequence;	j	field_7805	field_7805
-	f	Lnet/minecraft/util/FormattedCharSequence;	k	field_7806	field_7806
-	f	Lnet/minecraft/util/FormattedCharSequence;	l	field_7807	field_7807
+	f	[I	h	field_7793	utilityCounts
+	f	Lnet/minecraft/util/FormattedCharSequence;	i	field_7804	primaryLabel
+	f	Lnet/minecraft/util/FormattedCharSequence;	j	field_7805	secondaryLabel
+	f	Lnet/minecraft/util/FormattedCharSequence;	k	field_7806	meleeLabel
+	f	Lnet/minecraft/util/FormattedCharSequence;	l	field_7807	warCryText
 	f	Lnet/minecraft/util/FormattedCharSequence;	m	field_7808	field_7808
-	f	Lnet/minecraft/util/FormattedCharSequence;	n	field_7809	field_7809
+	f	Lnet/minecraft/util/FormattedCharSequence;	n	field_7809	formattedMphText
 	f	Lnet/minecraft/util/FormattedCharSequence;	o	field_7810	field_7810
-	f	Lnet/minecraft/util/FormattedCharSequence;	p	field_9583	field_9583
-	f	Lnet/minecraft/util/FormattedCharSequence;	q	field_9584	field_9584
-	f	Lnet/minecraft/util/FormattedCharSequence;	r	field_7811	field_7811
+	f	Lnet/minecraft/util/FormattedCharSequence;	p	field_9583	MPH_LABEL_TEXT
+	f	Lnet/minecraft/util/FormattedCharSequence;	q	field_9584	AMMO_LABEL_TEXT
+	f	Lnet/minecraft/util/FormattedCharSequence;	r	field_7811	healthText
 	f	Lnet/minecraft/util/FormattedCharSequence;	s	field_9240	field_9240
 	f	Lnet/minecraft/util/FormattedCharSequence;	t	field_9023	field_9023
 	f	Lnet/minecraft/util/FormattedCharSequence;	u	field_7812	field_7812
 	f	Lnet/minecraft/util/FormattedCharSequence;	v	field_7813	field_7813
-	f	Lit/unimi/dsi/fastutil/objects/ObjectList;	y	field_486	field_486
+	f	Lit/unimi/dsi/fastutil/objects/ObjectList;	y	field_486	killStreakEntries
 	m	()V	K	method_6978	method_6978
-	m	(Lcom/boehmod/blockfront/pE;Lnet/minecraft/client/player/LocalPlayer;)V	a	method_500	method_500
+	m	(Lcom/boehmod/blockfront/pE;Lnet/minecraft/client/player/LocalPlayer;)V	a	method_500	updateKillStreakEntries
+		p	0			game
+		p	1			localPlayer
 	m	(Lcom/boehmod/blockfront/pE;Lnet/minecraft/client/player/LocalPlayer;Lcom/boehmod/blockfront/gr;)V	a	method_496	method_496
-	m	(Lcom/boehmod/blockfront/pN;)V	a	method_6973	method_6973
+	m	(Lcom/boehmod/blockfront/pN;)V	a	method_6973	updateInventoryLabels
+		p	0			team
 	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;IFFI)V	a	method_6974	method_6974
 	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;Lcom/boehmod/blockfront/pE;Lcom/boehmod/blockfront/pF;ZIF)V	a	method_495	renderKillFeed
 		p	1			poseStack
@@ -4792,8 +4802,18 @@ c	com/boehmod/blockfront/cv	com/boehmod/blockfront/unnamed/BF_112	com/boehmod/bl
 		p	5			gameClient
 		p	6			debug
 		p	8			delta
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;Lcom/boehmod/blockfront/pF;Lnet/minecraft/client/player/LocalPlayer;IIIIF)V	a	method_497	method_497
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/player/LocalPlayer;III)V	a	method_498	method_498
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;Lcom/boehmod/blockfront/pF;Lnet/minecraft/client/player/LocalPlayer;IIIIF)V	a	method_497	renderHealth
+		p	1			poseStack
+		p	2			graphics
+		p	3			font
+		p	4			gameClient
+		p	5			localPlayer
+		p	6			y
+		p	7			height
+		p	8			width
+		p	9			backgroundColor
+		p	10			partialTick
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/player/LocalPlayer;III)V	a	method_498	renderVehicleHealth
 	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/player/LocalPlayer;Ljava/util/Collection;)V	a	method_499	renderMinimap
 		p	1			poseStack
 		p	2			graphics
@@ -4807,24 +4827,65 @@ c	com/boehmod/blockfront/cv	com/boehmod/blockfront/unnamed/BF_112	com/boehmod/bl
 	m	(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/gui/Font;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lcom/boehmod/blockfront/vs;Lnet/minecraft/world/item/ItemStack;IIFF)V	a	method_6976	method_6976
 	m	(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/gui/Font;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lcom/boehmod/blockfront/vs;Lnet/minecraft/world/item/ItemStack;IIIFFIIFF)V	a	method_502	method_502
 	m	(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/player/LocalPlayer;Lcom/boehmod/blockfront/pF;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;Lcom/boehmod/blockfront/pE;Lcom/boehmod/blockfront/gt;FIII)V	a	method_503	method_503
-	m	(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/player/LocalPlayer;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;Lcom/boehmod/blockfront/pE;Lnet/minecraft/world/entity/player/Inventory;IIIIIIIIFF)V	a	method_504	method_504
-	m	(Lnet/minecraft/client/gui/Font;Lcom/boehmod/blockfront/pE;Lcom/boehmod/blockfront/pF;Lnet/minecraft/client/gui/GuiGraphics;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/player/LocalPlayer;IIFF)V	a	method_505	method_505
-	m	(Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/entity/player/Inventory;IIIIIF)V	a	method_506	method_506
+	m	(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/player/LocalPlayer;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;Lcom/boehmod/blockfront/pE;Lnet/minecraft/world/entity/player/Inventory;IIIIIIIIFF)V	a	method_504	renderHeldItemName
+		p	1			minecraft
+		p	2			localPlayer
+		p	3			poseStack
+		p	4			graphics
+		p	5			font
+		p	6			game
+		p	7			inventory
+		p	16			renderTime
+		p	17			partialTick
+	m	(Lnet/minecraft/client/gui/Font;Lcom/boehmod/blockfront/pE;Lcom/boehmod/blockfront/pF;Lnet/minecraft/client/gui/GuiGraphics;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/player/LocalPlayer;IIFF)V	a	method_505	renderInfo
+		p	1			font
+		p	2			game
+		p	3			gameClient
+		p	4			graphics
+		p	5			poseStack
+		p	6			minecraft
+		p	7			localPlayer
+		p	8			width
+		p	9			height
+		p	10			renderTime
+		p	11			partialTick
+	m	(Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/entity/player/Inventory;IIIIIF)V	a	method_506	renderUtilitySlot
+		p	0			font
+		p	1			graphics
+		p	2			poseStack
+		p	3			inventory
+		p	4			index
+		p	5			selectedIndex
+		p	6			x
+		p	7			y
+		p	8			color
+		p	9			alpha
 	m	(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;II)V	a	method_6977	method_6977
 	m	(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;Lcom/boehmod/blockfront/pE;Lnet/minecraft/client/player/LocalPlayer;III)V	a	method_8440	method_8440
 	m	(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;II)V	a	method_8374	method_8374
 	m	(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;Lnet/minecraft/util/FormattedCharSequence;III)I	a	method_8647	method_8647
 	m	(Lnet/minecraft/client/player/LocalPlayer;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;Lcom/boehmod/blockfront/pE;IFFIFF)V	a	method_507	method_507
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;IIF)V	b	method_494	method_494
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;IIF)V	b	method_494	renderKillStreak
+		p	1			poseStack
+		p	2			guiGraphics
+		p	3			x
+		p	4			y
+		p	5			partialTick
 	m	(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/player/LocalPlayer;)V	c	method_6979	method_6979
 	m	(Lnet/minecraft/client/player/LocalPlayer;)V	e	method_6980	method_6980
 	m	()I	y	method_8265	method_8265
-c	com/boehmod/blockfront/cv$a	com/boehmod/blockfront/unnamed/BF_112$BF_113	com/boehmod/blockfront/client/gui/layer/MatchGuiLayer$BF_113
-	f	Lnet/minecraft/resources/ResourceLocation;	at	field_519	field_519
-	f	Lnet/minecraft/resources/ResourceLocation;	au	field_520	field_520
+c	com/boehmod/blockfront/cv$a	com/boehmod/blockfront/unnamed/BF_112$BF_113	com/boehmod/blockfront/client/gui/layer/MatchGuiLayer$KillStreakEntry
+	f	Lnet/minecraft/resources/ResourceLocation;	at	field_519	TEXTURE
+	f	Lnet/minecraft/resources/ResourceLocation;	au	field_520	FLASH_TEXTURE
 	f	F	dC	field_521	field_521
 	f	F	dD	field_522	field_522
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;IIIF)V	a	method_508	method_508
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;IIIF)V	a	method_508	render
+		p	1			poseStack
+		p	2			graphics
+		p	3			x
+		p	4			y
+		p	5			size
+		p	6			partialTick
 	m	()F	r	method_509	method_509
 c	com/boehmod/blockfront/cv$b	com/boehmod/blockfront/unnamed/BF_112$BF_114	com/boehmod/blockfront/client/gui/layer/MatchGuiLayer$EffectOverlay
 	f	F	aJ	field_523	field_523
@@ -4877,7 +4938,7 @@ c	com/boehmod/blockfront/cy	com/boehmod/blockfront/unnamed/BF_118	com/boehmod/bl
 	f	I	eL	field_540	field_540
 	f	I	eM	field_541	field_541
 	f	Lnet/minecraft/world/phys/Vec3;	j	field_542	field_542
-	f	Lit/unimi/dsi/fastutil/objects/ObjectList;	z	field_534	field_534
+	f	Lit/unimi/dsi/fastutil/objects/ObjectList;	z	field_534	OVERLAYS
 	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;IIFFFF)V	a	method_514	method_514
 	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/player/LocalPlayer;IIF)V	a	method_515	method_515
 	m	(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/player/LocalPlayer;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;II)V	a	method_516	method_516
@@ -13975,7 +14036,7 @@ c	com/boehmod/blockfront/ov	com/boehmod/blockfront/unnamed/BF_617	com/boehmod/bl
 	m	()Lcom/boehmod/blockfront/oC;	b	method_2343	method_2343
 	m	()Lnet/minecraft/world/entity/Entity;	b	method_2319	method_2319
 	m	(Ljava/util/UUID;)V	b	method_2344	method_2344
-	m	()F	ba	method_2313	method_2313
+	m	()F	ba	method_2313	getSpeed
 	m	()F	bb	method_2314	method_2314
 	m	()I	bn	method_2336	method_2336
 	m	()I	bo	method_2338	method_2338
@@ -14509,13 +14570,13 @@ c	com/boehmod/blockfront/pF	com/boehmod/blockfront/unnamed/BF_679	com/boehmod/bl
 	f	Lnet/minecraft/network/chat/Component;	iU	field_8118	field_8118
 	f	F	mn	field_8119	field_8119
 	f	F	mo	field_8120	field_8120
-	f	F	mp	field_2877	field_2877
-	f	F	mq	field_2878	field_2878
+	f	F	mp	field_2877	inventorySlide
+	f	F	mq	field_2878	inventorySlidePrev
 	f	F	mr	field_2879	field_2879
 	f	F	ms	field_2880	field_2880
 	f	F	mt	field_8836	field_8836
-	f	F	mu	field_2881	field_2881
-	f	F	mv	field_2882	field_2882
+	f	F	mu	field_2881	stamina
+	f	F	mv	field_2882	staminaPrev
 	f	I	oU	field_2895	field_2895
 	f	I	oV	field_2896	field_2896
 	f	I	oW	field_2897	field_2897
@@ -14538,7 +14599,8 @@ c	com/boehmod/blockfront/pF	com/boehmod/blockfront/unnamed/BF_679	com/boehmod/bl
 	m	()Ljava/util/List;	B	method_2736	getGameElements
 	m	(F)F	B	method_7275	method_7275
 	m	()Ljava/util/List;	C	method_2737	getRadioPoints
-	m	(F)F	C	method_2743	method_2743
+	m	(F)F	C	method_2743	getStamina
+		p	1			partialTick
 	m	(Lnet/minecraft/client/Minecraft;)V	C	method_7274	method_7274
 	m	()Ljava/util/List;	D	method_2740	getKillFeedEntries
 	m	(Lnet/minecraft/client/Minecraft;)V	D	method_2739	method_2739
@@ -14618,7 +14680,9 @@ c	com/boehmod/blockfront/pF	com/boehmod/blockfront/unnamed/BF_679	com/boehmod/bl
 		p	4			position
 		p	5			pointerColor
 		p	6			backgroundColor
-	m	(Ljava/util/List;Ljava/lang/String;)Lcom/boehmod/blockfront/qa;	a	method_7264	method_7264
+	m	(Ljava/util/List;Ljava/lang/String;)Lcom/boehmod/blockfront/qa;	a	method_7264	getNotificationByKey
+		p	0			notifications
+		p	1			key
 	m	(Ljava/util/List;Ljava/lang/String;Lnet/minecraft/network/chat/Component;)V	a	method_7265	addNotification
 		p	1			target
 		p	2			key
@@ -14746,13 +14810,13 @@ c	com/boehmod/blockfront/pF	com/boehmod/blockfront/unnamed/BF_679	com/boehmod/bl
 	m	()Z	bL	method_2719	canSwitchItem
 	m	()Z	bM	method_6108	hasRatedMap
 	m	()Z	bN	method_2720	method_2720
-	m	()F	bj	method_2675	method_2675
+	m	()F	bj	method_2675	getStamina
 	m	()F	bk	method_2726	method_2726
 	m	()F	bl	method_8250	method_8250
 	m	(Lcom/boehmod/blockfront/jE;Ljava/util/UUID;)V	c	method_2682	method_2682
-	m	()V	cG	method_7272	method_7272
+	m	()V	cG	method_7272	updateLocalNotifications
 	m	()V	cH	method_5959	method_5959
-	m	()Ljava/util/Collection;	d	method_2727	method_2727
+	m	()Ljava/util/Collection;	d	method_2727	getMinimapWaypoints
 	m	(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/player/LocalPlayer;)V	d	method_2724	updateGameElements
 	m	(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/player/LocalPlayer;)V	e	method_2728	method_2728
 	m	(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/player/LocalPlayer;)V	f	method_2704	method_2704
@@ -14760,7 +14824,8 @@ c	com/boehmod/blockfront/pF	com/boehmod/blockfront/unnamed/BF_679	com/boehmod/bl
 	m	(Lnet/minecraft/world/entity/player/Player;)Z	g	method_2730	canChangePerspective
 		p	1			player
 	m	(Lcom/boehmod/blockfront/m;)V	h	method_5542	method_5542
-	m	(F)V	k	method_2731	method_2731
+	m	(F)V	k	method_2731	decreaseStamina
+		p	1			amount
 	m	(F)V	l	method_8251	method_8251
 	m	(Lnet/minecraft/client/player/LocalPlayer;)V	l	method_2732	method_2732
 	m	(Lnet/minecraft/client/player/LocalPlayer;)V	m	method_2733	method_2733
@@ -16948,13 +17013,16 @@ c	com/boehmod/blockfront/qo	com/boehmod/blockfront/unnamed/BF_774	com/boehmod/bl
 	m	(Lnet/minecraft/client/gui/Font;)I	a	method_3210	method_3210
 	m	(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;Lcom/boehmod/blockfront/pE;ZF)V	a	method_3211	render
 	m	(Lnet/minecraft/network/RegistryFriendlyByteBuf;)Lcom/boehmod/blockfront/qo;	a	method_3212	method_3212
-	m	(Lnet/minecraft/network/RegistryFriendlyByteBuf;)V	a	method_3215	method_3215
+	m	(Lnet/minecraft/network/RegistryFriendlyByteBuf;)V	a	method_3215	write
+		p	1			buf
 	m	(Lnet/minecraft/client/gui/GuiGraphics;I)V	b	method_3214	method_3214
 	m	(Lnet/minecraft/network/RegistryFriendlyByteBuf;)V	b	method_3213	method_3213
-	m	(Lnet/minecraft/network/RegistryFriendlyByteBuf;)V	c	method_3216	method_3216
+	m	(Lnet/minecraft/network/RegistryFriendlyByteBuf;)V	c	method_3216	read
+		p	1			buf
 	m	(Ljava/util/UUID;)V	k	method_3217	method_3217
 	m	(Ljava/util/UUID;)V	l	method_3218	method_3218
-	m	(Lnet/minecraft/client/Minecraft;)V	m	method_7254	method_7254
+	m	(Lnet/minecraft/client/Minecraft;)V	m	method_7254	initSections
+		p	1			minecraft
 c	com/boehmod/blockfront/qp	com/boehmod/blockfront/unnamed/BF_775	com/boehmod/blockfront/common/match/kill/AbstractKillSection
 	f	I	qq	field_3311	field_3311
 	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;Lcom/boehmod/blockfront/pE;Lcom/boehmod/blockfront/qo;F)V	a	method_3220	render
@@ -16968,10 +17036,12 @@ c	com/boehmod/blockfront/qp	com/boehmod/blockfront/unnamed/BF_775	com/boehmod/bl
 		p	1			minecraft
 		p	2			game
 		p	3			entry
-	m	(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/gui/Font;)V	a	method_7255	method_7255
+	m	(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/gui/Font;)V	a	method_7255	init
+		p	1			minecraft
+		p	2			font
 	m	(Lnet/minecraft/client/gui/Font;)I	a	method_3222	getWidth
 		p	1			font
-	m	()I	bN	method_3223	method_3223
+	m	()I	bN	method_3223	getDebugColor
 	m	(Lnet/minecraft/network/RegistryFriendlyByteBuf;)V	d	method_3224	read
 		p	1			buf
 	m	(Lnet/minecraft/network/RegistryFriendlyByteBuf;)V	e	method_3225	write
@@ -16984,9 +17054,11 @@ c	com/boehmod/blockfront/qr	com/boehmod/blockfront/unnamed/BF_777	com/boehmod/bl
 	f	F	mL	field_3316	field_3316
 	f	F	mM	field_3315	field_3315
 c	com/boehmod/blockfront/qs	com/boehmod/blockfront/unnamed/BF_778	com/boehmod/blockfront/common/match/kill/KillSectionText
-	f	Lnet/minecraft/util/FormattedCharSequence;	B	field_8107	field_8107
-	f	Lnet/minecraft/network/chat/Component;	C	field_3317	field_3317
-	f	I	qc	field_8106	field_8106
+	f	Lnet/minecraft/util/FormattedCharSequence;	B	field_8107	text
+	f	Lnet/minecraft/network/chat/Component;	C	field_3317	component
+	f	I	qc	field_8106	width
+	m	(Lnet/minecraft/network/chat/Component;)V	<init>	<init>	<init>
+		p	1			component
 c	com/boehmod/blockfront/qt	com/boehmod/blockfront/unnamed/BF_779	com/boehmod/blockfront/common/match/kill/KillSectionRegistry
 	f	Lit/unimi/dsi/fastutil/bytes/Byte2ObjectMap;	a	field_3318	ID_TO_CLASS
 	f	Lit/unimi/dsi/fastutil/objects/Object2ByteMap;	a	field_3319	CLASS_TO_ID

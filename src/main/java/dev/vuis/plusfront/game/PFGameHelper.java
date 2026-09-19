@@ -10,6 +10,7 @@ import com.boehmod.blockfront.game.GameUtils;
 import dev.vuis.plusfront.util.PFUtil;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -30,13 +31,22 @@ public final class PFGameHelper {
 		}
 	}
 
+	public static void forUuids(@NotNull Set<UUID> players, @NotNull BiConsumer<UUID, ServerPlayer> consumer) {
+		for (UUID uuid : players) {
+			ServerPlayer player = GameUtils.getPlayerByUUID(uuid);
+			if (player != null) {
+				consumer.accept(uuid, player);
+			}
+		}
+	}
+
 	public static boolean isPlayerUnavailable(@NotNull Player player) {
 		return GameUtils.isPlayerUnavailable(player, PFUtil.getPlayerData(player));
 	}
 
 	public static int getNumUnavailable(
 		@NotNull PlayerDataHandler<?> dataHandler,
-		@NotNull Set<UUID> players
+		@NotNull Iterable<UUID> players
 	) {
 		int count = 0;
 

@@ -35,9 +35,12 @@ import dev.vuis.plusfront.ex.GameStageTimerEx;
 import dev.vuis.plusfront.game.PFGameClientHelper;
 import dev.vuis.plusfront.game.PFGameHelper;
 import dev.vuis.plusfront.game.ScoreboardFormats;
+import dev.vuis.plusfront.game.tag.IExtraPlayerInfo;
 import dev.vuis.plusfront.game.tag.IModifyRendering;
 import dev.vuis.plusfront.util.PFUtil;
 import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.objects.Object2FloatMap;
+import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.IOException;
 import java.util.Collection;
@@ -59,6 +62,8 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.network.VarInt;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
@@ -76,7 +81,12 @@ import net.neoforged.neoforge.client.event.RenderNameTagEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class DefusalGameClient extends AbstractGameClient<DefusalGame, DefusalPlayerManager> implements IAllowsPingsClient, IModifyRendering {
+public final class DefusalGameClient extends AbstractGameClient<DefusalGame, DefusalPlayerManager>
+	implements
+	IAllowsPingsClient,
+	IExtraPlayerInfo,
+	IModifyRendering {
+
 	private static final Component CT_LABEL = Component.literal("CT").withStyle(DefusalPlayerManager.CT_STYLE);
 	private static final Component T_LABEL = Component.literal("T").withStyle(DefusalPlayerManager.T_STYLE);
 
@@ -97,6 +107,7 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 			.occludedAlpha(0.25f);
 
 	private final List<AABB> bombSiteBoxes = new ObjectArrayList<>();
+	private final Object2FloatMap<UUID> playerHealth = new Object2FloatOpenHashMap<>();
 
 	private boolean isGameStage = false;
 	@Getter
@@ -240,13 +251,23 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 
 		GameGuiStyle guiStyle = PFClientConfig.getGameGuiStyle();
 
-		if (guiStyle == GameGuiStyle.OLD) {
-			PFGameGuiRendering.oldScoreOnly(
-				minecraft, dataHandler,
-				graphics, poseStack, font,
-				getStageTimer(), game.getPlayerManager(),
-				midX
-			);
+		switch (guiStyle) {
+			case OLD -> {
+				PFGameGuiRendering.oldScoreOnly(
+					minecraft, dataHandler,
+					graphics, poseStack, font,
+					getStageTimer(), game.getPlayerManager(),
+					midX
+				);
+			}
+			case CS2 -> {
+				PFGameGuiRendering.cs2ScoreOnly(
+					minecraft, dataHandler, this,
+					graphics, poseStack, font,
+					getStageTimer(), game.getPlayerManager(),
+					midX
+				);
+			}
 		}
 
 		if (PFKeyMappings.showWaypoints.isDown()) {
@@ -473,6 +494,14 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		isGameStage = buf.readBoolean();
 		finishedRound = buf.readBoolean();
 
+		playerHealth.clear();
+		int playerHealthSize = VarInt.read(buf);
+		for (int i = 0; i < playerHealthSize; i++) {
+			UUID playerUuid = UUIDUtil.STREAM_CODEC.decode(buf);
+			float health = buf.readFloat();
+			playerHealth.put(playerUuid, health);
+		}
+
 		onGamePacket();
 	}
 
@@ -565,6 +594,11 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	@Override
 	public boolean shouldMovePing(@NotNull AbstractPing ping, @NotNull UUID playerUuid, @NotNull Vec3 newPosition) {
 		return PFGameClientHelper.shouldMovePing(ping, playerUuid, newPosition);
+	}
+
+	@Override
+	public float getPlayerHealth(UUID playerUuid) {
+		return playerHealth.getFloat(playerUuid);
 	}
 
 	@Override

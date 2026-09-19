@@ -7,19 +7,26 @@ import com.boehmod.blockfront.common.player.PlayerDataHandler;
 import com.boehmod.blockfront.common.stat.BFStats;
 import com.boehmod.blockfront.game.AbstractCapturePoint;
 import com.boehmod.blockfront.game.AbstractGame;
+import com.boehmod.blockfront.game.AbstractGameClient;
 import com.boehmod.blockfront.game.AbstractGamePlayerManager;
 import com.boehmod.blockfront.game.GameStageTimer;
 import com.boehmod.blockfront.game.GameTeam;
 import com.boehmod.blockfront.game.tag.IHasCapturePoints;
 import com.boehmod.blockfront.util.BFRes;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.client.render.IconRenderer;
 import dev.vuis.plusfront.client.render.IconRenderers;
+import dev.vuis.plusfront.client.render.PFGuiRenderUtil;
 import dev.vuis.plusfront.ex.GameStageTimerEx;
+import dev.vuis.plusfront.game.PFGameClientHelper;
+import dev.vuis.plusfront.game.tag.IExtraPlayerInfo;
 import dev.vuis.plusfront.mixin.bf.GameStageTimerAccessor;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -48,6 +55,8 @@ public final class PFGameGuiRendering {
 	private static final ResourceLocation ARROW_RIGHT_TEXTURE = BFRes.loc("textures/gui/game/domination/cpoint_arrow_right_black.png");
 	private static final ResourceLocation NEUTRAL_ICON_TEXTURE = BFRes.loc("textures/misc/bfneutralicon.png");
 
+	private static final ResourceLocation PERSON_TEXTURE = PlusFront.res("textures/gui/person.png");
+
 	private PFGameGuiRendering() {
 		throw new AssertionError();
 	}
@@ -63,12 +72,13 @@ public final class PFGameGuiRendering {
 			);
 	}
 
-	public static void oldTimer(
+	private static void oldTimer(
 		GuiGraphics graphics,
 		PoseStack poseStack,
 		Font font,
 		int midX,
-		GameStageTimer timer
+		GameStageTimer timer,
+		boolean textShadow
 	) {
 		int y = 1;
 
@@ -78,7 +88,12 @@ public final class PFGameGuiRendering {
 		BFRendering.rectangle(graphics, midX - 19, y, 38, 13, BFRendering.translucentBlack());
 
 		if (iconRenderer == null) {
-			BFRendering.centeredString(font, graphics, oldTimerComponent(timer), midX, y + 3);
+			Component timerComponent = oldTimerComponent(timer);
+			graphics.drawString(
+				font, timerComponent,
+				midX - font.width(timerComponent) / 2, y + 3,
+				0xFFFFFFFF, textShadow
+			);
 		} else {
 			IconRenderers.renderAt(
 				graphics, poseStack,
@@ -86,6 +101,16 @@ public final class PFGameGuiRendering {
 				midX, y + 6.5f
 			);
 		}
+	}
+
+	public static void oldTimer(
+		GuiGraphics graphics,
+		PoseStack poseStack,
+		Font font,
+		int midX,
+		GameStageTimer timer
+	) {
+		oldTimer(graphics, poseStack, font, midX, timer, false);
 	}
 
 	private static void oldPlayerHead(
@@ -104,12 +129,12 @@ public final class PFGameGuiRendering {
 		PlayerInfo playerInfo = connection.getPlayerInfo(playerUuid);
 		BFAbstractPlayerData<?, ?, ?, ?> playerData = dataHandler.getPlayerData(playerUuid);
 
-		BFRendering.rectangle(graphics, x - 1, y - 1, 13, 13, BFRendering.translucentBlack());
+		BFRendering.rectangle(graphics, x, y, 13, 13, BFRendering.translucentBlack());
 
 		if (playerInfo == null || playerInfo.getGameMode() == GameType.SPECTATOR || playerData.isOutOfGame()) {
 			graphics.blit(
 				DEAD_TEXTURE,
-				x, y, 11, 11,
+				x + 1, y + 1, 11, 11,
 				0f, 0f,
 				8, 8, 8, 8
 			);
@@ -117,7 +142,7 @@ public final class PFGameGuiRendering {
 			PlayerFaceRenderer.draw(
 				graphics,
 				playerInfo.getSkin(),
-				x, y, 11
+				x + 1, y + 1, 11
 			);
 		}
 	}
@@ -133,31 +158,31 @@ public final class PFGameGuiRendering {
 		@Nullable GameTeam alliesTeam,
 		int midX
 	) {
-		oldTimer(graphics, poseStack, font, midX, timer);
+		oldTimer(graphics, poseStack, font, midX, timer, false);
 
 		if (axisTeam != null) {
-			UUID[] players = axisTeam.getPlayers().toArray(new UUID[0]);
-
-			for (int i = 0; i < players.length; i++) {
+			int headX = midX - 19 - 13 - 1;
+			for (UUID playerUuid : axisTeam.getPlayers()) {
 				oldPlayerHead(
 					minecraft, dataHandler,
 					graphics,
-					players[i],
-					midX - 32 - i * 14, 2
+					playerUuid,
+					headX, 1
 				);
+				headX -= 14;
 			}
 		}
 
 		if (alliesTeam != null) {
-			UUID[] players = alliesTeam.getPlayers().toArray(new UUID[0]);
-
-			for (int i = 0; i < players.length; i++) {
+			int headX = midX + 19 + 1;
+			for (UUID playerUuid : alliesTeam.getPlayers()) {
 				oldPlayerHead(
 					minecraft, dataHandler,
 					graphics,
-					players[i],
-					midX + 21 + i * 14, 2
+					playerUuid,
+					headX, 1
 				);
+				headX += 14;
 			}
 		}
 	}
@@ -448,7 +473,7 @@ public final class PFGameGuiRendering {
 		consumer.addVertex(matrix, width, height, 0f).setColor(color);
 		consumer.addVertex(matrix, width + shear, 0f, 0f).setColor(color);
 
-		graphics.flush();
+		PFGuiRenderUtil.flushIfUnmanaged(graphics);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -483,5 +508,171 @@ public final class PFGameGuiRendering {
 		}
 
 		BFRendering.centeredString(font, graphics, status, midX, y - 15);
+	}
+
+	private static void cs2Score(
+		ClientPacketListener connection,
+		PlayerDataHandler<?> dataHandler,
+		GuiGraphics graphics,
+		PoseStack poseStack,
+		Font font,
+		GameTeam team,
+		float x
+	) {
+		float y = 15f;
+		float width = 18.5f;
+
+		String scoreStr = Integer.toString(team.getStatInt(BFStats.SCORE, 0));
+
+		float aliveY = y + 13f;
+		float aliveScale = 0.5f;
+		String aliveStr = Integer.toString(PFGameClientHelper.getNumAlive(connection, dataHandler, team.getPlayers()));
+		float aliveX = x + width / 2f - (font.width(aliveStr) * aliveScale + 4) / 2f;
+
+		int color = team.getColor();
+
+		PFGuiRenderUtil.gradient(graphics, poseStack, x, y, width, 23f, BFRendering.translucentBlack(), 0x00000000, true);
+
+		PFGuiRenderUtil.centeredString(graphics, poseStack, font, scoreStr, x + width / 2f, y + 2f, 1f, color, true);
+
+		PFGuiRenderUtil.textureWithShadow(poseStack, PERSON_TEXTURE, aliveX, aliveY, 3f, 3f, color, 0.5f);
+		PFGuiRenderUtil.string(graphics, poseStack, font, aliveStr, aliveX + 4f, aliveY - 0.5f, aliveScale, color, true);
+	}
+
+	private static void cs2PlayerHead(
+		ClientPacketListener connection,
+		PlayerDataHandler<?> dataHandler,
+		@Nullable Function<UUID, Float> healthRetriever,
+		GuiGraphics graphics,
+		PoseStack poseStack,
+		UUID playerUuid,
+		int x,
+		int y
+	) {
+		int headSize = 16;
+		int padding = 1;
+
+		int size = headSize + padding * 2;
+
+		PlayerInfo playerInfo = connection.getPlayerInfo(playerUuid);
+		if (playerInfo == null) {
+			return;
+		}
+		BFAbstractPlayerData<?, ?, ?, ?> playerData = dataHandler.getPlayerData(playerUuid);
+		boolean dead = playerInfo.getGameMode() == GameType.SPECTATOR || playerData.isOutOfGame();
+
+		BFRendering.rectangle(graphics, x, y, size, size, BFRendering.translucentBlack());
+
+		if (dead) {
+			RenderSystem.setShaderColor(1f, 1f, 1f, 0.1f);
+			RenderSystem.enableBlend();
+		}
+		PlayerFaceRenderer.draw(
+			graphics,
+			playerInfo.getSkin(),
+			x + 1, y + 1, headSize
+		);
+		if (dead) {
+			RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+			RenderSystem.disableBlend();
+			return;
+		}
+
+		if (healthRetriever != null) {
+			float healthY = y + size + 1;
+			float healthHeight = 4f;
+
+			float healthNormal = Mth.clamp(healthRetriever.apply(playerUuid), 0f, 20f) / 20f;
+			int color = FastColor.ARGB32.lerp(healthNormal, 0xFFDD2222, 0xFFDDDDDD);
+
+			PFGuiRenderUtil.rectangle(graphics, poseStack, x, healthY, size, healthHeight, BFRendering.translucentBlack());
+			PFGuiRenderUtil.rectangle(graphics, poseStack, x + 1, healthY + 1, healthNormal * (size - 2), healthHeight - 2, color);
+		}
+	}
+
+	private static void cs2ScoreOnly(
+		Minecraft minecraft,
+		PlayerDataHandler<?> dataHandler,
+		AbstractGameClient<?, ?> gameClient,
+		GuiGraphics graphics,
+		PoseStack poseStack,
+		Font font,
+		GameStageTimer timer,
+		@Nullable GameTeam alliesTeam,
+		@Nullable GameTeam axisTeam,
+		int midX
+	) {
+		oldTimer(graphics, poseStack, font, midX, timer, true);
+
+		ClientPacketListener connection = minecraft.getConnection();
+		if (connection == null || minecraft.player == null) {
+			return;
+		}
+
+		UUID selfUuid = minecraft.player.getUUID();
+
+		Function<UUID, Float> healthRetriever =
+			gameClient instanceof IExtraPlayerInfo extraPlayerInfo ? extraPlayerInfo::getPlayerHealth : null;
+
+		if (alliesTeam != null) {
+			cs2Score(
+				connection, dataHandler,
+				graphics, poseStack, font,
+				alliesTeam,
+				midX - 19f
+			);
+
+			int headX = midX - 19 - 18 - 1;
+			for (UUID playerUuid : alliesTeam.getPlayers()) {
+				cs2PlayerHead(
+					connection, dataHandler, alliesTeam.hasPlayer(selfUuid) ? healthRetriever : null,
+					graphics, poseStack,
+					playerUuid,
+					headX, 1
+				);
+				headX -= 18 + 1;
+			}
+		}
+
+		if (axisTeam != null) {
+			cs2Score(
+				connection, dataHandler,
+				graphics, poseStack, font,
+				axisTeam,
+				midX + 0.5f
+			);
+
+			int headX = midX + 19 + 1;
+			for (UUID playerUuid : axisTeam.getPlayers()) {
+				cs2PlayerHead(
+					connection, dataHandler, axisTeam.hasPlayer(selfUuid) ? healthRetriever : null,
+					graphics, poseStack,
+					playerUuid,
+					headX, 1
+				);
+				headX += 18 + 1;
+			}
+		}
+	}
+
+	public static void cs2ScoreOnly(
+		Minecraft minecraft,
+		PlayerDataHandler<?> dataHandler,
+		AbstractGameClient<?, ?> gameClient,
+		GuiGraphics graphics,
+		PoseStack poseStack,
+		Font font,
+		GameStageTimer timer,
+		AbstractGamePlayerManager<?> playerManager,
+		int midX
+	) {
+		cs2ScoreOnly(
+			minecraft, dataHandler, gameClient,
+			graphics, poseStack, font,
+			timer,
+			playerManager.getTeamByName(BFStats.ALLIES_TEAM_NAME),
+			playerManager.getTeamByName(BFStats.AXIS_TEAM_NAME),
+			midX
+		);
 	}
 }

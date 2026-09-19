@@ -60,6 +60,7 @@
     "bf.client.TeamScoreGameElementMixin",
     "bf.client.TimeGameElementMixin",
     "bf.client.TroubleTownGameClientMixin",
+    "minecraft.client.GuiGraphicsAccessor",
     "minecraft.client.LightTextureMixin"
   ],
   "server": [

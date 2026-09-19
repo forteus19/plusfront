@@ -6,6 +6,8 @@ import com.boehmod.blockfront.client.player.BFClientPlayerData;
 import com.boehmod.blockfront.client.render.minimap.MinimapWaypoint;
 import com.boehmod.blockfront.common.net.packet.BFRegularPingRequestPacket;
 import com.boehmod.blockfront.common.net.packet.BFRegularPingTriggerRequestPacket;
+import com.boehmod.blockfront.common.player.BFAbstractPlayerData;
+import com.boehmod.blockfront.common.player.PlayerDataHandler;
 import com.boehmod.blockfront.game.AbstractGame;
 import com.boehmod.blockfront.game.AbstractGameClient;
 import com.boehmod.blockfront.game.AbstractGamePlayerManager;
@@ -22,9 +24,12 @@ import java.util.Set;
 import java.util.UUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -37,6 +42,28 @@ public final class PFGameClientHelper {
 
 	private PFGameClientHelper() {
 		throw new AssertionError();
+	}
+
+	public static int getNumAlive(
+		@NotNull ClientPacketListener connection,
+		@NotNull PlayerDataHandler<?> dataHandler,
+		@NotNull Iterable<UUID> players
+	) {
+		int count = 0;
+
+		for (UUID playerUuid : players) {
+			PlayerInfo playerInfo = connection.getPlayerInfo(playerUuid);
+			if (playerInfo == null) {
+				continue;
+			}
+			BFAbstractPlayerData<?, ?, ?, ?> playerData = dataHandler.getPlayerData(playerUuid);
+
+			if (!playerData.isOutOfGame() && playerInfo.getGameMode() != GameType.SPECTATOR) {
+				count++;
+			}
+		}
+
+		return count;
 	}
 
 	public static boolean canChangePerspective(

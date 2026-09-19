@@ -19,7 +19,7 @@ public final class IconRenderers {
 		float offset = 0f, scale = 1f;
 
 		switch (PFClientConfig.getGameGuiStyle()) {
-			case MODERN -> {
+			case MODERN, CS2 -> {
 				texture = BOMB_TEXTURE;
 				blinkTexture = BOMB_BLINK_TEXTURE;
 				offset = 0.5f;
@@ -38,9 +38,9 @@ public final class IconRenderers {
 		float height = 16f * scale;
 		boolean blink = PFClientTemp.frameMillis % 1000 < 500;
 
-		PFGuiRenderUtil.centeredTexture(poseStack, texture, 0f, offset, width, height);
+		PFGuiRenderUtil.centeredTexture(poseStack, texture, 0f, offset, width, height, 0xFFFFFFFF);
 		if (blink) {
-			PFGuiRenderUtil.centeredTexture(poseStack, blinkTexture, 0f, offset, width, height);
+			PFGuiRenderUtil.centeredTexture(poseStack, blinkTexture, 0f, offset, width, height, 0xFFFFFFFF);
 		}
 	};
 

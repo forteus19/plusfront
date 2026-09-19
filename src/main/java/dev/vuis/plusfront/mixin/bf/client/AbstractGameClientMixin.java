@@ -30,6 +30,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AbstractGameClient.class)
@@ -97,6 +98,18 @@ public abstract class AbstractGameClientMixin<G extends AbstractGame<G, P, ?>, P
 		if (PFClientConfig.getGameGuiStyle().showNotificationsInChat()) {
 			ci.cancel();
 		}
+	}
+
+	@ModifyVariable(
+		method = "renderNotifications",
+		ordinal = 1,
+		at = @At(
+			value = "STORE",
+			ordinal = 0
+		)
+	)
+	private int setNotificationOffset(int original) {
+		return PFClientConfig.getGameGuiStyle().getNotificationOffset();
 	}
 
 	@Inject(

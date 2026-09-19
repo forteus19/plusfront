@@ -61,6 +61,7 @@ import java.util.UUID;
 import lombok.Getter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.VarInt;
 import net.minecraft.network.chat.Component;
@@ -400,6 +401,13 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 		buf.writeBoolean(isGameStage());
 		buf.writeBoolean(finishedRound);
+
+		Set<UUID> players = playerManager.getPlayers();
+		VarInt.write(buf, players.size());
+		PFGameHelper.forUuids(players, (playerUuid, player) -> {
+			UUIDUtil.STREAM_CODEC.encode(buf, playerUuid);
+			buf.writeFloat(player.getHealth());
+		});
 	}
 
 	@Override

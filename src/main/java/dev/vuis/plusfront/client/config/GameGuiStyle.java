@@ -21,11 +21,19 @@ public enum GameGuiStyle {
 				PFGameType.DEFUSAL,
 				PFGameType.CHAMBER
 			)
-			.showNotificationsAsToasts()
+			.showNotificationsInChat()
 			.builtInPlayerHeads()
 			.oldKillFeed()
 			.oldWaitingMessage()
 			.oldCapturingStatus()
+	),
+	CS2(
+		new Settings()
+			.hiddenGameElementTypes(
+				PFGameType.DEFUSAL
+			)
+			.notificationOffset(18)
+			.builtInPlayerHeads()
 	);
 
 	private final Settings settings;
@@ -36,6 +44,10 @@ public enum GameGuiStyle {
 
 	public boolean shouldHideGameElements(GameType gameType) {
 		return settings.hiddenGameElementTypes.contains(gameType);
+	}
+
+	public int getNotificationOffset() {
+		return settings.notificationOffset;
 	}
 
 	public boolean showNotificationsInChat() {
@@ -61,6 +73,7 @@ public enum GameGuiStyle {
 	public static final class Settings {
 		private boolean disableFancyRectangles = false;
 		private Set<GameType> hiddenGameElementTypes = Set.of();
+		private int notificationOffset = 0;
 		private boolean showNotificationsInChat = false;
 		private boolean builtInPlayerHeads = false;
 		private boolean oldKillFeed = false;
@@ -80,7 +93,12 @@ public enum GameGuiStyle {
 			return this;
 		}
 
-		private Settings showNotificationsAsToasts() {
+		private Settings notificationOffset(int notificationOffset) {
+			this.notificationOffset = notificationOffset;
+			return this;
+		}
+
+		private Settings showNotificationsInChat() {
 			showNotificationsInChat = true;
 			return this;
 		}
