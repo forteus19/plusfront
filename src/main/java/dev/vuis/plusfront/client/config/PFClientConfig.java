@@ -27,4 +27,8 @@ public final class PFClientConfig {
 	public static GameGuiStyle getGameGuiStyle() {
 		return INSTANCE.gameGuiStyle.get();
 	}
+
+	public static void setGameGuiStyle(GameGuiStyle style) {
+		INSTANCE.gameGuiStyle.set(style);
+	}
 }

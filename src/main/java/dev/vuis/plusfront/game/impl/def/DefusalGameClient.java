@@ -1,6 +1,9 @@
 package dev.vuis.plusfront.game.impl.def;
 
 import com.boehmod.blockfront.client.BFClientManager;
+import com.boehmod.blockfront.client.gui.toast.BFToast;
+import com.boehmod.blockfront.client.gui.toast.BFToasts;
+import com.boehmod.blockfront.client.gui.toast.ToastType;
 import com.boehmod.blockfront.client.match.ping.AbstractPing;
 import com.boehmod.blockfront.client.player.BFClientPlayerData;
 import com.boehmod.blockfront.client.player.ClientPlayerDataHandler;
@@ -87,6 +90,10 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	IExtraPlayerInfo,
 	IModifyRendering {
 
+	private static final Component GUI_STYLE_TITLE = Component.translatable("pf.message.gamemode.defusal.guistyle.title");
+	private static final Component GUI_STYLE_MESSAGE = Component.translatable("pf.message.gamemode.defusal.guistyle.message");
+	private static final Component GUI_STYLE_SWITCH = Component.translatable("pf.message.action.switch");
+
 	private static final Component CT_LABEL = Component.literal("CT").withStyle(DefusalPlayerManager.CT_STYLE);
 	private static final Component T_LABEL = Component.literal("T").withStyle(DefusalPlayerManager.T_STYLE);
 
@@ -117,6 +124,17 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		super(manager, game, dataHandler);
 
 		manager.getCinematics().method_2205(new BF_552(game));
+
+		if (PFClientConfig.getGameGuiStyle() != GameGuiStyle.CS2) {
+			BFToasts.showToast(
+				BFToast.builder()
+					.type(ToastType.INFO)
+					.title(GUI_STYLE_TITLE)
+					.message(GUI_STYLE_MESSAGE)
+					.acceptAction(GUI_STYLE_SWITCH, () -> PFClientConfig.setGameGuiStyle(GameGuiStyle.CS2))
+					.build()
+			);
+		}
 	}
 
 	@Override

@@ -3,7 +3,7 @@ package dev.vuis.plusfront.mixin.bf.client;
 import com.boehmod.blockfront.client.gui.layer.MatchGuiLayer;
 import com.boehmod.blockfront.client.render.minimap.MinimapRendering;
 import com.boehmod.blockfront.client.render.minimap.MinimapWaypoint;
-import com.boehmod.blockfront.game.AbstractGame;
+import com.boehmod.blockfront.game.AbstractGameClient;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.vuis.plusfront.client.config.GameGuiStyle;
@@ -74,8 +74,8 @@ public abstract class MatchGuiLayerMixin {
 			ordinal = 0
 		)
 	)
-	private int shiftKillFeedInDefusal(int y, @Local(argsOnly = true) AbstractGame<?, ?, ?> game) {
-		if (game instanceof IModifyRendering modifyRendering) {
+	private int shiftKillFeedInDefusal(int y, @Local(argsOnly = true) AbstractGameClient<?, ?> gameClient) {
+		if (gameClient instanceof IModifyRendering modifyRendering) {
 			y += modifyRendering.getKillFeedOffset();
 		}
 		if (PFClientConfig.getGameGuiStyle() == GameGuiStyle.OLD) {
