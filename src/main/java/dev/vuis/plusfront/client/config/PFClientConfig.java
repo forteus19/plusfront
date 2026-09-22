@@ -1,5 +1,6 @@
 package dev.vuis.plusfront.client.config;
 
+import dev.vuis.plusfront.PlusFront;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -22,6 +23,11 @@ public final class PFClientConfig {
 
 	private PFClientConfig(ModConfigSpec.Builder builder) {
 		gameGuiStyle = builder.defineEnum("game_gui_style", GameGuiStyle.MODERN);
+	}
+
+	public static void save() {
+		PlusFront.LOGGER.info("Saving config");
+		SPEC.save();
 	}
 
 	public static GameGuiStyle getGameGuiStyle() {

@@ -2,11 +2,11 @@ package dev.vuis.plusfront.client;
 
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.client.config.PFClientConfig;
+import dev.vuis.plusfront.client.screen.PFConfigScreen;
 import lombok.Getter;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 @SuppressWarnings("ClassCanBeRecord")
@@ -29,7 +29,7 @@ public final class PlusFrontClient {
 		PFClientConfig.register(container);
 
 		PlusFront.LOGGER.info("Registering client extension points...");
-		container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+		container.registerExtensionPoint(IConfigScreenFactory.class, (mod, parent) -> new PFConfigScreen(parent));
 
 		PlusFront.LOGGER.info("PlusFront client initialized!");
 	}

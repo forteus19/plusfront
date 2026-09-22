@@ -90,8 +90,8 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	IExtraPlayerInfo,
 	IModifyRendering {
 
-	private static final Component GUI_STYLE_TITLE = Component.translatable("pf.message.gamemode.defusal.guistyle.title");
-	private static final Component GUI_STYLE_MESSAGE = Component.translatable("pf.message.gamemode.defusal.guistyle.message");
+	private static final Component GUI_STYLE_TITLE = Component.translatable("pf.notification.guistyle.title");
+	private static final Component GUI_STYLE_MESSAGE = Component.translatable("pf.notification.guistyle.defusal");
 	private static final Component GUI_STYLE_SWITCH = Component.translatable("pf.message.action.switch");
 
 	private static final Component CT_LABEL = Component.literal("CT").withStyle(DefusalPlayerManager.CT_STYLE);
@@ -131,7 +131,10 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 					.type(ToastType.INFO)
 					.title(GUI_STYLE_TITLE)
 					.message(GUI_STYLE_MESSAGE)
-					.acceptAction(GUI_STYLE_SWITCH, () -> PFClientConfig.setGameGuiStyle(GameGuiStyle.CS2))
+					.acceptAction(GUI_STYLE_SWITCH, () -> {
+						PFClientConfig.setGameGuiStyle(GameGuiStyle.CS2);
+						PFClientConfig.save();
+					})
 					.build()
 			);
 		}

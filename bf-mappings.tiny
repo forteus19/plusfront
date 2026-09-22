@@ -1165,7 +1165,7 @@ c	com/boehmod/blockfront/bD	com/boehmod/blockfront/unnamed/BF_50	com/boehmod/blo
 	m	()F	p	method_362	method_362
 	m	()F	q	method_363	method_363
 	m	()Z	r	method_364	method_364
-c	com/boehmod/blockfront/bE	com/boehmod/blockfront/unnamed/BF_51	com/boehmod/blockfront/unnamed/BF_51
+c	com/boehmod/blockfront/bE	com/boehmod/blockfront/unnamed/BF_51	com/boehmod/blockfront/client/screen/NotificationSupplier
 	m	()I	getNotificationCount	getNotificationCount	getNotificationCount
 c	com/boehmod/blockfront/bF	com/boehmod/blockfront/unnamed/BF_52	com/boehmod/blockfront/unnamed/BF_52
 	f	Lnet/minecraft/resources/ResourceLocation;	Q	field_270	field_270
@@ -1184,84 +1184,133 @@ c	com/boehmod/blockfront/bF	com/boehmod/blockfront/unnamed/BF_52	com/boehmod/blo
 	m	()V	onUpdate	onUpdate	onUpdate
 c	com/boehmod/blockfront/bG	com/boehmod/blockfront/unnamed/BF_53	com/boehmod/blockfront/client/gui/widget/BFButton
 	f	Lnet/minecraft/network/chat/Component;	K	field_314	tip
-	f	Lnet/minecraft/resources/ResourceLocation;	P	field_282	field_282
-	f	Lnet/minecraft/resources/ResourceLocation;	S	field_283	field_283
-	f	Lnet/minecraft/resources/ResourceLocation;	T	field_288	texture
-	f	Lnet/minecraft/resources/ResourceLocation;	U	field_289	field_289
-	f	Z	aH	field_303	field_303
-	f	Z	aI	field_304	field_304
-	f	Z	aJ	field_305	field_305
-	f	Z	aK	field_306	field_306
-	f	Lcom/boehmod/blockfront/bE;	a	field_290	field_290
-	f	Lcom/boehmod/blockfront/bG$a;	a	field_291	displayType
+	f	Lnet/minecraft/resources/ResourceLocation;	P	field_282	backgroundTexture
+	f	Lnet/minecraft/resources/ResourceLocation;	S	field_283	FADE_RED
+	f	Lnet/minecraft/resources/ResourceLocation;	T	field_288	icon
+	f	Lnet/minecraft/resources/ResourceLocation;	U	field_289	backgroundHoveredTexture
+	f	Z	aH	field_303	useHoverColor
+	f	Z	aI	field_304	dimmed
+	f	Z	aJ	field_305	useHoverSound
+	f	Z	aK	field_306	wasHovered
+	f	Lcom/boehmod/blockfront/bE;	a	field_290	notificationSupplier
+	f	Lcom/boehmod/blockfront/bG$a;	a	field_291	background
 	f	Lcom/boehmod/blockfront/bG$b;	a	field_292	alignment
 	f	Lcom/boehmod/blockfront/bG$c;	a	field_293	textStyle
 	f	Ljava/util/function/Predicate;	a	field_294	enabledPredicate
 	f	Lnet/neoforged/neoforge/registries/DeferredHolder;	a	field_295	downSound
 	f	Lnet/minecraft/client/gui/components/Button$OnPress;	b	field_307	onHover
-	f	F	de	field_310	field_310
-	f	F	df	field_311	field_311
-	f	F	dg	field_312	field_312
-	f	F	dh	field_313	field_313
+	f	F	de	field_310	backgroundTextureAlpha
+	f	F	df	field_311	messageOffsetX
+	f	F	dg	field_312	messageOffsetY
+	f	F	dh	field_313	textScale
 	f	I	dl	field_296	color
-	f	I	dr	field_8977	field_8977
-	f	I	ds	field_297	width
-	f	I	dt	field_298	height
-	f	I	du	field_299	field_299
-	f	I	dv	field_300	field_300
-	f	I	dw	field_301	field_301
-	f	I	dx	field_302	field_302
-	f	I	dy	field_308	field_308
-	f	I	dz	field_309	field_309
-	m	()Lcom/boehmod/blockfront/bG;	a	method_366	method_366
-	m	(F)Lcom/boehmod/blockfront/bG;	a	method_367	method_367
-	m	(FF)Lcom/boehmod/blockfront/bG;	a	method_368	method_368
-	m	(I)Lcom/boehmod/blockfront/bG;	a	method_369	method_369
-	m	(II)Lcom/boehmod/blockfront/bG;	a	method_370	size
+	f	I	dr	field_8977	iconTint
+	f	I	ds	field_297	iconWidth
+	f	I	dt	field_298	iconHeight
+	f	I	du	field_299	iconOffsetX
+	f	I	dv	field_300	iconOffsetY
+	f	I	dw	field_301	textColor
+	f	I	dx	field_302	hoverTextColor
+	f	I	dy	field_308	disabledTextColor
+	f	I	dz	field_309	hoverColor
+	m	()Lcom/boehmod/blockfront/bG;	a	method_366	ignoreHoverSound
+	m	(F)Lcom/boehmod/blockfront/bG;	a	method_367	backgroundTextureAlpha
+		p	1			alpha
+	m	(FF)Lcom/boehmod/blockfront/bG;	a	method_368	messageOffset
+		p	1			x
+		p	2			y
+	m	(I)Lcom/boehmod/blockfront/bG;	a	method_369	textColor
+		p	1			textColor
+	m	(II)Lcom/boehmod/blockfront/bG;	a	method_370	iconSize
 		p	1			width
 		p	2			height
-	m	(Lcom/boehmod/blockfront/bE;)Lcom/boehmod/blockfront/bG;	a	method_371	method_371
-	m	(Lcom/boehmod/blockfront/bG$a;)Lcom/boehmod/blockfront/bG;	a	method_372	displayType
-		p	1			displayType
+	m	(Lcom/boehmod/blockfront/bE;)Lcom/boehmod/blockfront/bG;	a	method_371	notificationSupplier
+		p	1			notificationSupplier
+	m	(Lcom/boehmod/blockfront/bG$a;)Lcom/boehmod/blockfront/bG;	a	method_372	background
+		p	1			background
 	m	(Lcom/boehmod/blockfront/bG$b;)Lcom/boehmod/blockfront/bG;	a	method_373	alignment
 		p	1			alignment
 	m	(Lcom/boehmod/blockfront/bG$c;)Lcom/boehmod/blockfront/bG;	a	method_374	textStyle
 		p	1			textStyle
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;F)V	a	method_375	method_375
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;IIF)V	a	method_376	method_376
-	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;)V	a	method_377	method_377
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;F)V	a	method_375	renderNotifications
+		p	1			poseStack
+		p	2			font
+		p	3			graphics
+		p	4			partialTick
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;IIF)V	a	method_376	renderMessage
+		p	1			poseStack
+		p	2			font
+		p	3			graphics
+		p	4			mouseX
+		p	5			mouseY
+		p	6			partialTick
+	m	(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;)V	a	method_377	renderIcon
+		p	1			poseStack
+		p	2			graphics
 	m	(Ljava/util/function/Predicate;)Lcom/boehmod/blockfront/bG;	a	method_378	enabled
 		p	1			predicate
-	m	(Lnet/minecraft/client/Minecraft;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;IIF)V	a	method_379	method_379
-	m	(Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;II)V	a	method_380	method_380
-	m	(Lnet/minecraft/client/gui/GuiGraphics;Lcom/mojang/blaze3d/vertex/PoseStack;IIFF)V	a	method_381	method_381
+	m	(Lnet/minecraft/client/Minecraft;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;IIF)V	a	method_379	renderAbove
+		p	1			minecraft
+		p	2			poseStack
+		p	3			font
+		p	4			graphics
+		p	5			mouseX
+		p	6			mouseY
+		p	7			partialTick
+	m	(Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;II)V	a	method_380	renderTooltip
+		p	1			font
+		p	2			graphics
+		p	3			mouseX
+		p	4			mouseY
+	m	(Lnet/minecraft/client/gui/GuiGraphics;Lcom/mojang/blaze3d/vertex/PoseStack;IIFF)V	a	method_381	renderBackground
+		p	1			graphics
+		p	2			poseStack
+		p	3			mouseX
+		p	4			mouseY
+		p	5			renderTime
+		p	6			partialTick
 	m	(Lnet/minecraft/client/gui/components/Button$OnPress;)Lcom/boehmod/blockfront/bG;	a	method_382	onHover
 		p	1			onHover
 	m	(Lnet/minecraft/network/chat/Component;)Lcom/boehmod/blockfront/bG;	a	method_383	tip
 		p	1			tip
-	m	(Lnet/minecraft/resources/ResourceLocation;)Lcom/boehmod/blockfront/bG;	a	method_384	texture
+	m	(Lnet/minecraft/resources/ResourceLocation;)Lcom/boehmod/blockfront/bG;	a	method_384	icon
+		p	1			icon
+	m	(Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/resources/ResourceLocation;)Lcom/boehmod/blockfront/bG;	a	method_385	backgroundTexture
 		p	1			texture
-	m	(Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/resources/ResourceLocation;)Lcom/boehmod/blockfront/bG;	a	method_385	method_385
+		p	2			textureHovered
 	m	(Lnet/neoforged/neoforge/registries/DeferredHolder;)Lcom/boehmod/blockfront/bG;	a	method_386	downSound
 		p	1			downSound
-	m	(Z)Lcom/boehmod/blockfront/bG;	a	method_387	method_387
-	m	()Lcom/boehmod/blockfront/bG;	b	method_388	method_388
-	m	(F)Lcom/boehmod/blockfront/bG;	b	method_389	method_389
-	m	(I)Lcom/boehmod/blockfront/bG;	b	method_390	method_390
-	m	(II)Lcom/boehmod/blockfront/bG;	b	method_391	method_391
-	m	(Lnet/minecraft/resources/ResourceLocation;)Lcom/boehmod/blockfront/bG;	b	method_392	method_392
-	m	(I)Lcom/boehmod/blockfront/bG;	c	method_393	method_393
-	m	(I)Lcom/boehmod/blockfront/bG;	d	method_394	size
+	m	(Z)Lcom/boehmod/blockfront/bG;	a	method_387	dimmed
+		p	1			dimmed
+	m	()Lcom/boehmod/blockfront/bG;	b	method_388	ignoreHoverColor
+	m	(F)Lcom/boehmod/blockfront/bG;	b	method_389	textScale
+		p	1			textScale
+	m	(I)Lcom/boehmod/blockfront/bG;	b	method_390	hoverTextColor
+		p	1			hoverTextColor
+	m	(II)Lcom/boehmod/blockfront/bG;	b	method_391	iconOffset
+		p	1			x
+		p	2			y
+	m	(Lnet/minecraft/resources/ResourceLocation;)Lcom/boehmod/blockfront/bG;	b	method_392	backgroundTexture
+		p	1			texture
+	m	(I)Lcom/boehmod/blockfront/bG;	c	method_393	disabledTextColor
+		p	1			disabledTextColor
+	m	(I)Lcom/boehmod/blockfront/bG;	d	method_394	iconSize
 		p	1			size
 	m	(I)Lcom/boehmod/blockfront/bG;	e	method_395	color
 		p	1			color
 	m	(I)Lcom/boehmod/blockfront/bG;	f	method_397	hoverColor
+		p	1			hoverColor
 	m	()I	getHeight	getHeight	getHeight
 	m	(Lnet/minecraft/client/sounds/SoundManager;)V	playDownSound	playDownSound	playDownSound
-	m	()F	r	method_396	method_396
+		p	1			soundManager
+	m	()F	r	method_396	getTextScale
 	m	(Lnet/minecraft/client/gui/GuiGraphics;IIF)V	renderWidget	renderWidget	renderWidget
-	m	()I	v	method_398	method_398
-	m	()I	w	method_399	method_399
+		p	1			graphics
+		p	2			mouseX
+		p	3			mouseY
+		p	4			partialTick
+	m	()I	v	method_398	getTextColor
+	m	()I	w	method_399	getColor
 	m	(IIIILnet/minecraft/network/chat/Component;Lnet/minecraft/client/gui/components/Button$OnPress;)V	<init>	<init>	<init>
 		p	1			x
 		p	2			y
@@ -1269,7 +1318,7 @@ c	com/boehmod/blockfront/bG	com/boehmod/blockfront/unnamed/BF_53	com/boehmod/blo
 		p	4			height
 		p	5			message
 		p	6			onPress
-c	com/boehmod/blockfront/bG$a	com/boehmod/blockfront/unnamed/BF_53$BF_54	com/boehmod/blockfront/client/gui/widget/BFButton$DisplayType
+c	com/boehmod/blockfront/bG$a	com/boehmod/blockfront/unnamed/BF_53$BF_54	com/boehmod/blockfront/client/gui/widget/BFButton$Background
 	f	[Lcom/boehmod/blockfront/bG$a;	$VALUES	$VALUES	$VALUES
 	f	Lcom/boehmod/blockfront/bG$a;	DEFAULT	DEFAULT	DEFAULT
 	f	Lcom/boehmod/blockfront/bG$a;	FANCY	FANCY	FANCY
@@ -1331,61 +1380,110 @@ c	com/boehmod/blockfront/bI	com/boehmod/blockfront/unnamed/BF_120	com/boehmod/bl
 	m	(Z)Lcom/boehmod/blockfront/bI;	a	method_527	method_527
 	m	(Z)V	d	method_528	method_528
 	m	(Z)V	e	method_529	method_529
-c	com/boehmod/blockfront/bJ	com/boehmod/blockfront/unnamed/BF_121	com/boehmod/blockfront/client/gui/widget/BFWidget
-	f	Lnet/minecraft/network/chat/Component;	K	field_570	field_570
-	f	Z	aJ	field_559	field_559
-	f	Z	aK	field_560	field_560
-	f	Z	aR	field_561	field_561
-	f	Z	aS	field_562	field_562
-	f	Lnet/minecraft/client/gui/screens/Screen;	b	field_563	screen
-	f	I	ca	field_564	field_564
-	f	I	cb	field_565	field_565
-	f	I	dC	field_566	field_566
+c	com/boehmod/blockfront/bJ	com/boehmod/blockfront/unnamed/BF_121	com/boehmod/blockfront/client/gui/widget/BFCompoundWidget
+	f	Lnet/minecraft/network/chat/Component;	K	field_570	tooltip
+	f	Z	aJ	field_559	hoverSound
+	f	Z	aK	field_560	wasHovered
+	f	Z	aR	field_561	isHovered
+	f	Z	aS	field_562	shouldRenderNested
+	f	Lnet/minecraft/client/gui/screens/Screen;	b	field_563	parent
+	f	I	ca	field_564	x
+	f	I	cb	field_565	y
+	f	I	dC	field_566	width
 	f	I	dD	field_567	height
-	f	Ljava/util/List;	p	field_568	bfWidgets
-	f	Ljava/util/List;	q	field_569	mcWidgets
-	m	()V	L	method_561	clearAll
-	m	()V	M	method_562	clearBfWidgets
-	m	()V	N	method_563	method_563
-	m	()Lcom/boehmod/blockfront/bJ;	a	method_531	method_531
+	f	Ljava/util/List;	p	field_568	nested
+	f	Ljava/util/List;	q	field_569	widgets
+	m	()V	L	method_561	clearWidgets
+	m	()V	M	method_562	clearNested
+	m	()V	N	method_563	clearBfSubWidgets
+	m	()Lcom/boehmod/blockfront/bJ;	a	method_531	hoverSound
 	m	()Lnet/minecraft/client/gui/screens/Screen;	a	method_532	getScreen
-	m	(Lcom/boehmod/blockfront/bJ;)Z	a	method_533	addBfWidget
+	m	(Lcom/boehmod/blockfront/bJ;)Z	a	method_533	addNested
 		p	1			widget
-	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/gs;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;IIFF)V	a	method_534	method_534
-	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/m;Lcom/boehmod/blockfront/gs;)V	a	method_535	method_535
+	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/gs;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;IIFF)V	a	method_534	renderNested
+		p	1			minecraft
+		p	2			dataHandler
+		p	3			poseStack
+		p	4			graphics
+		p	5			mouseX
+		p	6			mouseY
+		p	7			renderTime
+		p	8			partialTick
+	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/m;Lcom/boehmod/blockfront/gs;)V	a	method_535	clearAll
+		p	1			minecraft
+		p	2			manager
+		p	3			dataHandler
 	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/m;Lcom/boehmod/blockfront/gs;DDI)Z	a	method_536	onPress
-	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/m;Lcom/boehmod/blockfront/gs;F)V	a	method_537	method_537
+	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/m;Lcom/boehmod/blockfront/gs;F)V	a	method_537	tick
+		p	1			minecraft
+		p	2			manager
+		p	3			dataHandler
+		p	4			partialTick
 	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/m;Lcom/boehmod/blockfront/gs;FLcom/boehmod/blockfront/bJ;)V	a	method_538	method_538
 	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/m;Lcom/boehmod/blockfront/gs;Lcom/boehmod/blockfront/bJ;)V	a	method_539	method_539
 	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/m;Lcom/boehmod/blockfront/gs;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;Lcom/boehmod/blockfront/jR;IIFF)V	a	method_540	render
-	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/m;Lcom/boehmod/blockfront/gs;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;IIF)V	a	method_541	method_541
-	m	(Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;II)V	a	method_542	method_542
-	m	(Lnet/minecraft/client/gui/components/AbstractWidget;)Z	a	method_543	addMcWidget
+		p	1			minecraft
+		p	2			manager
+		p	3			dataHandler
+		p	4			poseStack
+		p	5			graphics
+		p	6			font
+		p	7			cloudData
+		p	8			mouseX
+		p	9			mouseY
+		p	10			renderTime
+		p	11			partialTick
+	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/m;Lcom/boehmod/blockfront/gs;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;IIF)V	a	method_541	renderAbove
+		p	1			minecraft
+		p	2			manager
+		p	3			dataHandler
+		p	4			font
+		p	5			graphics
+		p	6			mouseX
+		p	7			mouseY
+		p	8			partialTick
+	m	(Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/gui/GuiGraphics;II)V	a	method_542	renderTooltip
+		p	1			font
+		p	2			graphics
+		p	3			mouseX
+		p	4			mouseY
+	m	(Lnet/minecraft/client/gui/components/AbstractWidget;)Z	a	method_543	addWidget
 		p	1			widget
 	m	(Lnet/minecraft/client/gui/components/AbstractWidget;Lnet/minecraft/client/gui/components/AbstractWidget;)Z	a	method_544	method_544
-	m	(Lnet/minecraft/client/gui/screens/Screen;)V	a	method_545	setScreen
-		p	1			screen
-	m	(Lnet/minecraft/network/chat/Component;)Lcom/boehmod/blockfront/bJ;	a	method_546	method_546
-	m	()Lcom/boehmod/blockfront/bJ;	b	method_547	method_547
-	m	(Lcom/boehmod/blockfront/bJ;)Z	b	method_548	removeBfWidget
+	m	(Lnet/minecraft/client/gui/screens/Screen;)V	a	method_545	setParent
+		p	1			parent
+	m	(Lnet/minecraft/network/chat/Component;)Lcom/boehmod/blockfront/bJ;	a	method_546	tooltip
+		p	1			tooltip
+	m	()Lcom/boehmod/blockfront/bJ;	b	method_547	shouldRenderNested
+	m	(Lcom/boehmod/blockfront/bJ;)Z	b	method_548	removeNested
 		p	1			widget
-	m	(Lnet/minecraft/client/gui/components/AbstractWidget;)Z	b	method_549	method_549
-	m	(I)V	c	method_551	method_551
-	m	()Ljava/util/List;	d	method_550	method_550
-	m	(I)V	d	method_552	method_552
-	m	(I)V	e	method_553	method_553
-	m	(I)V	f	method_554	method_554
-	m	(Z)V	f	method_555	method_555
-	m	(Z)V	g	method_556	method_556
+	m	(Lnet/minecraft/client/gui/components/AbstractWidget;)Z	b	method_549	containsWidget
+		p	1			widget
+	m	(I)V	c	method_551	x
+		p	1			x
+	m	()Ljava/util/List;	d	method_550	getWidgets
+	m	(I)V	d	method_552	y
+		p	1			y
+	m	(I)V	e	method_553	width
+		p	1			width
+	m	(I)V	f	method_554	height
+		p	1			height
+	m	(Z)V	f	method_555	setHovered
+		p	1			hovered
+	m	(Z)V	g	method_556	shouldRenderNested
+		p	1			shouldRenderNested
 	m	(III)Z	keyPressed	keyPressed	keyPressed
 	m	(DDI)Z	mouseReleased	mouseReleased	mouseReleased
 	m	(DDDD)Z	mouseScrolled	mouseScrolled	mouseScrolled
-	m	()I	r	method_559	method_559
-	m	()I	s	method_560	method_560
-	m	()Z	s	method_557	method_557
-	m	()I	x	method_558	method_558
-	m	()I	y	method_9753	method_9753
+	m	()I	r	method_559	getX
+	m	()I	s	method_560	getY
+	m	()Z	s	method_557	isBeingHovered
+	m	()I	x	method_558	getWidth
+	m	()I	y	method_9753	getHeight
 	m	(IIIILnet/minecraft/client/gui/screens/Screen;)V	<init>	<init>	<init>
+		p	1			x
+		p	2			y
+		p	3			width
 		p	4			height
 		p	5			screen
 c	com/boehmod/blockfront/bK	com/boehmod/blockfront/unnamed/BF_136	com/boehmod/blockfront/client/screen/dropdown/ClanMemberDropdownScreen
@@ -4172,25 +4270,29 @@ c	com/boehmod/blockfront/cS	com/boehmod/blockfront/unnamed/BF_186	com/boehmod/bl
 	f	Lnet/minecraft/resources/ResourceLocation;	aX	field_1063	CORNERSHADOW
 	f	Lnet/minecraft/resources/ResourceLocation;	aY	field_1064	SPLASHES
 	f	Lnet/minecraft/network/chat/Component;	bK	field_1048	field_1048
-	f	Ljava/util/List;	v	field_1047	widgets
-	m	()V	M	method_774	menuInit
-	m	(Lcom/boehmod/blockfront/bG;)Z	a	method_761	method_761
-	m	(Lcom/boehmod/blockfront/bJ;)V	a	method_764	addWidget
+	f	Ljava/util/List;	v	field_1047	compoundWidgets
+	m	()V	M	method_774	compoundInit
+	m	(Lcom/boehmod/blockfront/bG;)Z	a	method_761	isAdded
+		p	1			button
+	m	(Lcom/boehmod/blockfront/bJ;)V	a	method_764	addCompound
 		p	1			widget
 	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/bV;)V	a	method_767	addParticle
 		p	1			minecraft
 		p	2			particle
-	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/gs;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lcom/boehmod/blockfront/jR;IIFF)V	a	method_768	method_768
-	m	()V	aC	method_759	clearWidgets
-	m	()V	ay	method_758	method_758
+	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/gs;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/GuiGraphics;Lcom/boehmod/blockfront/jR;IIFF)V	a	method_768	renderCompoundWidgets
+	m	()V	aC	method_759	clearCompoundWidgets
+	m	()V	ay	method_758	widgetInit
 	m	(Lnet/minecraft/client/Minecraft;Ljava/lang/String;)V	b	method_770	openUrl
 		p	0			minecraft
 		p	1			url
-	m	(Ljava/lang/String;)Z	c	method_9182	method_9182
-	m	(Lnet/minecraft/client/Minecraft;)Z	c	method_766	method_766
+	m	(Ljava/lang/String;)Z	c	method_9182	isHttpUri
+	m	(Lnet/minecraft/client/Minecraft;)Z	c	method_766	isReturnDown
+		p	0			minecraft
 	m	(Ljava/lang/String;)Z	d	method_765	method_765
-	m	(Lnet/minecraft/client/Minecraft;)Z	d	method_769	method_769
-	m	(Lnet/minecraft/client/Minecraft;)Z	e	method_771	method_771
+	m	(Lnet/minecraft/client/Minecraft;)Z	d	method_769	isEscapeDown
+		p	0			minecraft
+	m	(Lnet/minecraft/client/Minecraft;)Z	e	method_771	isBackspaceDown
+		p	0			minecraft
 	m	()Ljava/util/List;	i	method_772	getMenuParticles
 	m	()V	init	init	init
 	m	()Z	isPauseScreen	isPauseScreen	isPauseScreen
@@ -4208,6 +4310,10 @@ c	com/boehmod/blockfront/cT	com/boehmod/blockfront/unnamed/BF_187	com/boehmod/bl
 	f	Z	bm	field_1068	field_1068
 	f	Lcom/boehmod/blockfront/m;	f	field_1071	manager
 	m	(Lnet/minecraft/client/gui/GuiGraphics;IIF)V	render	render	render
+		p	1			graphics
+		p	2			mouseX
+		p	3			mouseY
+		p	4			partialTick
 	m	(Lnet/minecraft/network/chat/Component;)V	<init>	<init>	<init>
 		p	1			title
 c	com/boehmod/blockfront/cU	com/boehmod/blockfront/unnamed/BF_188	com/boehmod/blockfront/client/screen/title/overlay/RankupScreen

@@ -2,10 +2,9 @@ package dev.vuis.plusfront.client.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import dev.vuis.plusfront.client.PlusFrontClient;
+import dev.vuis.plusfront.client.screen.PFConfigScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
-import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 
 import static net.minecraft.commands.Commands.literal;
 
@@ -21,11 +20,7 @@ public final class PFClientCommand {
     }
 
 	private static int runConfig(CommandContext<CommandSourceStack> context) {
-		Minecraft minecraft = Minecraft.getInstance();
-		minecraft.setScreen(new ConfigurationScreen(
-			PlusFrontClient.instance().getContainer(), null
-		));
-
+		Minecraft.getInstance().setScreen(new PFConfigScreen(null));
 		return 1;
 	}
 }

@@ -4,13 +4,18 @@ import com.boehmod.blockfront.game.GameType;
 import dev.vuis.plusfront.game.PFGameType;
 import java.util.Set;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 
 @AllArgsConstructor
 public enum GameGuiStyle {
 	MODERN(
+		Component.translatable("pf.config.gameGuiStyle.modern"),
 		new Settings()
 	),
 	OLD(
+		Component.translatable("pf.config.gameGuiStyle.old"),
 		new Settings()
 			.disableFancyRectangles()
 			.hiddenGameElementTypes(
@@ -28,6 +33,7 @@ public enum GameGuiStyle {
 			.oldCapturingStatus()
 	),
 	CS2(
+		Component.translatable("pf.config.gameGuiStyle.cs2"),
 		new Settings()
 			.hiddenGameElementTypes(
 				PFGameType.DEFUSAL
@@ -36,7 +42,9 @@ public enum GameGuiStyle {
 			.builtInPlayerHeads()
 	);
 
-	private final Settings settings;
+	@Getter
+	private final @NotNull Component displayName;
+	private final @NotNull Settings settings;
 
 	public boolean disableFancyRectangles() {
 		return settings.disableFancyRectangles;

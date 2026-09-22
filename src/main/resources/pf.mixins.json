@@ -55,6 +55,7 @@
     "bf.client.KillFeedEntryMixin",
     "bf.client.KillSectionPlayerAndTextMixin",
     "bf.client.MatchGuiLayerMixin",
+    "bf.client.MatchPauseScreenMixin",
     "bf.client.PlayerCloudInventoryMixin",
     "bf.client.TeamDeathmatchGameClientMixin",
     "bf.client.TeamScoreGameElementMixin",

@@ -29,6 +29,11 @@ public final class PFUtil {
 		throw new AssertionError();
 	}
 
+	public static <T extends Enum<T>> T nextEnum(T value) {
+		T[] values = value.getDeclaringClass().getEnumConstants();
+		return values[(value.ordinal() + 1) % values.length];
+	}
+
 	public static TriState triState(boolean value) {
 		return value ? TriState.TRUE : TriState.FALSE;
 	}
