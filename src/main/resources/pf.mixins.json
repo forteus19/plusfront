@@ -44,6 +44,7 @@
     "bf.client.BFClientPlayerDataMixin",
     "bf.client.BFClientScreenSubscriberMixin",
     "bf.client.BFConsumableItemMixin",
+    "bf.client.BFNotifyCommandMixin",
     "bf.client.BFRenderingMixin",
     "bf.client.CapturePointGameClientMixin",
     "bf.client.DominationGameClientMixin",
