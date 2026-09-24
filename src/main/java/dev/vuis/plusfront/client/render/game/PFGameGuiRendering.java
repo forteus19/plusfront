@@ -26,7 +26,6 @@ import dev.vuis.plusfront.game.tag.IExtraPlayerInfo;
 import dev.vuis.plusfront.mixin.bf.GameStageTimerAccessor;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Function;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -542,7 +541,9 @@ public final class PFGameGuiRendering {
 	private static void cs2PlayerHead(
 		ClientPacketListener connection,
 		PlayerDataHandler<?> dataHandler,
-		@Nullable Function<UUID, Float> healthRetriever,
+		@Nullable IExtraPlayerInfo extraPlayerInfo,
+		boolean showHighlight,
+		boolean showHealth,
 		GuiGraphics graphics,
 		PoseStack poseStack,
 		UUID playerUuid,
@@ -561,7 +562,14 @@ public final class PFGameGuiRendering {
 		BFAbstractPlayerData<?, ?, ?, ?> playerData = dataHandler.getPlayerData(playerUuid);
 		boolean dead = playerInfo.getGameMode() == GameType.SPECTATOR || playerData.isOutOfGame();
 
-		BFRendering.rectangle(graphics, x, y, size, size, BFRendering.translucentBlack());
+		int bgColor;
+		if (extraPlayerInfo != null && showHighlight && !dead) {
+			bgColor = extraPlayerInfo.getPlayerHighlight(playerUuid).orElse(BFRendering.translucentBlack());
+		} else {
+			bgColor = BFRendering.translucentBlack();
+		}
+
+		BFRendering.rectangle(graphics, x, y, size, size, bgColor);
 
 		if (dead) {
 			RenderSystem.setShaderColor(1f, 1f, 1f, 0.1f);
@@ -578,11 +586,11 @@ public final class PFGameGuiRendering {
 			return;
 		}
 
-		if (healthRetriever != null) {
+		if (extraPlayerInfo != null && showHealth) {
 			float healthY = y + size + 1;
 			float healthHeight = 4f;
 
-			float healthNormal = Mth.clamp(healthRetriever.apply(playerUuid), 0f, 20f) / 20f;
+			float healthNormal = Mth.clamp(extraPlayerInfo.getPlayerHealth(playerUuid), 0f, 20f) / 20f;
 			int color = FastColor.ARGB32.lerp(healthNormal, 0xFFDD2222, 0xFFDDDDDD);
 
 			PFGuiRenderUtil.rectangle(graphics, poseStack, x, healthY, size, healthHeight, BFRendering.translucentBlack());
@@ -611,10 +619,11 @@ public final class PFGameGuiRendering {
 
 		UUID selfUuid = minecraft.player.getUUID();
 
-		Function<UUID, Float> healthRetriever =
-			gameClient instanceof IExtraPlayerInfo extraPlayerInfo ? extraPlayerInfo::getPlayerHealth : null;
+		IExtraPlayerInfo extraPlayerInfo = gameClient instanceof IExtraPlayerInfo info ? info : null;
 
 		if (alliesTeam != null) {
+			boolean isSelfAllies = alliesTeam.hasPlayer(selfUuid);
+
 			cs2Score(
 				connection, dataHandler,
 				graphics, poseStack, font,
@@ -625,7 +634,8 @@ public final class PFGameGuiRendering {
 			int headX = midX - 19 - 18 - 1;
 			for (UUID playerUuid : alliesTeam.getPlayers()) {
 				cs2PlayerHead(
-					connection, dataHandler, alliesTeam.hasPlayer(selfUuid) ? healthRetriever : null,
+					connection, dataHandler, extraPlayerInfo,
+					false, isSelfAllies,
 					graphics, poseStack,
 					playerUuid,
 					headX, 1
@@ -635,6 +645,8 @@ public final class PFGameGuiRendering {
 		}
 
 		if (axisTeam != null) {
+			boolean isSelfAxis = axisTeam.hasPlayer(selfUuid);
+
 			cs2Score(
 				connection, dataHandler,
 				graphics, poseStack, font,
@@ -645,7 +657,8 @@ public final class PFGameGuiRendering {
 			int headX = midX + 19 + 1;
 			for (UUID playerUuid : axisTeam.getPlayers()) {
 				cs2PlayerHead(
-					connection, dataHandler, axisTeam.hasPlayer(selfUuid) ? healthRetriever : null,
+					connection, dataHandler, extraPlayerInfo,
+					isSelfAxis, isSelfAxis,
 					graphics, poseStack,
 					playerUuid,
 					headX, 1

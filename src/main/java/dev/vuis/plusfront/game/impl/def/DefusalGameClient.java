@@ -48,6 +48,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -111,6 +112,8 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 			.sides(true, false, false)
 			.verticalFade(BFRendering.BoundaryFadeDirection.TOP)
 			.occludedAlpha(0.25f);
+
+	private static final Optional<Integer> BOMB_HOLDER_HIGHLIGHT = Optional.of(BOMBSITE_CAGE_COLOR);
 
 	private final List<AABB> bombSiteBoxes = new ObjectArrayList<>();
 	private final Object2FloatMap<UUID> playerHealth = new Object2FloatOpenHashMap<>();
@@ -594,6 +597,11 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	@Override
 	public boolean shouldMovePing(@NotNull AbstractPing ping, @NotNull UUID playerUuid, @NotNull Vec3 newPosition) {
 		return PFGameClientHelper.shouldMovePing(ping, playerUuid, newPosition);
+	}
+
+	@Override
+	public Optional<Integer> getPlayerHighlight(UUID playerUuid) {
+		return game.getPlayerManager().isBombHolder(playerUuid) ? BOMB_HOLDER_HIGHLIGHT : Optional.empty();
 	}
 
 	@Override
