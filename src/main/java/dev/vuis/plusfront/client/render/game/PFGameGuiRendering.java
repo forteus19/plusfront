@@ -533,10 +533,10 @@ public final class PFGameGuiRendering {
 
 		PFGuiRenderUtil.gradient(graphics, poseStack, x, y, width, 23f, BFRendering.translucentBlack(), 0x00000000, true);
 
-		PFGuiRenderUtil.centeredString(graphics, poseStack, font, scoreStr, x + width / 2f, y + 2f, 1f, color, true);
+		PFGuiRenderUtil.centeredText(graphics, poseStack, font, scoreStr, x + width / 2f, y + 2f, 1f, color, true);
 
 		PFGuiRenderUtil.textureWithShadow(poseStack, PERSON_TEXTURE, aliveX, aliveY, 3f, 3f, color, 0.5f);
-		PFGuiRenderUtil.string(graphics, poseStack, font, aliveStr, aliveX + 4f, aliveY - 0.5f, aliveScale, color, true);
+		PFGuiRenderUtil.text(graphics, poseStack, font, aliveStr, aliveX + 4f, aliveY - 0.5f, aliveScale, color, true);
 	}
 
 	private static void cs2PlayerHead(

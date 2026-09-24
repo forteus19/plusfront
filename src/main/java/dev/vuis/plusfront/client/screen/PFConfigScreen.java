@@ -12,7 +12,7 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class PFConfigScreen extends BFMenuScreen {
+public final class PFConfigScreen extends Screen {
 	private static final Component TITLE = Component.translatable("pf.screen.config.title");
 
 	private static final Component GAME_GUI_STYLE = Component.translatable("pf.config.gameGuiStyle");
@@ -25,8 +25,8 @@ public final class PFConfigScreen extends BFMenuScreen {
 	}
 
 	@Override
-	public void widgetInit() {
-		super.widgetInit();
+	public void init() {
+		super.init();
 
 		BFButton nextButton;
 
@@ -35,7 +35,7 @@ public final class PFConfigScreen extends BFMenuScreen {
 			Component.empty(),
 			button -> onClose()
 		);
-		nextButton.icon(RETURN_ICON).iconSize(20);
+		nextButton.icon(BFMenuScreen.RETURN_ICON).iconSize(20);
 		nextButton.background(BFButton.Background.NONE);
 		nextButton.tip(CommonComponents.GUI_BACK);
 		addRenderableWidget(nextButton);

@@ -14,6 +14,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import org.joml.Matrix4f;
@@ -134,11 +135,11 @@ public final class PFGuiRenderUtil {
 		texture(poseStack, texture, x, y, width, height, color);
 	}
 
-	public static void string(
+	public static void text(
 		GuiGraphics graphics,
 		PoseStack poseStack,
 		Font font,
-		String string,
+		Object text,
 		float x,
 		float y,
 		float scale,
@@ -151,34 +152,57 @@ public final class PFGuiRenderUtil {
 			poseStack.scale(scale, scale, 1f);
 		}
 
-		font.drawInBatch(
-			string,
-			0f, 0f,
-			color,
-			shadow,
-			poseStack.last().pose(),
-			graphics.bufferSource(),
-			Font.DisplayMode.NORMAL,
-			0x00000000,
-			0xF000F0
-		);
+		switch (text) {
+			case String string -> {
+				font.drawInBatch(
+					string,
+					0f, 0f,
+					color,
+					shadow,
+					poseStack.last().pose(),
+					graphics.bufferSource(),
+					Font.DisplayMode.NORMAL,
+					0x00000000,
+					0xF000F0
+				);
+			}
+			case Component component -> {
+				font.drawInBatch(
+					component,
+					0f, 0f,
+					color,
+					shadow,
+					poseStack.last().pose(),
+					graphics.bufferSource(),
+					Font.DisplayMode.NORMAL,
+					0x00000000,
+					0xF000F0
+				);
+			}
+			default -> throw new IllegalArgumentException("Unsupported text class");
+		}
 
 		poseStack.popPose();
 
 		flushIfUnmanaged(graphics);
 	}
 
-	public static void centeredString(
+	public static void centeredText(
 		GuiGraphics graphics,
 		PoseStack poseStack,
 		Font font,
-		String string,
+		Object text,
 		float x,
 		float y,
 		float scale,
 		int color,
 		boolean shadow
 	) {
-		string(graphics, poseStack, font, string, x - font.width(string) / 2f, y, scale, color, shadow);
+		float width = switch (text) {
+			case String string -> font.width(string);
+			case Component component -> font.width(component);
+			default -> throw new IllegalArgumentException("Unsupported text class");
+		};
+		text(graphics, poseStack, font, text, x - (width * scale) / 2f, y, scale, color, shadow);
 	}
 }

@@ -33,8 +33,8 @@ import dev.vuis.plusfront.client.config.GameGuiStyle;
 import dev.vuis.plusfront.client.config.PFClientConfig;
 import dev.vuis.plusfront.client.def.DefusalTeamGameElement;
 import dev.vuis.plusfront.client.render.IconRenderers;
+import dev.vuis.plusfront.client.render.PFGuiRenderUtil;
 import dev.vuis.plusfront.client.render.game.PFGameGuiRendering;
-import dev.vuis.plusfront.ex.GameStageTimerEx;
 import dev.vuis.plusfront.game.PFGameClientHelper;
 import dev.vuis.plusfront.game.PFGameHelper;
 import dev.vuis.plusfront.game.ScoreboardFormats;
@@ -68,7 +68,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.VarInt;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -126,18 +125,20 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		manager.getCinematics().method_2205(new BF_552(game));
 
 		if (PFClientConfig.getGameGuiStyle() != GameGuiStyle.CS2) {
-			BFToasts.showToast(
-				BFToast.builder()
-					.type(ToastType.INFO)
-					.title(GUI_STYLE_TITLE)
-					.message(GUI_STYLE_MESSAGE)
-					.acceptAction(GUI_STYLE_SWITCH, () -> {
-						PFClientConfig.setGameGuiStyle(GameGuiStyle.CS2);
-						PFClientConfig.save();
-					})
-					.build()
-			);
+			BFToasts.showToast(createGuiStyleToast());
 		}
+	}
+
+	private static BFToast createGuiStyleToast() {
+		return BFToast.builder()
+			.type(ToastType.INFO)
+			.title(GUI_STYLE_TITLE)
+			.message(GUI_STYLE_MESSAGE)
+			.acceptAction(GUI_STYLE_SWITCH, () -> {
+				PFClientConfig.setGameGuiStyle(GameGuiStyle.CS2);
+				PFClientConfig.save();
+			})
+			.build();
 	}
 
 	@Override
@@ -295,10 +296,6 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 			Camera camera = minecraft.gameRenderer.getMainCamera();
 
 			for (BombSite bombSite : game.getBombSites()) {
-				if (bombSite.waypoints.isEmpty()) {
-					continue;
-				}
-
 				for (Vec3 siteWaypoint : bombSite.waypoints) {
 					renderBombSiteWaypoint(
 						poseStack, graphics, font, camera, width, height, partialTick,
@@ -347,40 +344,26 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		String name
 	) {
 		BFRendering.ScreenClampData screenClampData = BFRendering.screenClamp(position, camera, width, height, 48, partialTick);
+		float x = screenClampData.screenX();
+		float y = screenClampData.screenY();
 
-		TextColor textColor = PFClientTemp.frameMillis % 1000 < 500 ? DefusalPlayerManager.T_TEXT_COLOR : null;
+		boolean blink = PFClientTemp.frameMillis % 1000 < 500;
+		TextColor textColor = blink ? DefusalPlayerManager.T_TEXT_COLOR : null;
+		String distance = Mth.floor(camera.getPosition().distanceTo(position)) + "m";
 
-		poseStack.pushPose();
-		poseStack.translate(screenClampData.screenX(), screenClampData.screenY(), 0f);
-
-		{
-			poseStack.pushPose();
-			poseStack.scale(2f, 2f, 1f);
-
-			Component nameText = Component.literal(name)
-				.withStyle(BFStyles.BOLD.withColor(textColor));
-
-			graphics.drawString(
-				font,
-				nameText,
-				-font.width(nameText) / 2, -9,
-				0xFFFFFFFF, true
-			);
-
-			poseStack.popPose();
-		}
-
-		Component distanceText = Component.literal(Mth.floor(camera.getPosition().distanceTo(position)) + "m")
-			.withStyle(Style.EMPTY.withColor(textColor));
-
-		graphics.drawString(
-			font,
-			distanceText,
-			-font.width(distanceText) / 2, 3,
+		PFGuiRenderUtil.centeredText(
+			graphics, poseStack, font,
+			Component.literal(name).withStyle(BFStyles.BOLD.withColor(textColor)),
+			x, y - 18f, 2f,
 			0xFFFFFFFF, true
 		);
 
-		poseStack.popPose();
+		PFGuiRenderUtil.centeredText(
+			graphics, poseStack, font,
+			distance,
+			x, y + 3f, 1f,
+			blink ? DefusalPlayerManager.T_TEXT_COLOR.getValue() : 0xFFFFFFFF, true
+		);
 	}
 
 	private void renderBombItemWaypoint(
@@ -531,10 +514,6 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		for (BombSite bombSite : game.getBombSites()) {
 			bombSiteBoxes.add(bombSite.getBoundaryAABB());
 		}
-
-		((GameStageTimerEx) (Object) getStageTimer()).pf$setIconRenderer(
-			game.isBombPlanted() ? IconRenderers.BOMB : null
-		);
 	}
 
 	@Override
