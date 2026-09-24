@@ -40,7 +40,6 @@ import com.boehmod.blockfront.registry.BFEntityTypes;
 import com.boehmod.blockfront.registry.BFItems;
 import com.boehmod.blockfront.registry.BFSounds;
 import com.boehmod.blockfront.util.CommandUtils;
-import com.boehmod.blockfront.util.math.BFPose;
 import com.mojang.brigadier.context.CommandContext;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.data.PFDefusalData;
@@ -60,6 +59,7 @@ import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.particles.ParticleTypes;
@@ -120,15 +120,12 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 				CommandUtils.sendBfa(source, Component.literal("Cleared all bombsites."));
 			}))
 			.subCommand("boundary", executorPlayers(new String[]{"name"}, this::suggestBombSites, (context, source, args) -> {
-				String name = args[0];
-
-				BombSite bombSite = getBombSiteByName(name);
+				BombSite bombSite = getBombSiteByName(source, args[0]);
 				if (bombSite == null) {
-					CommandUtils.sendBfa(source, Component.literal("Bomb site " + name + " was not found!"));
 					return;
 				}
 
-				GameBoundary boundary = dataHandler.getPlayerData((Player) source).getRegionSelection().getBoundary();
+				GameBoundary boundary = dataHandler.getPlayerData(source).getRegionSelection().getBoundary();
 				if (boundary == null) {
 					CommandUtils.sendBfa(source, Component.literal("No region selection! Select an area with the region wand first."));
 					return;
@@ -138,46 +135,60 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 
 				CommandUtils.sendBfa(source, Component.literal("Set boundary for bomb site " + name + " from your selection. (" + boundary.numPoints() + " points)"));
 			}))
-			.subCommand("visibleY", executorPlayers(new String[]{"name"}, this::suggestBombSites, (context, source, args) -> {
-				String name = args[0];
-
-				BombSite bombSite = getBombSiteByName(name);
+			.subCommand("minY", executorPlayers(new String[]{"name"}, this::suggestBombSites, (context, source, args) -> {
+				BombSite bombSite = getBombSiteByName(source, args[0]);
 				if (bombSite == null) {
-					CommandUtils.sendBfa(source, Component.literal("Bomb site " + name + " was not found!"));
 					return;
 				}
 
-				bombSite.visibleY = ((Player) source).position().y;
+				bombSite.minY = source.getY();
+
+				CommandUtils.sendBfa(source, Component.literal("Set minimum Y for bomb site " + name + "."));
+			}))
+			.subCommand("maxY", executorPlayers(new String[]{"name"}, this::suggestBombSites, (context, source, args) -> {
+				BombSite bombSite = getBombSiteByName(source, args[0]);
+				if (bombSite == null) {
+					return;
+				}
+
+				bombSite.maxY = source.getY();
+
+				CommandUtils.sendBfa(source, Component.literal("Set maximum Y for bomb site " + name + "."));
+			}))
+			.subCommand("visibleY", executorPlayers(new String[]{"name"}, this::suggestBombSites, (context, source, args) -> {
+				BombSite bombSite = getBombSiteByName(source, args[0]);
+				if (bombSite == null) {
+					return;
+				}
+
+				bombSite.visibleY = source.getY();
 
 				CommandUtils.sendBfa(source, Component.literal("Set visible Y for bomb site " + name + "."));
-			})))
-		.subCommand("spawn", new AssetCommandBuilder()
-			.subCommand("add", executorPlayers(new String[]{"team"}, (context, source, args) -> {
-				String teamName = args[0];
-
-				GameTeam team = playerManager.getTeamByName(teamName);
-				if (team == null) {
-					CommandUtils.sendBfa(source, Component.literal("Team " + teamName + " was not found!"));
-					return;
-				}
-
-				team.addPlayerSpawn(new BFPose((Player) source));
-
-				CommandUtils.sendBfa(source, Component.literal(teamName + " team spawn added. (" + team.getPlayerSpawns().size() + ")"));
 			}))
-			.subCommand("clear", executor((context, source, args) -> {
-				String teamName = args[0];
+			.subCommand("waypoint", new AssetCommandBuilder()
+				.subCommand("add", executorPlayers(new String[]{"name"}, this::suggestBombSites, (context, source, args) -> {
+					BombSite bombSite = getBombSiteByName(source, args[0]);
+					if (bombSite == null) {
+						return;
+					}
 
-				GameTeam team = playerManager.getTeamByName(teamName);
-				if (team == null) {
-					CommandUtils.sendBfa(source, Component.literal("Team " + teamName + " was not found!"));
-					return;
-				}
+					bombSite.waypoints.add(source.position());
 
-				team.clearPlayerSpawns();
+					CommandUtils.sendBfa(source, Component.literal("Added waypoint to bomb site " + name + "."));
+				}))
+				.subCommand("add", executorPlayers(new String[]{"name"}, this::suggestBombSites, (context, source, args) -> {
+					BombSite bombSite = getBombSiteByName(source, args[0]);
+					if (bombSite == null) {
+						return;
+					}
 
-				CommandUtils.sendBfa(source, Component.literal(teamName + " team's spawns cleared."));
-			})));
+					bombSite.waypoints.clear();
+
+					CommandUtils.sendBfa(source, Component.literal("Cleared waypoints from bomb site " + name + "."));
+				}))));
+	{
+		PFGameHelper.addTeamSpawnCommands(command, this);
+	}
 
 	@Getter
 	private boolean isBombPlanted = false;
@@ -200,6 +211,14 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		}
 
 		return null;
+	}
+
+	private @Nullable BombSite getBombSiteByName(CommandSource source, String name) {
+		BombSite bombSite = getBombSiteByName(name);
+		if (bombSite == null) {
+			CommandUtils.sendBfa(source, Component.literal("Bomb site " + name + " was not found!"));
+		}
+		return bombSite;
 	}
 
 	public @Nullable ItemEntity getBombItem(Level level) {
