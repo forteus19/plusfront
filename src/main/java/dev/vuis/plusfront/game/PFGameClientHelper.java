@@ -15,11 +15,14 @@ import com.boehmod.blockfront.game.GameStatus;
 import com.boehmod.blockfront.game.GameTeam;
 import com.boehmod.blockfront.game.GameUtils;
 import com.boehmod.blockfront.game.TeamType;
+import com.boehmod.blockfront.game.impl.ttt.TroubleTownGame;
 import com.boehmod.blockfront.util.BFRes;
 import com.boehmod.blockfront.util.CollisionUtils;
 import com.boehmod.blockfront.util.PacketUtils;
+import dev.vuis.plusfront.ex.TroubleTownGameEx;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import net.minecraft.client.Minecraft;
@@ -28,6 +31,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.HitResult;
@@ -161,5 +165,25 @@ public final class PFGameClientHelper {
 		@NotNull Vec3 newPosition
 	) {
 		return ping.getPlayerUuid().equals(playerUuid) && ping.getPosition().distanceToSqr(newPosition) <= (2.0 * 2.0);
+	}
+
+	public static boolean isInfoVisible(
+		@NotNull TroubleTownGame game,
+		@NotNull LocalPlayer localPlayer,
+		@NotNull Entity target
+	) {
+		if (!localPlayer.hasLineOfSight(target)) {
+			return false;
+		}
+
+		TroubleTownGameEx gameEx = (TroubleTownGameEx) (Object) game;
+
+		Optional<Float> pidOptional = gameEx.pf$getPlayerInfoDistance();
+		if (pidOptional == null || pidOptional.isEmpty()) {
+			return true;
+		}
+		float pid = pidOptional.orElseThrow();
+
+		return localPlayer.distanceToSqr(target) <= (pid * pid);
 	}
 }

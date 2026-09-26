@@ -6,8 +6,7 @@ import com.boehmod.blockfront.game.AbstractGameClient;
 import com.boehmod.blockfront.game.impl.ttt.TroubleTownGame;
 import com.boehmod.blockfront.game.impl.ttt.TroubleTownGameClient;
 import com.boehmod.blockfront.game.impl.ttt.TroubleTownPlayerManager;
-import dev.vuis.plusfront.ex.TroubleTownGameEx;
-import java.util.Optional;
+import dev.vuis.plusfront.game.PFGameClientHelper;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
@@ -33,19 +32,19 @@ public abstract class TroubleTownGameClientMixin extends AbstractGameClient<Trou
 			ordinal = 0
 		)
 	)
-	private boolean adjustLineOfSightToCustomDistance(LocalPlayer localPlayer, Entity target) {
-		if (localPlayer.hasLineOfSight(target)) {
-			TroubleTownGameEx gameEx = (TroubleTownGameEx) (Object) game;
+	private boolean handleInfoDistance(LocalPlayer localPlayer, Entity target) {
+		return PFGameClientHelper.isInfoVisible(game, localPlayer, target);
+	}
 
-			Optional<Float> pidOptional = gameEx.pf$getPlayerInfoDistance();
-			if (pidOptional == null || pidOptional.isEmpty()) {
-				return true;
-			}
-			float pid = pidOptional.orElseThrow();
-
-			return localPlayer.distanceToSqr(target) <= (pid * pid);
-		} else {
-			return false;
-		}
+	@Redirect(
+		method = "renderWorld",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/client/player/LocalPlayer;hasLineOfSight(Lnet/minecraft/world/entity/Entity;)Z",
+			ordinal = 0
+		)
+	)
+	private boolean handleRoleDistance(LocalPlayer localPlayer, Entity target) {
+		return PFGameClientHelper.isInfoVisible(game, localPlayer, target);
 	}
 }
