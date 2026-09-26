@@ -17,6 +17,7 @@ import dev.vuis.plusfront.PFTemp;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.player.PFArmory;
 import dev.vuis.plusfront.registry.PFAttachmentTypes;
+import dev.vuis.plusfront.server.PFCustomMemes;
 import dev.vuis.plusfront.util.PFUtil;
 import dev.vuis.plusfront.util.PFZipUtil;
 import dev.vuis.plusfront.util.index.CloudRegistryIndex;
@@ -39,7 +40,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
@@ -118,6 +118,10 @@ public final class PFCommand {
 						argument("value", BoolArgumentType.bool()).executes(PFCommand::runFeatureSet)
 					)
 				)
+			)
+		).then(
+			literal("memes").requires(stack -> stack.hasPermission(3)).then(
+				literal("reload").executes(PFCommand::runMemesReload)
 			)
 		));
 	}
@@ -363,12 +367,10 @@ public final class PFCommand {
 	}
 
 	private static int runAssetsBackup(CommandContext<CommandSourceStack> context) {
-		MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-		assert server != null;
-
 		PlusFront.LOGGER.info("Assets backup requested...");
 
 		CommandSourceStack stack = context.getSource();
+		MinecraftServer server = stack.getServer();
 
 		Path serverDirectory = server.getServerDirectory();
 
@@ -522,6 +524,20 @@ public final class PFCommand {
 		}
 
 		stack.sendSuccess(() -> Component.translatable("pf.message.command.feature.set.success", name, Boolean.toString(value)), true);
+
+		return 1;
+	}
+
+	private static int runMemesReload(CommandContext<CommandSourceStack> context) {
+		CommandSourceStack stack = context.getSource();
+
+		Component error = PFCustomMemes.load(stack.getServer());
+		if (error != null) {
+			stack.sendFailure(error);
+			return -1;
+		}
+
+		stack.sendSuccess(() -> Component.translatable("pf.message.memes.success"), true);
 
 		return 1;
 	}

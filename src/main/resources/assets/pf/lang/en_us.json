@@ -53,6 +53,9 @@
   "pf.message.gamemode.notification.round.win": "%s won the round!",
   "pf.message.ingame.settings": "PlusFront Settings...",
   "pf.message.ingame.settings.tip": "Configure your PlusFront settings",
+  "pf.message.memes.error.parse": "Failed to parse custom memes",
+  "pf.message.memes.error.read": "Failed to read custom memes",
+  "pf.message.memes.success": "Loaded custom memes",
   "pf.notification.guistyle.defusal": "CS2 style is recommended for defusal.",
   "pf.notification.guistyle.title": "UI Style",
   "pf.screen.config.title": "PlusFront Settings"
