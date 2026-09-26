@@ -17,8 +17,8 @@ val parchmentVersion = "2024.11.17"
 val loaderVersionRange = "[1,)"
 val neoforgeVersion = "21.1.251"
 
-val blockfrontVersion = "0.9.0.33b"
-val blockfrontModrinthVersion = "KWdo8xVj"
+val blockfrontVersion = "0.9.0.34b"
+val blockfrontModrinthVersion = "hU2pOPNG"
 
 val geckolibVersion = "4.9.3"
 val veilVersion = "4.5.0"
