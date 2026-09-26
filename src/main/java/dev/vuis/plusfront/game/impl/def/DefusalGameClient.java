@@ -48,6 +48,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -90,10 +91,6 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 	IExtraPlayerInfo,
 	IModifyRendering {
 
-	private static final Component GUI_STYLE_TITLE = Component.translatable("pf.notification.guistyle.title");
-	private static final Component GUI_STYLE_MESSAGE = Component.translatable("pf.notification.guistyle.defusal");
-	private static final Component GUI_STYLE_SWITCH = Component.translatable("pf.message.action.switch");
-
 	private static final Component CT_LABEL = Component.literal("CT").withStyle(DefusalPlayerManager.CT_STYLE);
 	private static final Component T_LABEL = Component.literal("T").withStyle(DefusalPlayerManager.T_STYLE);
 
@@ -132,15 +129,21 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		}
 	}
 
-	private static BFToast createGuiStyleToast() {
+	private BFToast createGuiStyleToast() {
 		return BFToast.builder()
 			.type(ToastType.INFO)
-			.title(GUI_STYLE_TITLE)
-			.message(GUI_STYLE_MESSAGE)
-			.acceptAction(GUI_STYLE_SWITCH, () -> {
-				PFClientConfig.setGameGuiStyle(GameGuiStyle.CS2);
-				PFClientConfig.save();
-			})
+			.title(Component.translatable("pf.notification.guistyle.title"))
+			.message(Component.translatable(
+				"pf.notification.guistyle.recommend",
+				GameGuiStyle.CS2.getDisplayName(),
+				game.getType().toUpperCase(Locale.ROOT)
+			))
+			.acceptAction(
+				Component.translatable("pf.message.action.switch"),
+				() -> {
+					PFClientConfig.setGameGuiStyle(GameGuiStyle.CS2);
+					PFClientConfig.save();
+				})
 			.build();
 	}
 

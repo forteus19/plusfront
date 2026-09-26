@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @AllArgsConstructor
 public enum GameGuiStyle {
@@ -35,6 +36,9 @@ public enum GameGuiStyle {
 	CS2(
 		Component.translatable("pf.config.gameGuiStyle.cs2"),
 		new Settings()
+			.supportedGameTypes(
+				PFGameType.DEFUSAL
+			)
 			.hiddenGameElementTypes(
 				PFGameType.DEFUSAL
 			)
@@ -45,6 +49,10 @@ public enum GameGuiStyle {
 	@Getter
 	private final @NotNull Component displayName;
 	private final @NotNull Settings settings;
+
+	public boolean isGameTypeSupported(GameType gameType) {
+		return settings.supportedGameTypes == null || settings.supportedGameTypes.contains(gameType);
+	}
 
 	public boolean disableFancyRectangles() {
 		return settings.disableFancyRectangles;
@@ -79,6 +87,7 @@ public enum GameGuiStyle {
 	}
 
 	public static final class Settings {
+		private @Nullable Set<GameType> supportedGameTypes = null;
 		private boolean disableFancyRectangles = false;
 		private Set<GameType> hiddenGameElementTypes = Set.of();
 		private int notificationOffset = 0;
@@ -89,6 +98,11 @@ public enum GameGuiStyle {
 		private boolean oldCapturingStatus = false;
 
 		private Settings() {
+		}
+
+		private Settings supportedGameTypes(@Nullable GameType... supportedGameTypes) {
+			this.supportedGameTypes = supportedGameTypes != null ? Set.of(supportedGameTypes) : null;
+			return this;
 		}
 
 		private Settings disableFancyRectangles() {

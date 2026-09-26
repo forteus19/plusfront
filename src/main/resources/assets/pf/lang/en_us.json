@@ -56,7 +56,8 @@
   "pf.message.memes.error.parse": "Failed to parse custom memes",
   "pf.message.memes.error.read": "Failed to read custom memes",
   "pf.message.memes.success": "Loaded custom memes",
-  "pf.notification.guistyle.defusal": "CS2 style is recommended for defusal.",
+  "pf.notification.guistyle.recommend": "%s style is recommended for %s.",
   "pf.notification.guistyle.title": "UI Style",
+  "pf.notification.guistyle.unsupported": "%s style does not support %s. Your UI style has been switched to %s.",
   "pf.screen.config.title": "PlusFront Settings"
 }
