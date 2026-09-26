@@ -7,7 +7,6 @@
   "pf.config.gameGuiStyle.cs2": "CS2",
   "pf.config.gameGuiStyle.modern": "Modern",
   "pf.config.gameGuiStyle.old": "Old",
-  "pf.gamemode.def": "Defusal",
   "pf.gamemode.oitc": "One In The Chamber",
   "pf.message.action.switch": "Switch",
   "pf.message.command.armory.clear.card.success": "Cleared card for %s players",

@@ -7,7 +7,7 @@ import dev.vuis.plusfront.game.impl.oitc.ChamberGame;
 
 @SuppressWarnings("unused")
 public final class PFGameType {
-	public static final GameType DEFUSAL = new GameType(GameType.Category.VERSUS, "pf.gamemode.def", "def", SearchGame.DEFUSAL, DefusalGame.class)
+	public static final GameType DEFUSAL = new GameType(GameType.Category.VERSUS, "bf.gamemode.def", "def", SearchGame.DEFUSAL, DefusalGame.class)
 		.experimental().hidden();
 	public static final GameType CHAMBER = new GameType(GameType.Category.VERSUS, "pf.gamemode.oitc", "oitc", SearchGame.FREE_FOR_ALL, ChamberGame.class)
 		.experimental().hidden();
