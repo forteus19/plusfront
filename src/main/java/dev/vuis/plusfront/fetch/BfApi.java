@@ -28,10 +28,10 @@ public final class BfApi {
 		throw new AssertionError();
 	}
 
-	public static @NotNull CompletableFuture<@NotNull Inventory> fetchPlayerInventory(@NotNull UUID playerUuid) {
+	public static @NotNull CompletableFuture<@NotNull Inventory> fetchPlayerInventoryEquipped(@NotNull UUID playerUuid) {
 		HttpRequest request = HttpRequest.newBuilder()
 			.GET()
-			.uri(getPlayerInventoryUri(playerUuid))
+			.uri(getUri("/api/v1/player_inventory/equipped?uuid=" + playerUuid))
 			.build();
 
 		CompletableFuture<HttpResponse<InputStream>> responseFuture = HTTP_CLIENT.sendAsync(
@@ -55,8 +55,8 @@ public final class BfApi {
 		});
 	}
 
-	private static @NotNull URI getPlayerInventoryUri(@NotNull UUID playerUuid) {
-		return URI.create(PFServerConfig.getBfApiHost() + "/api/v1/player_inventory?uuid=" + playerUuid);
+	private static @NotNull URI getUri(@NotNull String path) {
+		return URI.create(PFServerConfig.getBfApiHost() + path);
 	}
 
 	public record Inventory(

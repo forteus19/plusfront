@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Executor;
+import lombok.Getter;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.VarInt;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -47,7 +48,7 @@ public final class PFArmory {
 	{
 		PlusFront.LOGGER.info("Fetching player inventory for {}", playerUuid);
 
-		BfApi.fetchPlayerInventory(playerUuid).thenAccept(
+		BfApi.fetchPlayerInventoryEquipped(playerUuid).thenAccept(
 			inventory -> mainThreadExecutor.execute(() -> {
 				try {
 					PlusFront.LOGGER.info("Processing fetched inventory for {}", playerUuid);
@@ -126,6 +127,7 @@ public final class PFArmory {
 				instance, Weapons::new
 			));
 
+		@Getter
 		private final Map<Item, Stack> equippedWeapons;
 
 		private Weapons(
@@ -136,10 +138,6 @@ public final class PFArmory {
 
 		public Weapons() {
 			this.equippedWeapons = new IdentityHashMap<>();
-		}
-
-		public Map<Item, Stack> getEquippedWeapons() {
-			return equippedWeapons;
 		}
 
 		public @Nullable PFArmory.Weapons.Stack getEquippedWeapon(Item item) {
