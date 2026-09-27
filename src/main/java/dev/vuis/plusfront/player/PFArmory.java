@@ -73,12 +73,12 @@ public final class PFArmory {
 	private static void processFetchedInventory(
 		Weapons weapons,
 		Extra extra,
-		BfApi.Inventory inventory
+		BfApi.InventoryEqipped inventory
 	) {
 		weapons.clearWeapons();
 		extra.clearAll();
 
-		for (BfApi.Inventory.Stack stack : inventory.inventory()) {
+		for (BfApi.Stack stack : inventory.equipped()) {
 			CloudItem<?> cloudItem = CloudRegistryIndex.REGISTRY.getItem(stack.id());
 			if (cloudItem == null) {
 				PlusFront.LOGGER.warn("Found unknown item ID ({})", stack.id());

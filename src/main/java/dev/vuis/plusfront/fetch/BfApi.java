@@ -28,7 +28,7 @@ public final class BfApi {
 		throw new AssertionError();
 	}
 
-	public static @NotNull CompletableFuture<@NotNull Inventory> fetchPlayerInventoryEquipped(@NotNull UUID playerUuid) {
+	public static @NotNull CompletableFuture<@NotNull InventoryEqipped> fetchPlayerInventoryEquipped(@NotNull UUID playerUuid) {
 		HttpRequest request = HttpRequest.newBuilder()
 			.GET()
 			.uri(getUri("/api/v1/player_inventory/equipped?uuid=" + playerUuid))
@@ -48,7 +48,7 @@ public final class BfApi {
 				InputStream body = response.body();
 				Reader reader = new InputStreamReader(body, StandardCharsets.UTF_8)
 			) {
-				return GSON.fromJson(reader, Inventory.class);
+				return GSON.fromJson(reader, InventoryEqipped.class);
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);
 			}
@@ -59,13 +59,14 @@ public final class BfApi {
 		return URI.create(PFServerConfig.getBfApiHost() + path);
 	}
 
-	public record Inventory(
-		@NotNull List<@NotNull Stack> inventory
+	public record Stack(
+		int id,
+		double mint
 	) {
-		public record Stack(
-			int id,
-			double mint
-		) {
-		}
+	}
+
+	public record InventoryEqipped(
+		@NotNull List<@NotNull Stack> equipped
+	) {
 	}
 }
