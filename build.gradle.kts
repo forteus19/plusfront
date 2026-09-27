@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.vuis"
-version = "0.1.9"
+version = "0.1.10"
 
 val modId = "pf"
 val modName = "PlusFront"
