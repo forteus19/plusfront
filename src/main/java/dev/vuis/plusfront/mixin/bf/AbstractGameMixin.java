@@ -7,15 +7,12 @@ import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import dev.vuis.plusfront.PFTemp;
-import dev.vuis.plusfront.compat.voicechat.PFVoicechat;
 import dev.vuis.plusfront.ex.AbstractGameEx;
 import dev.vuis.plusfront.server.PFCustomMemes;
 import io.netty.buffer.ByteBuf;
 import java.util.UUID;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.NotNull;
@@ -36,16 +33,6 @@ public abstract class AbstractGameMixin implements AbstractGameEx {
 	private TeamType pf$alliesTeamOverride;
 	@Unique
 	private TeamType pf$axisTeamOverride;
-
-	@Inject(
-		method = "reset",
-		at = @At("TAIL")
-	)
-	private void handleVoicechat(ServerLevel level, CallbackInfo ci) {
-		if (PFTemp.voicechatLoaded) {
-			PFVoicechat.getInstance().onGameEnd(getUUID());
-		}
-	}
 
 	@Inject(
 		method = "write",

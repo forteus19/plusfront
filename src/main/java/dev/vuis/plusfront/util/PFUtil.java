@@ -41,7 +41,7 @@ public final class PFUtil {
 	public static BFAbstractManager<?, ?, ?> blockfrontManager() {
 		BFAbstractManager<?, ?, ?> manager = BlockFront.getInstance().getManager();
 		if (manager == null) {
-			throw new IllegalStateException("BlockFront manager is null!");
+			throw new NullPointerException("BlockFront manager is null");
 		}
 		return manager;
 	}

@@ -28,15 +28,12 @@
     "bf.GameTypeMixin",
     "bf.GameUtilsMixin",
     "bf.GunDamageConfigMixin",
-    "bf.IdleGameStageMixin",
     "bf.MapEffectCodecsMixin",
     "bf.MapEffectRegistryMixin",
     "bf.MapEnvironmentMixin",
     "bf.TeamTypeAccessor",
     "bf.TeamTypeMixin",
-    "bf.TroubleTownGameMixin",
-    "bf.TroubleTownPlayerManagerMixin",
-    "bf.TroubleTownWaitingStageMixin"
+    "bf.TroubleTownGameMixin"
   ],
   "client": [
     "bf.client.AbstractGameClientMixin",

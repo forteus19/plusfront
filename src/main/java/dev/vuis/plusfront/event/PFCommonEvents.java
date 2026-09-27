@@ -3,8 +3,10 @@ package dev.vuis.plusfront.event;
 import com.boehmod.blockfront.common.net.packet.BFExplosionPacket;
 import com.boehmod.blockfront.common.world.ExplosionType;
 import com.mojang.brigadier.CommandDispatcher;
+import dev.vuis.plusfront.PFTemp;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.command.PFCommand;
+import dev.vuis.plusfront.compat.voicechat.PFVoicechat;
 import dev.vuis.plusfront.net.payload.PFFeatureFlagsPayload;
 import dev.vuis.plusfront.net.payload.PFStartConsumablePayload;
 import dev.vuis.plusfront.net.payload.PFStopMusicPayload;
@@ -25,6 +27,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -107,6 +110,13 @@ public final class PFCommonEvents {
 		var featureFlags = PFUtil.getFeatureFlags(event.getServer());
 		if (featureFlags != null) {
 			PFUtil.updateFeatureFlags(featureFlags);
+		}
+	}
+
+	@SubscribeEvent
+	public static void onServerTickPost(ServerTickEvent.Post event) {
+		if (PFTemp.voicechatLoaded) {
+			PFVoicechat.getInstance().update(event.getServer());
 		}
 	}
 }
