@@ -35,6 +35,7 @@ import dev.vuis.plusfront.client.def.DefusalTeamGameElement;
 import dev.vuis.plusfront.client.render.IconRenderers;
 import dev.vuis.plusfront.client.render.PFGuiRenderUtil;
 import dev.vuis.plusfront.client.render.game.PFGameGuiRendering;
+import dev.vuis.plusfront.ex.GameStageTimerEx;
 import dev.vuis.plusfront.game.PFGameClientHelper;
 import dev.vuis.plusfront.game.PFGameHelper;
 import dev.vuis.plusfront.game.ScoreboardFormats;
@@ -520,6 +521,10 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		for (BombSite bombSite : game.getBombSites()) {
 			bombSiteBoxes.add(bombSite.getBoundaryAABB());
 		}
+
+		((GameStageTimerEx) (Object) getStageTimer()).pf$setIconRenderer(
+			game.isBombPlanted() ? IconRenderers.BOMB : null
+		);
 	}
 
 	@Override
