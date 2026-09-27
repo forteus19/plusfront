@@ -1,8 +1,7 @@
 package dev.vuis.plusfront.mixin.bf.client;
 
 import com.boehmod.blockfront.client.BFClientManager;
-import com.boehmod.blockfront.client.gui.toast.BFToasts;
-import com.boehmod.blockfront.client.gui.toast.ToastType;
+import com.boehmod.blockfront.client.gui.notification.BFNotifications;
 import com.boehmod.blockfront.client.player.BFClientPlayerData;
 import com.boehmod.blockfront.client.player.ClientPlayerDataHandler;
 import com.boehmod.blockfront.common.stat.BFStats;
@@ -11,12 +10,12 @@ import com.boehmod.blockfront.game.AbstractGameClient;
 import com.boehmod.blockfront.game.AbstractGamePlayerManager;
 import com.boehmod.blockfront.game.GameType;
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.vuis.plusfront.client.PFNotifications;
 import dev.vuis.plusfront.client.config.GameGuiStyle;
 import dev.vuis.plusfront.client.config.PFClientConfig;
 import dev.vuis.plusfront.client.render.game.PFGameGuiRendering;
 import dev.vuis.plusfront.util.PFUtil;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 import net.minecraft.ChatFormatting;
@@ -57,15 +56,8 @@ public abstract class AbstractGameClientMixin<G extends AbstractGame<G, P, ?>, P
 			PFClientConfig.setGameGuiStyle(GameGuiStyle.MODERN);
 			PFClientConfig.save();
 
-			BFToasts.showToast(
-				Component.translatable("pf.notification.guistyle.title"),
-				Component.translatable(
-					"pf.notification.guistyle.unsupported",
-					guiStyle.getDisplayName(),
-					game.getType().toUpperCase(Locale.ROOT),
-					GameGuiStyle.MODERN.getDisplayName()
-				),
-				ToastType.WARNING
+			BFNotifications.show(
+				PFNotifications.guiStyleUnsupported(guiStyle, GameGuiStyle.MODERN, game.getType())
 			);
 		}
 	}

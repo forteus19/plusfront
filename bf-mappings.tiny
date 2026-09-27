@@ -3734,7 +3734,7 @@ c	com/boehmod/blockfront/cF	com/boehmod/blockfront/unnamed/BF_1668	com/boehmod/b
 c	com/boehmod/blockfront/cF$a	com/boehmod/blockfront/unnamed/BF_1668$BF_1669	com/boehmod/blockfront/client/BFEarlyLoadingAnimation$Texture
 	m	(Lnet/minecraft/server/packs/resources/ResourceManager;)Lnet/minecraft/client/renderer/texture/SimpleTexture$TextureImage;	getTextureImage	getTextureImage	getTextureImage
 		p	1			resourceManager
-c	com/boehmod/blockfront/cG	com/boehmod/blockfront/unnamed/BF_1653	com/boehmod/blockfront/client/gui/toast/BFToast
+c	com/boehmod/blockfront/cG	com/boehmod/blockfront/unnamed/BF_1653	com/boehmod/blockfront/client/gui/notification/BFNotification
 	f	Lnet/minecraft/resources/ResourceLocation;	aG	field_10392	CHECK_ICON
 	f	Lnet/minecraft/resources/ResourceLocation;	aH	field_10393	CROSS_ICON
 	f	Lnet/minecraft/resources/ResourceLocation;	aI	field_10394	icon
@@ -3743,27 +3743,27 @@ c	com/boehmod/blockfront/cG	com/boehmod/blockfront/unnamed/BF_1653	com/boehmod/b
 	f	Lcom/boehmod/blockfront/cG$d;	a	field_10397	state
 	f	Lcom/boehmod/blockfront/cI;	a	field_10398	acceptAction
 	f	Lcom/boehmod/blockfront/cL;	a	field_10399	onResponse
-	f	Lcom/boehmod/blockfront/cM;	a	field_10400	type
-	f	Ljava/lang/Runnable;	a	field_10401	field_10401
+	f	Lcom/boehmod/blockfront/cM;	a	field_10400	tone
+	f	Ljava/lang/Runnable;	a	field_10401	clickAction
 	f	Ljava/util/function/BooleanSupplier;	a	field_10402	visibleWhile
 	f	Lnet/minecraft/network/chat/Style;	a	field_10403	field_10403
 	f	Z	aR	field_10404	field_10404
 	f	Lcom/boehmod/blockfront/cG$a;	b	field_10405	animatedIcon
 	f	Lcom/boehmod/blockfront/cG$b;	b	field_10406	field_10406
 	f	Lcom/boehmod/blockfront/cI;	b	field_10407	denyAction
-	f	Lcom/mojang/authlib/GameProfile;	b	field_10408	field_10408
-	f	Ljava/lang/Runnable;	b	field_10409	field_10409
+	f	Lcom/mojang/authlib/GameProfile;	b	field_10408	subject
+	f	Ljava/lang/Runnable;	b	field_10409	onRemoved
 	f	Z	bd	field_10410	shouldNarrate
-	f	Lnet/minecraft/network/chat/Component;	be	field_10412	field_10412
+	f	Lnet/minecraft/network/chat/Component;	be	field_10412	clickLabel
 	f	Z	be	field_10411	field_10411
-	f	Z	bf	field_10413	field_10413
+	f	Z	bf	field_10413	sticky
 	f	Z	bg	field_10414	field_10414
 	f	Z	bh	field_10415	field_10415
 	f	Z	bi	field_10418	field_10418
 	f	Lcom/boehmod/blockfront/cG$b;	c	field_10419	field_10419
 	f	Lcom/boehmod/blockfront/cI;	c	field_10638	ggAction
-	f	Ljava/lang/Object;	c	field_10421	field_10421
-	f	I	dD	field_10422	field_10422
+	f	Ljava/lang/Object;	c	field_10421	key
+	f	I	dD	field_10422	height
 	f	F	dL	field_10423	field_10423
 	f	Lcom/boehmod/blockfront/cG$b;	d	field_10639	field_10639
 	f	Lcom/boehmod/blockfront/cI;	d	field_10420	field_10420
@@ -3795,7 +3795,7 @@ c	com/boehmod/blockfront/cG	com/boehmod/blockfront/unnamed/BF_1653	com/boehmod/b
 	f	I	fm	field_10451	field_10451
 	f	I	fn	field_10452	field_10452
 	f	I	fo	field_10453	field_10453
-	f	I	fp	field_10454	field_10454
+	f	I	fp	field_10454	duration
 	f	I	fq	field_10455	field_10455
 	f	I	fr	field_10456	field_10456
 	f	I	fs	field_10457	iconTint
@@ -3803,7 +3803,7 @@ c	com/boehmod/blockfront/cG	com/boehmod/blockfront/unnamed/BF_1653	com/boehmod/b
 	f	I	fu	field_10459	field_10459
 	f	I	fv	field_10460	field_10460
 	f	I	fw	field_10461	field_10461
-	f	I	fx	field_10462	field_10462
+	f	I	fx	field_10462	stateTimer
 	f	I	fy	field_10463	field_10463
 	f	I	fz	field_10464	field_10464
 	f	Ljava/util/List;	r	field_10467	field_10467
@@ -3813,35 +3813,43 @@ c	com/boehmod/blockfront/cG	com/boehmod/blockfront/unnamed/BF_1653	com/boehmod/b
 	m	()I	A	method_9759	method_9759
 	m	()Z	A	method_10015	hasAcceptAction
 	m	()I	B	method_9761	method_9761
-	m	()Z	B	method_9760	method_9760
-	m	()Z	C	method_9762	method_9762
-	m	()Z	D	method_9763	method_9763
-	m	()Z	E	method_9764	method_9764
+	m	()Z	B	method_9760	isPersistent
+	m	()Z	C	method_9762	hasIcon
+	m	()Z	D	method_9763	isSticky
+	m	()Z	E	method_9764	hasClickAction
 	m	()Z	F	method_9765	shouldNarrate
-	m	()V	P	method_9766	method_9766
+	m	()V	P	method_9766	exit
 	m	()Lcom/boehmod/blockfront/cG$a;	a	method_9768	getAnimatedIcon
 	m	()Lcom/boehmod/blockfront/cG$c;	a	method_9769	builder
 	m	()Lcom/boehmod/blockfront/cG$d;	a	method_9770	getState
 	m	()Lcom/boehmod/blockfront/cI;	a	method_9771	getAcceptAction
-	m	()Lcom/boehmod/blockfront/cM;	a	method_9772	getType
-	m	()Lcom/mojang/authlib/GameProfile;	a	method_9773	method_9773
-	m	()Ljava/lang/Object;	a	method_9774	method_9774
-	m	()Ljava/lang/Runnable;	a	method_9775	method_9775
+	m	()Lcom/boehmod/blockfront/cM;	a	method_9772	getTone
+	m	()Lcom/mojang/authlib/GameProfile;	a	method_9773	getSubject
+	m	()Ljava/lang/Object;	a	method_9774	getKey
+	m	()Ljava/lang/Runnable;	a	method_9775	getClickAction
 	m	(FF)F	a	method_9776	method_9776
 	m	(Lcom/boehmod/bflib/cloud/common/NotificationResponse;)V	a	method_9777	method_9777
 	m	(Lcom/boehmod/bflib/cloud/common/NotificationResponse;Z)V	a	method_9778	method_9778
-	m	(Lcom/boehmod/blockfront/cG$d;)V	a	method_9779	method_9779
-	m	(Lnet/minecraft/client/gui/Font;)V	a	method_9780	method_9780
+	m	(Lcom/boehmod/blockfront/cG$d;)V	a	method_9779	setState
+		p	1			state
+	m	(Lnet/minecraft/client/gui/Font;)V	a	method_9780	refreshDimensions
+		p	1			font
 	m	(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;II)Ljava/util/List;	a	method_9781	method_9781
 	m	(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;Lcom/boehmod/blockfront/cM;Lnet/minecraft/resources/ResourceLocation;I)V	a	method_9782	method_9782
-	m	(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;Lcom/boehmod/blockfront/cM;Lnet/minecraft/resources/ResourceLocation;IZ)V	a	method_9783	method_9783
+	m	(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;Lcom/boehmod/blockfront/cM;Lnet/minecraft/resources/ResourceLocation;IZ)V	a	method_9783	update
+		p	1			title
+		p	2			message
+		p	3			tone
+		p	4			icon
+		p	5			duration
+		p	6			toneBorder
 	m	()Lcom/boehmod/blockfront/cI;	b	method_9784	getDenyAction
-	m	()Ljava/lang/Runnable;	b	method_9785	method_9785
+	m	()Ljava/lang/Runnable;	b	method_9785	getOnRemoved
 	m	()Lcom/boehmod/blockfront/cI;	c	method_10016	getGgAction
 	m	(I)I	c	method_9786	method_9786
 	m	()Ljava/util/List;	e	method_9787	method_9787
 	m	()Ljava/util/List;	f	method_9788	method_9788
-	m	()Lnet/minecraft/network/chat/Component;	f	method_9789	method_9789
+	m	()Lnet/minecraft/network/chat/Component;	f	method_9789	getClickLabel
 	m	()Ljava/util/List;	g	method_9790	method_9790
 	m	()I	getHeight	getHeight	getHeight
 	m	()Lnet/minecraft/resources/ResourceLocation;	getIcon	getIcon	getIcon
@@ -3866,7 +3874,7 @@ c	com/boehmod/blockfront/cG	com/boehmod/blockfront/unnamed/BF_1653	com/boehmod/b
 	m	()Z	z	method_9806	hasAction
 	m	(Lcom/boehmod/blockfront/cG$c;)V	<init>	<init>	<init>
 		p	1			builder
-c	com/boehmod/blockfront/cG$a	com/boehmod/blockfront/unnamed/BF_1653$BF_1654	com/boehmod/blockfront/client/gui/toast/BFToast$AnimatedIcon
+c	com/boehmod/blockfront/cG$a	com/boehmod/blockfront/unnamed/BF_1653$BF_1654	com/boehmod/blockfront/client/gui/notification/BFNotification$AnimatedIcon
 	f	Lnet/minecraft/resources/ResourceLocation;	aJ	field_10471	texture
 	f	I	fC	field_10472	frameSize
 	f	I	fD	field_10473	frames
@@ -3878,7 +3886,7 @@ c	com/boehmod/blockfront/cG$a	com/boehmod/blockfront/unnamed/BF_1653$BF_1654	com
 	m	()Lnet/minecraft/resources/ResourceLocation;	f	method_9810	texture
 	m	()I	hashCode	hashCode	hashCode
 	m	()Ljava/lang/String;	toString	toString	toString
-c	com/boehmod/blockfront/cG$b	com/boehmod/blockfront/unnamed/BF_1653$BF_1655	com/boehmod/blockfront/client/gui/toast/BFToast$BF_1655
+c	com/boehmod/blockfront/cG$b	com/boehmod/blockfront/unnamed/BF_1653$BF_1655	com/boehmod/blockfront/client/gui/notification/BFNotification$BF_1655
 	f	F	dP	field_10475	field_10475
 	f	F	dQ	field_10476	field_10476
 	f	F	dR	field_10477	field_10477
@@ -3886,42 +3894,49 @@ c	com/boehmod/blockfront/cG$b	com/boehmod/blockfront/unnamed/BF_1653$BF_1655	com
 	m	(FFFF)V	a	method_9811	method_9811
 	m	(DD)Z	b	method_9812	method_9812
 	m	()V	g	method_9813	method_9813
-c	com/boehmod/blockfront/cG$c	com/boehmod/blockfront/unnamed/BF_1653$BF_1656	com/boehmod/blockfront/client/gui/toast/BFToast$Builder
+c	com/boehmod/blockfront/cG$c	com/boehmod/blockfront/unnamed/BF_1653$BF_1656	com/boehmod/blockfront/client/gui/notification/BFNotification$Builder
 	f	Lnet/minecraft/resources/ResourceLocation;	aI	field_10479	icon
 	f	Lcom/boehmod/blockfront/cI;	a	field_10480	acceptAction
 	f	Lcom/boehmod/blockfront/cL;	a	field_10481	onResponse
-	f	Lcom/boehmod/blockfront/cM;	a	field_10482	type
-	f	Ljava/lang/Runnable;	a	field_10483	field_10483
+	f	Lcom/boehmod/blockfront/cM;	a	field_10482	tone
+	f	Ljava/lang/Runnable;	a	field_10483	clickAction
 	f	Ljava/util/function/BooleanSupplier;	a	field_10484	visibleWhile
 	f	Lcom/boehmod/blockfront/cG$a;	b	field_10485	animatedIcon
 	f	Lcom/boehmod/blockfront/cI;	b	field_10486	denyAction
-	f	Lcom/mojang/authlib/GameProfile;	b	field_10487	field_10487
-	f	Ljava/lang/Runnable;	b	field_10488	field_10488
+	f	Lcom/mojang/authlib/GameProfile;	b	field_10487	subject
+	f	Ljava/lang/Runnable;	b	field_10488	onRemoved
 	f	Z	bd	field_10489	shouldNarrate
-	f	Lnet/minecraft/network/chat/Component;	be	field_10490	field_10490
-	f	Z	bf	field_10491	field_10491
+	f	Lnet/minecraft/network/chat/Component;	be	field_10490	clickLabel
+	f	Z	bf	field_10491	sticky
 	f	Lcom/boehmod/blockfront/cI;	c	field_10640	ggAction
-	f	Ljava/lang/Object;	c	field_10492	field_10492
-	f	I	fp	field_10493	field_10493
+	f	Ljava/lang/Object;	c	field_10492	key
+	f	I	fp	field_10493	duration
 	f	Lnet/minecraft/network/chat/Component;	s	field_10494	title
 	f	Lnet/minecraft/network/chat/Component;	t	field_10495	message
 	m	()Lcom/boehmod/blockfront/cG;	a	method_9814	build
-	m	(F)Lcom/boehmod/blockfront/cG$c;	a	method_9815	method_9815
-	m	(I)Lcom/boehmod/blockfront/cG$c;	a	method_9816	method_9816
+	m	(F)Lcom/boehmod/blockfront/cG$c;	a	method_9815	durationSeconds
+		p	1			seconds
+	m	(I)Lcom/boehmod/blockfront/cG$c;	a	method_9816	durationTicks
+		p	1			ticks
 	m	(Lcom/boehmod/blockfront/cG$a;)Lcom/boehmod/blockfront/cG$c;	a	method_9817	animatedIcon
 		p	1			animatedIcon
 	m	(Lcom/boehmod/blockfront/cL;)Lcom/boehmod/blockfront/cG$c;	a	method_9818	onResponse
 		p	1			onResponse
-	m	(Lcom/boehmod/blockfront/cM;)Lcom/boehmod/blockfront/cG$c;	a	method_9819	type
-		p	1			type
-	m	(Lcom/mojang/authlib/GameProfile;)Lcom/boehmod/blockfront/cG$c;	a	method_9820	method_9820
-	m	(Ljava/lang/Object;)Lcom/boehmod/blockfront/cG$c;	a	method_9821	method_9821
-	m	(Ljava/lang/Runnable;)Lcom/boehmod/blockfront/cG$c;	a	method_9822	method_9822
+	m	(Lcom/boehmod/blockfront/cM;)Lcom/boehmod/blockfront/cG$c;	a	method_9819	tone
+		p	1			tone
+	m	(Lcom/mojang/authlib/GameProfile;)Lcom/boehmod/blockfront/cG$c;	a	method_9820	subject
+		p	1			subject
+	m	(Ljava/lang/Object;)Lcom/boehmod/blockfront/cG$c;	a	method_9821	key
+		p	1			key
+	m	(Ljava/lang/Runnable;)Lcom/boehmod/blockfront/cG$c;	a	method_9822	onRemoved
+		p	1			onRemoved
 	m	(Ljava/util/function/BooleanSupplier;)Lcom/boehmod/blockfront/cG$c;	a	method_9823	visibleWhile
 		p	1			visibleWhile
 	m	(Lnet/minecraft/network/chat/Component;)Lcom/boehmod/blockfront/cG$c;	a	method_9824	title
 		p	1			title
-	m	(Lnet/minecraft/network/chat/Component;Ljava/lang/Runnable;)Lcom/boehmod/blockfront/cG$c;	a	method_9825	method_9825
+	m	(Lnet/minecraft/network/chat/Component;Ljava/lang/Runnable;)Lcom/boehmod/blockfront/cG$c;	a	method_9825	clickAction
+		p	1			label
+		p	2			action
 	m	(Lnet/minecraft/resources/ResourceLocation;)Lcom/boehmod/blockfront/cG$c;	a	method_9826	icon
 		p	1			icon
 	m	(Lnet/minecraft/resources/ResourceLocation;III)Lcom/boehmod/blockfront/cG$c;	a	method_9827	animatedIcon
@@ -3931,20 +3946,20 @@ c	com/boehmod/blockfront/cG$c	com/boehmod/blockfront/unnamed/BF_1653$BF_1656	com
 		p	4			ticksPerFrame
 	m	(Z)Lcom/boehmod/blockfront/cG$c;	a	method_9828	shouldNarrate
 		p	1			shouldNarrate
-	m	()Lcom/boehmod/blockfront/cG$c;	b	method_9829	method_9829
+	m	()Lcom/boehmod/blockfront/cG$c;	b	method_9829	sticky
 	m	(Lnet/minecraft/network/chat/Component;)Lcom/boehmod/blockfront/cG$c;	b	method_9830	message
 		p	1			message
 	m	(Lnet/minecraft/network/chat/Component;Ljava/lang/Runnable;)Lcom/boehmod/blockfront/cG$c;	b	method_9831	acceptAction
 		p	1			label
 		p	2			action
-	m	()Lcom/boehmod/blockfront/cG$c;	c	method_9832	method_9832
+	m	()Lcom/boehmod/blockfront/cG$c;	c	method_9832	persistent
 	m	(Lnet/minecraft/network/chat/Component;Ljava/lang/Runnable;)Lcom/boehmod/blockfront/cG$c;	c	method_9833	denyAction
 		p	1			label
 		p	2			action
 	m	(Lnet/minecraft/network/chat/Component;Ljava/lang/Runnable;)Lcom/boehmod/blockfront/cG$c;	d	method_10017	ggAction
 		p	1			label
 		p	2			action
-c	com/boehmod/blockfront/cG$d	com/boehmod/blockfront/unnamed/BF_1653$BF_1657	com/boehmod/blockfront/client/gui/toast/BFToast$State
+c	com/boehmod/blockfront/cG$d	com/boehmod/blockfront/unnamed/BF_1653$BF_1657	com/boehmod/blockfront/client/gui/notification/BFNotification$State
 	f	[Lcom/boehmod/blockfront/cG$d;	$VALUES	$VALUES	$VALUES
 	f	Lcom/boehmod/blockfront/cG$d;	COLLAPSING	COLLAPSING	COLLAPSING
 	f	Lcom/boehmod/blockfront/cG$d;	ENTERING	ENTERING	ENTERING
@@ -3954,7 +3969,7 @@ c	com/boehmod/blockfront/cG$d	com/boehmod/blockfront/unnamed/BF_1653$BF_1657	com
 	m	()[Lcom/boehmod/blockfront/cG$d;	$values	$values	$values
 	m	(Ljava/lang/String;)Lcom/boehmod/blockfront/cG$d;	valueOf	valueOf	valueOf
 	m	()[Lcom/boehmod/blockfront/cG$d;	values	values	values
-c	com/boehmod/blockfront/cH	com/boehmod/blockfront/unnamed/BF_1658	com/boehmod/blockfront/client/gui/toast/CloudToasts
+c	com/boehmod/blockfront/cH	com/boehmod/blockfront/unnamed/BF_1658	com/boehmod/blockfront/client/gui/notification/CloudNotifications
 	f	Ljava/lang/String;	R	field_10496	field_10496
 	f	Lnet/minecraft/network/chat/Component;	bf	field_10497	TITLE_CLOUD
 	f	Lnet/minecraft/network/chat/Component;	bg	field_10498	TITLE_FRIEND_REQUEST
@@ -3968,37 +3983,53 @@ c	com/boehmod/blockfront/cH	com/boehmod/blockfront/unnamed/BF_1658	com/boehmod/b
 	f	Lnet/minecraft/network/chat/Component;	bo	field_10506	TITLE_FRIEND_PRESTIGE
 	f	Lnet/minecraft/network/chat/Component;	bp	field_10507	TITLE_CONNECTION_ESTABLISHED
 	f	Lnet/minecraft/network/chat/Component;	bq	field_10508	TITLE_CONNECTION_LOST
-	f	Lnet/minecraft/network/chat/Component;	br	field_10509	ACCEPT_LABEL
-	f	Lnet/minecraft/network/chat/Component;	bs	field_10510	DECLINE_LABEL
-	f	Lnet/minecraft/network/chat/Component;	bt	field_10511	JOIN_LABEL
-	f	Lnet/minecraft/network/chat/Component;	bu	field_10641	field_10641
-	f	Lnet/minecraft/network/chat/Component;	bv	field_10642	field_10642
-	f	Lnet/minecraft/network/chat/Component;	bw	field_10643	field_10643
-	f	Lnet/minecraft/network/chat/Component;	bx	field_10644	field_10644
+	f	Lnet/minecraft/network/chat/Component;	br	field_10509	ACTION_ACCEPT
+	f	Lnet/minecraft/network/chat/Component;	bs	field_10510	ACTION_DECLINE
+	f	Lnet/minecraft/network/chat/Component;	bt	field_10511	ACTION_JOIN
+	f	Lnet/minecraft/network/chat/Component;	bu	field_10641	ACTION_CANCEL
+	f	Lnet/minecraft/network/chat/Component;	bv	field_10642	ACTION_GG
+	f	Lnet/minecraft/network/chat/Component;	bw	field_10643	ACTION_INVITE_PARTY
+	f	Lnet/minecraft/network/chat/Component;	bx	field_10644	ACTION_INVITE_MATCH
 	f	I	fF	field_10512	field_10512
 	f	I	fG	field_10645	field_10645
-	m	()V	Q	method_9834	method_9834
+	m	()V	Q	method_9834	handleConnectionEstablished
 	m	()V	R	method_9835	method_9835
 	m	()V	S	method_10018	method_10018
 	m	()V	T	method_9836	method_9836
-	m	(Lcom/boehmod/bflib/cloud/common/NotificationTone;)Lcom/boehmod/blockfront/cM;	a	method_9837	method_9837
-	m	(Lcom/boehmod/bflib/cloud/common/NotificationType;)Lcom/boehmod/blockfront/cM;	a	method_9838	method_9838
-	m	(Lcom/boehmod/bflib/cloud/common/NotificationType;)Lnet/minecraft/network/chat/Component;	a	method_9839	method_9839
+	m	(Lcom/boehmod/bflib/cloud/common/NotificationTone;)Lcom/boehmod/blockfront/cM;	a	method_9837	convertTone
+		p	0			tone
+	m	(Lcom/boehmod/bflib/cloud/common/NotificationType;)Lcom/boehmod/blockfront/cM;	a	method_9838	getToneFromType
+		p	0			type
+	m	(Lcom/boehmod/bflib/cloud/common/NotificationType;)Lnet/minecraft/network/chat/Component;	a	method_9839	getTitleFromType
+		p	0			type
 	m	(Lcom/boehmod/blockfront/h;Ljava/util/UUID;Lcom/boehmod/bflib/cloud/common/NotificationResponse;Z)V	a	method_9840	method_9840
-	m	(Lcom/boehmod/blockfront/m;Lcom/boehmod/bflib/cloud/common/NotificationType;Lnet/minecraft/network/chat/Component;Ljava/util/UUID;Ljava/util/UUID;IZLcom/boehmod/bflib/cloud/common/NotificationTone;Lcom/boehmod/bflib/cloud/common/NotificationPrompt;)V	a	method_9841	method_9841
-	m	(Lcom/boehmod/blockfront/m;Lcom/boehmod/blockfront/cG$c;Ljava/util/UUID;)V	a	method_10019	method_10019
+	m	(Lcom/boehmod/blockfront/m;Lcom/boehmod/bflib/cloud/common/NotificationType;Lnet/minecraft/network/chat/Component;Ljava/util/UUID;Ljava/util/UUID;IZLcom/boehmod/bflib/cloud/common/NotificationTone;Lcom/boehmod/bflib/cloud/common/NotificationPrompt;)V	a	method_9841	handle
+		p	0			manager
+		p	1			type
+		p	2			message
+		p	3			subject
+		p	4			id
+		p	5			durationTicks
+		p	6			tracking
+		p	7			tone
+		p	8			prompt
+	m	(Lcom/boehmod/blockfront/m;Lcom/boehmod/blockfront/cG$c;Ljava/util/UUID;)V	a	method_10019	handleInvite
+		p	0			manager
+		p	1			builder
+		p	2			subject
 	m	(Lcom/boehmod/blockfront/m;Lnet/minecraft/client/Minecraft;Ljava/util/UUID;)V	a	method_10020	method_10020
 	m	(Ljava/util/UUID;)V	a	method_9843	method_9843
 	m	(Ljava/util/UUID;Lnet/minecraft/network/chat/Component;Lcom/boehmod/bflib/cloud/common/NotificationTone;I)V	a	method_9844	method_9844
 	m	(Ljava/util/UUID;Lnet/minecraft/network/chat/MutableComponent;)V	a	method_10021	method_10021
 	m	(Ljava/lang/Object;)Z	b	method_9842	method_9842
 	m	(Ljava/util/UUID;Lcom/boehmod/bflib/cloud/common/mm/MatchParty;)Ljava/lang/Boolean;	b	method_10022	method_10022
-	m	(Ljava/lang/String;)V	d	method_9845	method_9845
+	m	(Ljava/lang/String;)V	d	method_9845	handleConnectionError
+		p	0			error
 	m	(Ljava/lang/String;)V	e	method_9846	method_9846
-c	com/boehmod/blockfront/cH$1	com/boehmod/blockfront/unnamed/BF_1658$1	com/boehmod/blockfront/client/gui/toast/CloudToasts$1
+c	com/boehmod/blockfront/cH$1	com/boehmod/blockfront/unnamed/BF_1658$1	com/boehmod/blockfront/client/gui/notification/CloudNotifications$1
 	f	[I	i	field_10513	field_10513
 	f	[I	j	field_10514	field_10514
-c	com/boehmod/blockfront/cI	com/boehmod/blockfront/unnamed/BF_1659	com/boehmod/blockfront/client/gui/toast/BFToastAction
+c	com/boehmod/blockfront/cI	com/boehmod/blockfront/unnamed/BF_1659	com/boehmod/blockfront/client/gui/notification/BFNotificationAction
 	f	Lnet/minecraft/network/chat/Component;	by	field_10515	label
 	f	Ljava/lang/Runnable;	c	field_10516	action
 	m	()Ljava/lang/Runnable;	c	method_9847	action
@@ -4009,7 +4040,7 @@ c	com/boehmod/blockfront/cI	com/boehmod/blockfront/unnamed/BF_1659	com/boehmod/b
 	m	(Lnet/minecraft/network/chat/Component;Ljava/lang/Runnable;)V	<init>	<init>	<init>
 		p	1			label
 		p	2			action
-c	com/boehmod/blockfront/cJ	com/boehmod/blockfront/unnamed/BF_1660	com/boehmod/blockfront/client/gui/toast/BFToasts
+c	com/boehmod/blockfront/cJ	com/boehmod/blockfront/unnamed/BF_1660	com/boehmod/blockfront/client/gui/notification/BFNotifications
 	f	Lnet/minecraft/util/FormattedCharSequence;	A	field_10517	field_10517
 	f	Lnet/minecraft/util/FormattedCharSequence;	B	field_10646	field_10646
 	f	Lnet/minecraft/network/chat/Component;	bA	field_10521	TOOLTIP_COPY
@@ -4027,8 +4058,8 @@ c	com/boehmod/blockfront/cJ	com/boehmod/blockfront/unnamed/BF_1660	com/boehmod/b
 	f	I	fM	field_10531	field_10531
 	f	I	fN	field_10532	field_10532
 	f	I	fO	field_10533	field_10533
-	f	Ljava/util/List;	t	field_10535	field_10535
-	f	Ljava/util/List;	u	field_10536	field_10536
+	f	Ljava/util/List;	t	field_10535	active
+	f	Ljava/util/List;	u	field_10536	queued
 	f	Lnet/minecraft/util/FormattedCharSequence;	z	field_10537	field_10537
 	m	()Z	G	method_9849	method_9849
 	m	()Z	H	method_9850	method_9850
@@ -4037,20 +4068,48 @@ c	com/boehmod/blockfront/cJ	com/boehmod/blockfront/unnamed/BF_1660	com/boehmod/b
 		p	0			mouseX
 		p	2			mouseY
 		p	4			button
-	m	(Lcom/boehmod/blockfront/cG;)V	a	method_9855	showToast
-		p	0			toast
+	m	(Lcom/boehmod/blockfront/cG;)V	a	method_9855	show
+		p	0			notification
 	m	(Lcom/boehmod/blockfront/cG;)Z	a	method_9856	method_9856
 	m	(Lcom/boehmod/blockfront/cG;Lcom/boehmod/blockfront/cI;)Lnet/minecraft/sounds/SoundEvent;	a	method_9857	method_9857
 	m	(Lcom/boehmod/blockfront/cG;Lcom/boehmod/blockfront/cI;)V	a	method_9858	method_9858
 	m	(Ljava/lang/Object;)V	a	method_9859	method_9859
 	m	(Ljava/lang/Object;Lcom/boehmod/blockfront/cG;)Z	a	method_9860	method_9860
-	m	(Ljava/lang/Object;Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;Lcom/boehmod/blockfront/cM;Lnet/minecraft/resources/ResourceLocation;I)V	a	method_9861	method_9861
-	m	(Ljava/lang/Object;Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;Lcom/boehmod/blockfront/cM;Lnet/minecraft/resources/ResourceLocation;I)Z	a	method_9862	method_9862
-	m	(Ljava/lang/Object;Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;Lcom/boehmod/blockfront/cM;Lnet/minecraft/resources/ResourceLocation;IZ)V	a	method_9863	method_9863
-	m	(Ljava/lang/Object;Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;Lcom/boehmod/blockfront/cM;Lnet/minecraft/resources/ResourceLocation;IZ)Z	a	method_9864	method_9864
+	m	(Ljava/lang/Object;Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;Lcom/boehmod/blockfront/cM;Lnet/minecraft/resources/ResourceLocation;I)V	a	method_9861	updateOrShow
+		p	0			key
+		p	1			title
+		p	2			message
+		p	3			tone
+		p	4			icon
+		p	5			duration
+	m	(Ljava/lang/Object;Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;Lcom/boehmod/blockfront/cM;Lnet/minecraft/resources/ResourceLocation;I)Z	a	method_9862	update
+		p	0			key
+		p	1			title
+		p	2			message
+		p	3			tone
+		p	4			icon
+		p	5			duration
+	m	(Ljava/lang/Object;Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;Lcom/boehmod/blockfront/cM;Lnet/minecraft/resources/ResourceLocation;IZ)V	a	method_9863	updateOrShow
+		p	0			key
+		p	1			title
+		p	2			message
+		p	3			tone
+		p	4			icon
+		p	5			duration
+		p	6			toneBorder
+	m	(Ljava/lang/Object;Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;Lcom/boehmod/blockfront/cM;Lnet/minecraft/resources/ResourceLocation;IZ)Z	a	method_9864	update
+		p	0			key
+		p	1			title
+		p	2			message
+		p	3			tone
+		p	4			icon
+		p	5			duration
+		p	6			toneBorder
 	m	(Ljava/net/URI;)V	a	method_9865	method_9865
 	m	(Ljava/net/URI;Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/gui/screens/Screen;Z)V	a	method_9866	method_9866
-	m	(Ljava/util/List;Ljava/lang/Object;)Lcom/boehmod/blockfront/cG;	a	method_9867	method_9867
+	m	(Ljava/util/List;Ljava/lang/Object;)Lcom/boehmod/blockfront/cG;	a	method_9867	getByKey
+		p	0			target
+		p	1			key
 	m	(Ljava/util/function/Predicate;)V	a	method_9868	method_9868
 	m	(Ljava/util/function/Predicate;Lcom/boehmod/blockfront/cG;)Z	a	method_9869	method_9869
 	m	(Lnet/minecraft/client/KeyMapping;)Z	a	method_9870	method_9870
@@ -4078,22 +4137,22 @@ c	com/boehmod/blockfront/cJ	com/boehmod/blockfront/unnamed/BF_1660	com/boehmod/b
 	m	(Lnet/minecraft/client/Minecraft;Z)V	a	method_9878	method_9878
 	m	(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Style;II)V	a	method_9879	method_9879
 	m	(Lnet/minecraft/client/gui/screens/Screen;)Z	a	method_9880	method_9880
-	m	(Lnet/minecraft/network/chat/Component;Lcom/boehmod/blockfront/cM;)V	a	method_9881	showToast
+	m	(Lnet/minecraft/network/chat/Component;Lcom/boehmod/blockfront/cM;)V	a	method_9881	show
 		p	0			message
 		p	1			type
-	m	(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;)V	a	method_9882	showToast
+	m	(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;)V	a	method_9882	show
 		p	0			title
 		p	1			message
-	m	(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;Lcom/boehmod/blockfront/cM;)V	a	method_9883	showToast
+	m	(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;Lcom/boehmod/blockfront/cM;)V	a	method_9883	show
 		p	0			title
 		p	1			message
 		p	2			type
-	m	(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;Lcom/boehmod/blockfront/cM;Z)V	a	method_9884	showToast
+	m	(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;Lcom/boehmod/blockfront/cM;Z)V	a	method_9884	show
 		p	0			title
 		p	1			message
 		p	2			type
 		p	3			shouldNarrate
-	m	(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;Z)V	a	method_9885	showToast
+	m	(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;Z)V	a	method_9885	show
 		p	0			title
 		p	1			message
 		p	2			shouldNarrate
@@ -4101,8 +4160,8 @@ c	com/boehmod/blockfront/cJ	com/boehmod/blockfront/unnamed/BF_1660	com/boehmod/b
 	m	(Lnet/minecraft/sounds/SoundEvent;)V	a	method_9887	playPitchVaried
 		p	0			sound
 	m	()Lcom/boehmod/blockfront/cG;	b	method_10023	method_10023
-	m	(Lcom/boehmod/blockfront/cG;)V	b	method_9889	addToast
-		p	0			toast
+	m	(Lcom/boehmod/blockfront/cG;)V	b	method_9889	addOrQueue
+		p	0			notification
 	m	(Ljava/lang/Object;Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;Lcom/boehmod/blockfront/cM;Lnet/minecraft/resources/ResourceLocation;IZ)V	b	method_9890	method_9890
 	m	(Lnet/minecraft/client/Minecraft;)I	b	method_9891	getGuiMouseY
 		p	0			minecraft
@@ -4114,18 +4173,20 @@ c	com/boehmod/blockfront/cJ	com/boehmod/blockfront/unnamed/BF_1660	com/boehmod/b
 		p	2			partialTick
 	m	(Lnet/minecraft/network/chat/Style;)Z	b	method_9893	method_9893
 	m	()Lcom/boehmod/blockfront/cG;	c	method_9888	method_9888
-	m	(Lcom/boehmod/blockfront/cG;)V	c	method_9894	narrateToast
-		p	0			toast
-	m	(Lnet/minecraft/network/chat/Component;)V	c	method_9895	showToast
+	m	(Lcom/boehmod/blockfront/cG;)V	c	method_9894	narrate
+		p	0			notification
+	m	(Lnet/minecraft/network/chat/Component;)V	c	method_9895	show
 		p	0			message
-	m	(Lcom/boehmod/blockfront/cG;)V	d	method_9896	method_9896
+	m	(Lcom/boehmod/blockfront/cG;)V	d	method_9896	add
+		p	0			notification
 	m	(Lcom/boehmod/blockfront/cG;)V	e	method_9897	method_9897
 	m	(Lcom/boehmod/blockfront/cG;)V	f	method_9898	method_9898
 	m	(Lcom/boehmod/blockfront/cG;)V	g	method_9899	method_9899
-	m	(Lnet/minecraft/client/Minecraft;)V	n	method_9900	method_9900
-c	com/boehmod/blockfront/cJ$1	com/boehmod/blockfront/unnamed/BF_1660$1	com/boehmod/blockfront/client/gui/toast/BFToasts$1
+	m	(Lnet/minecraft/client/Minecraft;)V	n	method_9900	update
+		p	0			minecraft
+c	com/boehmod/blockfront/cJ$1	com/boehmod/blockfront/unnamed/BF_1660$1	com/boehmod/blockfront/client/gui/notification/BFNotifications$1
 	f	[I	k	field_10538	field_10538
-c	com/boehmod/blockfront/cK	com/boehmod/blockfront/unnamed/BF_1661	com/boehmod/blockfront/client/gui/toast/BFToastRendering
+c	com/boehmod/blockfront/cK	com/boehmod/blockfront/unnamed/BF_1661	com/boehmod/blockfront/client/gui/notification/BFNotificationRendering
 	f	I	fP	field_10539	field_10539
 	f	I	fQ	field_10540	field_10540
 	f	I	fR	field_10541	field_10541
@@ -4138,11 +4199,11 @@ c	com/boehmod/blockfront/cK	com/boehmod/blockfront/unnamed/BF_1661	com/boehmod/b
 	m	(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;Lcom/boehmod/blockfront/cG;Lcom/boehmod/blockfront/cI;Lnet/minecraft/util/FormattedCharSequence;IFFIIFLcom/boehmod/blockfront/cG$b;)I	a	method_9905	method_9905
 	m	(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;Lnet/minecraft/util/FormattedCharSequence;IIIII)V	a	method_9906	method_9906
 	m	(II)I	c	method_10139	method_10139
-c	com/boehmod/blockfront/cL	com/boehmod/blockfront/unnamed/BF_1662	com/boehmod/blockfront/client/gui/toast/BFToastResponseListener
+c	com/boehmod/blockfront/cL	com/boehmod/blockfront/unnamed/BF_1662	com/boehmod/blockfront/client/gui/notification/BFNotificationListener
 	m	(Lcom/boehmod/bflib/cloud/common/NotificationResponse;Z)V	onResponse	onResponse	onResponse
 		p	1			response
 		p	2			accepted
-c	com/boehmod/blockfront/cM	com/boehmod/blockfront/unnamed/BF_1663	com/boehmod/blockfront/client/gui/toast/ToastType
+c	com/boehmod/blockfront/cM	com/boehmod/blockfront/unnamed/BF_1663	com/boehmod/blockfront/client/gui/notification/BFNotificationTone
 	f	[Lcom/boehmod/blockfront/cM;	$VALUES	$VALUES	$VALUES
 	f	Lcom/boehmod/blockfront/cM;	CHALLENGE	CHALLENGE	CHALLENGE
 	f	Lcom/boehmod/blockfront/cM;	ERROR	ERROR	ERROR
@@ -11669,7 +11730,7 @@ c	com/boehmod/blockfront/l	com/boehmod/blockfront/unnamed/BF_550	com/boehmod/blo
 	m	(Lcom/boehmod/bflib/cloud/common/mm/SearchRegion;)V	a	method_1903	setSearchRegion
 		p	1			searchRegion
 	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/m;)V	a	method_9989	method_9989
-	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/m;Lcom/boehmod/blockfront/jT;)V	a	method_9990	showSearchingToast
+	m	(Lnet/minecraft/client/Minecraft;Lcom/boehmod/blockfront/m;Lcom/boehmod/blockfront/jT;)V	a	method_9990	showSearchingNotification
 		p	1			minecraft
 		p	2			manager
 		p	3			cloudData
@@ -12221,7 +12282,7 @@ c	com/boehmod/blockfront/m	com/boehmod/blockfront/unnamed/BF_606	com/boehmod/blo
 	m	()Lcom/boehmod/blockfront/r;	a	method_2237	getFriendManager
 	m	()Lcom/boehmod/blockfront/u;	a	method_2238	createAntiCheat
 	m	()Lnet/minecraft/client/Minecraft;	a	method_2241	getMinecraft
-	m	(Lcom/boehmod/bflib/cloud/connection/ConnectionStatus;Lcom/boehmod/bflib/cloud/connection/ConnectionStatus;)V	a	method_2242	showConnectionToast
+	m	(Lcom/boehmod/bflib/cloud/connection/ConnectionStatus;Lcom/boehmod/bflib/cloud/connection/ConnectionStatus;)V	a	method_2242	showConnectionNotification
 		p	1			fromStatus
 		p	2			toStatus
 	m	(Lcom/boehmod/bflib/cloud/packet/common/PacketDailyReward;)V	a	method_6137	setDailyReward
@@ -19381,7 +19442,7 @@ c	com/boehmod/blockfront/rz	com/boehmod/blockfront/unnamed/BF_740	com/boehmod/bl
 	m	()Ljava/lang/Float;	s	method_7464	method_7464
 	m	(Ljava/lang/Float;)V	s	method_7466	method_7466
 c	com/boehmod/blockfront/s	com/boehmod/blockfront/unnamed/BF_1666	com/boehmod/blockfront/game/GameFovClamp
-	f	Lnet/minecraft/network/chat/Component;	A	field_10608	TOAST_TITLE
+	f	Lnet/minecraft/network/chat/Component;	A	field_10608	NOTIFICATION_TITLE
 	f	Z	D	field_10609	messageShown
 	f	I	w	field_10610	MIN_FOV
 	f	I	x	field_10611	MAX_FOV
@@ -21324,7 +21385,7 @@ c	com/boehmod/blockfront/uZ$a$b$a	com/boehmod/blockfront/unnamed/BF_1533$BF_1534
 	m	()[Lcom/boehmod/blockfront/uZ$a$b$a;	$values	$values	$values
 	m	(Ljava/lang/String;)Lcom/boehmod/blockfront/uZ$a$b$a;	valueOf	valueOf	valueOf
 	m	()[Lcom/boehmod/blockfront/uZ$a$b$a;	values	values	values
-c	com/boehmod/blockfront/ua	com/boehmod/blockfront/unnamed/BF_921	com/boehmod/blockfront/common/net/BFPopup
+c	com/boehmod/blockfront/ua	com/boehmod/blockfront/unnamed/BF_921	com/boehmod/blockfront/game/GamePopup
 	f	F	aJ	field_3654	field_3654
 	f	F	aK	field_3655	field_3655
 	f	I	aN	field_3656	duration

@@ -1,9 +1,7 @@
 package dev.vuis.plusfront.game.impl.def;
 
 import com.boehmod.blockfront.client.BFClientManager;
-import com.boehmod.blockfront.client.gui.toast.BFToast;
-import com.boehmod.blockfront.client.gui.toast.BFToasts;
-import com.boehmod.blockfront.client.gui.toast.ToastType;
+import com.boehmod.blockfront.client.gui.notification.BFNotifications;
 import com.boehmod.blockfront.client.match.ping.AbstractPing;
 import com.boehmod.blockfront.client.player.BFClientPlayerData;
 import com.boehmod.blockfront.client.player.ClientPlayerDataHandler;
@@ -29,6 +27,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.vuis.plusfront.PlusFront;
 import dev.vuis.plusfront.client.PFClientTemp;
 import dev.vuis.plusfront.client.PFKeyMappings;
+import dev.vuis.plusfront.client.PFNotifications;
 import dev.vuis.plusfront.client.config.GameGuiStyle;
 import dev.vuis.plusfront.client.config.PFClientConfig;
 import dev.vuis.plusfront.client.def.DefusalTeamGameElement;
@@ -49,7 +48,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -126,26 +124,10 @@ public final class DefusalGameClient extends AbstractGameClient<DefusalGame, Def
 		manager.getCinematics().method_2205(new BF_552(game));
 
 		if (PFClientConfig.getGameGuiStyle() != GameGuiStyle.CS2) {
-			BFToasts.showToast(createGuiStyleToast());
+			BFNotifications.show(
+				PFNotifications.guiStyleRecommend(GameGuiStyle.CS2, game.getType())
+			);
 		}
-	}
-
-	private BFToast createGuiStyleToast() {
-		return BFToast.builder()
-			.type(ToastType.INFO)
-			.title(Component.translatable("pf.notification.guistyle.title"))
-			.message(Component.translatable(
-				"pf.notification.guistyle.recommend",
-				GameGuiStyle.CS2.getDisplayName(),
-				game.getType().toUpperCase(Locale.ROOT)
-			))
-			.acceptAction(
-				Component.translatable("pf.message.action.switch"),
-				() -> {
-					PFClientConfig.setGameGuiStyle(GameGuiStyle.CS2);
-					PFClientConfig.save();
-				})
-			.build();
 	}
 
 	@Override
