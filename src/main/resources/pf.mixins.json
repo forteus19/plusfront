@@ -44,6 +44,7 @@
     "bf.client.BFNotifyCommandMixin",
     "bf.client.BFRenderingMixin",
     "bf.client.CapturePointGameClientMixin",
+    "bf.client.ClientConnectionManagerMixin",
     "bf.client.DominationGameClientMixin",
     "bf.client.FakeEnvironmentMixin",
     "bf.client.FlyByMapEffectMixin",
@@ -58,9 +59,11 @@
     "bf.client.TeamDeathmatchGameClientMixin",
     "bf.client.TeamScoreGameElementMixin",
     "bf.client.TimeGameElementMixin",
+    "bf.client.TitleSidebarScreenMixin",
     "bf.client.TroubleTownGameClientMixin",
     "minecraft.client.GuiGraphicsAccessor",
-    "minecraft.client.LightTextureMixin"
+    "minecraft.client.LightTextureMixin",
+    "minecraft.client.TitleScreenMixin"
   ],
   "server": [
     "bf.server.BFServerTickSubscriberMixin"
