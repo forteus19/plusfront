@@ -2,6 +2,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.stream.Stream;
 import net.fabricmc.tinyremapper.OutputConsumerPath;
 import net.fabricmc.tinyremapper.TinyRemapper;
 import net.fabricmc.tinyremapper.TinyUtils;
@@ -13,14 +16,8 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.InputFiles;
-import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.TaskAction;
 
 public abstract class RemapTask extends DefaultTask {
-	@InputFile
-	public abstract RegularFileProperty getInput();
-	@OutputFile
-	public abstract RegularFileProperty getOutput();
 	@InputFile
 	public abstract RegularFileProperty getMappings();
 	@InputFiles
@@ -39,10 +36,7 @@ public abstract class RemapTask extends DefaultTask {
 		getMixinExtension().convention(true);
 	}
 
-	@TaskAction
-	public void run() {
-		Path input = getInput().get().getAsFile().toPath();
-		Path output = getOutput().get().getAsFile().toPath();
+	protected void remap(Path input, Path output, boolean isJar) {
 		Path mappings = getMappings().get().getAsFile().toPath();
 		Path[] classpath = getClasspath().getFiles().stream().map(File::toPath).toArray(Path[]::new);
 		String from = getFrom().get();
@@ -61,12 +55,16 @@ public abstract class RemapTask extends DefaultTask {
 		TinyRemapper remapper = builder.build();
 
 		try {
-			Files.deleteIfExists(output);
+			if (isJar) {
+				Files.deleteIfExists(output);
+			} else if (Files.isDirectory(output)) {
+				deleteDir(output);
+			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 
-		try (OutputConsumerPath outputConsumer = new OutputConsumerPath.Builder(output).build()) {
+		try (OutputConsumerPath outputConsumer = new OutputConsumerPath.Builder(output).assumeArchive(isJar).build()) {
 			if (nonClassFiles) {
 				outputConsumer.addNonClassFiles(input);
 			}
@@ -79,6 +77,16 @@ public abstract class RemapTask extends DefaultTask {
 			throw new RuntimeException(e);
 		} finally {
 			remapper.finish();
+		}
+	}
+
+	private static void deleteDir(Path path) throws IOException {
+		try (Stream<Path> walkStream = Files.walk(path)) {
+			Iterator<Path> files = walkStream.sorted(Comparator.reverseOrder()).iterator();
+
+			for (Iterator<Path> it = files; it.hasNext(); ) {
+				Files.deleteIfExists(it.next());
+			}
 		}
 	}
 }

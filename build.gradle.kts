@@ -107,10 +107,17 @@ neoForge {
             sourceSet(sourceSets["main"])
         }
     }
+
+    runs {
+        create("client") {
+            client()
+        }
+    }
 }
 
 dependencies {
     blockfrontOriginal("maven.modrinth:blockfront:$blockfrontModrinthVersion")
+    runtimeOnly(files(blockfrontOriginal))
 
     // declared manually for sources
     compileOnly("software.bernie.geckolib:geckolib-neoforge-$minecraftVersion:$geckolibVersion")
@@ -149,7 +156,7 @@ val blockfrontLibraries = files(
     }
 )
 
-val remapBlockfrontTask = tasks.register<RemapTask>("remapBlockfront") {
+val remapBlockfrontTask = tasks.register<RemapJarTask>("remapBlockfront") {
     dependsOn(blockfrontOriginal, extractBlockfrontLibrariesTask)
 
     input = blockfrontOriginal.resolve().first()
@@ -200,13 +207,13 @@ sourceSets.main {
     }
 }
 
-val remapModTask = tasks.register<RemapTask>("remapMod") {
+val remapModTask = tasks.register<RemapDirTask>("remapMod") {
     group = "build"
 
-    dependsOn(tasks["jar"], remapBlockfrontTask)
+    dependsOn(tasks["compileJava"], remapBlockfrontTask)
 
-    input = tasks["jar"].outputs.files.first()
-    output = layout.buildDirectory.file("libs/${base.archivesName.get()}-${project.version}-bfobf.jar")
+    input = tasks["compileJava"].outputs.files.first()
+    output = layout.buildDirectory.dir("classesRemapped")
     mappings = file("bf-mappings.tiny")
     classpath.from(remapBlockfrontTask.get().outputs.files.first())
     from = "named"
@@ -215,11 +222,21 @@ val remapModTask = tasks.register<RemapTask>("remapMod") {
     mixinExtension = true
 }
 
-val createLatestJarSymlinkTask = tasks.register<SymlinkTask>("createLatestJarSymlink") {
-    dependsOn(remapModTask)
+sourceSets.main {
+    (output.classesDirs as ConfigurableFileCollection).setFrom(files(
+        remapModTask.map { layout.buildDirectory.dir("classesRemapped") }
+    ))
+}
 
-    target.set(remapModTask.get().outputs.files.first().absolutePath)
-    link.set(layout.buildDirectory.file("libs/${base.archivesName.get()}-latest-bfobf.jar"))
+tasks.classes {
+    dependsOn(remapModTask)
+}
+
+val createLatestJarSymlinkTask = tasks.register<SymlinkTask>("createLatestJarSymlink") {
+    dependsOn(tasks["jar"])
+
+    target.set(tasks["jar"].outputs.files.first().absolutePath)
+    link.set(layout.buildDirectory.file("libs/${base.archivesName.get()}-latest.jar"))
 }
 
 tasks.build {
