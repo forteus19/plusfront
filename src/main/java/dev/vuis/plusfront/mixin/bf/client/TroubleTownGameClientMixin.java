@@ -25,7 +25,7 @@ public abstract class TroubleTownGameClientMixin extends AbstractGameClient<Trou
 	}
 
 	@Redirect(
-		method = "method_3533",
+		method = "renderPlayerInfo",
 		at = @At(
 			value = "INVOKE",
 			target = "Lnet/minecraft/client/player/LocalPlayer;hasLineOfSight(Lnet/minecraft/world/entity/Entity;)Z",

@@ -1,0 +1,57 @@
+{
+  "type": "pistol",
+  "primary": false,
+  "mags": {
+    "default": {
+      "capacity": 1,
+      "maxAmmo": 0
+    }
+  },
+  "fireModes": [
+    {
+      "behaviour": "semi",
+      "fireRate": 20
+    }
+  ],
+  "damage": "pf:one_tap",
+  "spread": "bf:revolver",
+  "bulletType": "pistol",
+  "reload": {
+    "type": "simple",
+    "time": 4.45
+  },
+  "aim": {
+    "default": {}
+  },
+  "rightHanded": true,
+  "movementPenalty": 0.0,
+  "wallTiltSpeed": "revolver",
+  "shake": "revolver",
+  "shootBack": "revolver",
+  "dryFireAnimation": true,
+  "heatSmoke": "revolver",
+  "sounds": {
+    "shoot": "bf:item.gun.webley.mk6.fire",
+    "pre": "bf:item.gun.webley.mk6.pre",
+    "reload": "bf:item.gun.webley.mk6.reload",
+    "reloadEmpty": "bf:item.gun.webley.mk6.reload",
+    "lastRound": "bf:item.gun.shared.lastround.pistol",
+    "dryFire": "bf:item.gun.shared.dryfire.revolver",
+    "coreBass": "bf:item.gun.shared.corebass.close.pistol",
+    "coreBassDistant": "bf:item.gun.shared.corebass.pistol.distant",
+    "echoDistant": "bf:item.gun.shared.echo.distant.revolver",
+    "echoDistantStereo": "bf:item.gun.shared.echo.distant.revolver.stereo",
+    "lfe": "bf:item.gun.shared.lfe.pistol",
+    "foleyArm": "bf:item.gun.shared.foley.arm.pistol",
+    "towards": "bf:item.gun.shared.towards.pistol",
+    "bulletGeneric": "bf:item.gun.shared.bullet.lmg",
+    "bulletWood": "bf:item.gun.shared.bullet.lmg.wood",
+    "bulletMetal": "bf:item.gun.shared.bullet.lmg.metal",
+    "bulletDirt": "bf:item.gun.shared.bullet.lmg.dirt",
+    "bulletWater": "bf:item.gun.shared.bullet.lmg.water",
+    "equip": "bf:item.gun.shared.foley.equip.revolver",
+    "playPreOnce": true,
+    "preTick": 1,
+    "echoPitch": 1.2
+  }
+}
