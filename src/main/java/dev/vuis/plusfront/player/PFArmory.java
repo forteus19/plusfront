@@ -44,8 +44,8 @@ public final class PFArmory {
 		Extra extra,
 		UUID playerUuid,
 		Executor mainThreadExecutor,
-		@Nullable Runnable onFinished)
-	{
+		@Nullable Runnable onFinished
+	) {
 		PlusFront.LOGGER.info("Fetching player inventory for {}", playerUuid);
 
 		BfApi.fetchPlayerInventoryEquipped(playerUuid).thenAccept(

@@ -44,9 +44,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 public final class PFGameGuiRendering {
-	@SuppressWarnings("NoTranslation")
 	public static final Component WAITING_MESSAGE = Component.translatable("bf.message.match.title.waiting");
-	@SuppressWarnings("NoTranslation")
 	public static final Component GAME_OVER_MESSAGE = Component.translatable("bf.message.match.title.gameover");
 
 	private static final ResourceLocation DEAD_TEXTURE = BFRes.loc("textures/gui/dead.png");

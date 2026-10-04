@@ -457,7 +457,6 @@ public final class PFCommand {
 
 		AbstractGame<?, ?, ?> game = manager.getGameByName(gameName);
 		if (game == null) {
-			//noinspection NoTranslation
 			stack.sendFailure(Component.translatable("bf.message.command.game.player.error.nogame", gameName));
 			return -1;
 		}

@@ -19,9 +19,7 @@ public class DefusalTeamGameElement extends TextWithIconGameElement<DefusalGame,
 	private static final ResourceLocation CT_ICON = PlusFront.res("textures/text/team_ct.png");
 	private static final ResourceLocation T_ICON = BFRes.loc("textures/text/team_axis.png");
 
-	@SuppressWarnings("NoTranslation")
 	private static final Component NO_TEAM_COMPONENT = Component.translatable("bf.message.no.team");
-	@SuppressWarnings("NoTranslation")
 	private static final Component SPECTATING_COMPONENT = Component.translatable("bf.message.spectating").withStyle(ChatFormatting.GRAY);
 
 	@Override

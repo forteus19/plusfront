@@ -10,20 +10,22 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 
 public final class FeatureFlagIndex {
-	public static final String EVENT_HALLOWEEN = "event_halloween";
-	public static final String EVENT_CHRISTMAS = "event_christmas";
-	public static final String SERVER_SHOT_VALIDATION = "server_shot_validation";
-	public static final String SERVER_SHOT_VALIDATION_SPREAD = "server_shot_validation_spread";
-	public static final String SERVER_SHOT_VALIDATION_KICK = "server_shot_validation_kick";
-	public static final String SERVER_SHOT_VALIDATION_REPORT = "server_shot_validation_report";
-	public static final String SERVER_SHOT_VALIDATION_AIM = "server_shot_validation_aim";
-	public static final String SERVER_MATCH_FEATURE_PING = "server_match_feature_ping";
-	public static final String SERVER_GRENADE_COOK_ON_DEATH = "server_grenade_cook_drop_on_death";
-	public static final String CLIENT_FANCY_BULLET_EFFECTS = "client_fancy_bullet_effects";
-	public static final String CLIENT_VEIL_FANCY_GUN_LIGHT = "client_veil_fancy_gun_light";
-	public static final String SERVER_PLAYER_VOICE_SOUNDS = "server_player_voice_sounds";
-	public static final String SERVER_CHAT_MARKDOWN = "server_chat_markdown";
-	public static final String CLIENT_AC_LAYER_PREFIX = "client_ac_layer_";
+	public static final String
+		EVENT_HALLOWEEN = "event_halloween",
+		EVENT_CHRISTMAS = "event_christmas",
+		SERVER_SHOT_VALIDATION = "server_shot_validation",
+		SERVER_SHOT_VALIDATION_SPREAD = "server_shot_validation_spread",
+		SERVER_SHOT_VALIDATION_KICK = "server_shot_validation_kick",
+		SERVER_SHOT_VALIDATION_REPORT = "server_shot_validation_report",
+		SERVER_SHOT_VALIDATION_AIM = "server_shot_validation_aim",
+		SERVER_MATCH_FEATURE_PING = "server_match_feature_ping",
+		SERVER_GRENADE_COOK_ON_DEATH = "server_grenade_cook_drop_on_death",
+		CLIENT_VEIL_FANCY_GUN_LIGHT = "client_veil_fancy_gun_light",
+		SERVER_PLAYER_VOICE_SOUNDS = "server_player_voice_sounds",
+		SERVER_CHAT_MARKDOWN = "server_chat_markdown",
+		SERVER_OBJECTIVE_REWARDS = "server_objective_rewards",
+		SERVER_SKILL_BALANCING = "server_skill_balancing",
+		CLIENT_AC_LAYER_PREFIX = "client_ac_layer_";
 
 	public static final Map<String, Boolean> DEFAULT;
 
@@ -38,10 +40,11 @@ public final class FeatureFlagIndex {
 			.put(SERVER_SHOT_VALIDATION_AIM, false)
 			.put(SERVER_MATCH_FEATURE_PING, false)
 			.put(SERVER_GRENADE_COOK_ON_DEATH, true)
-			.put(CLIENT_FANCY_BULLET_EFFECTS, false)
 			.put(CLIENT_VEIL_FANCY_GUN_LIGHT, false)
 			.put(SERVER_PLAYER_VOICE_SOUNDS, true)
-			.put(SERVER_CHAT_MARKDOWN, true);
+			.put(SERVER_CHAT_MARKDOWN, true)
+			.put(SERVER_OBJECTIVE_REWARDS, false)
+			.put(SERVER_SKILL_BALANCING, false);
 
 		for (int i = 1; i <= BFClientAntiCheat.ID_MAX; i++) {
 			tempDefault.put(CLIENT_AC_LAYER_PREFIX + i, false);

@@ -786,7 +786,7 @@ public final class DefusalGame extends AbstractGame<DefusalGame, DefusalPlayerMa
 		GameTeam winningTeam = ctWin ? counterTerrorists : terrorists;
 		GameTeam losingTeam = ctWin ? terrorists : counterTerrorists;
 
-		winningTeam.putStatInt(BFStats.SCORE, winningTeam.getStatInt(BFStats.SCORE) + 1);
+		PFGameHelper.incrementTeamStat(winningTeam, BFStats.SCORE);
 
 		GameUtils.sendNotification(
 			players,

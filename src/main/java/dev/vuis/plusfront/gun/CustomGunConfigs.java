@@ -22,9 +22,7 @@ public final class CustomGunConfigs {
 	}
 
 	public static void load(String id) {
-		try (
-			InputStream stream = CustomGunConfigs.class.getResourceAsStream("/assets/pf/guns/" + id + ".json")
-		) {
+		try (InputStream stream = CustomGunConfigs.class.getResourceAsStream("/assets/pf/guns/" + id + ".json")) {
 			if (stream == null) {
 				PlusFront.LOGGER.error("Failed to find custom gun config for '{}'", id);
 				return;
@@ -39,7 +37,7 @@ public final class CustomGunConfigs {
 			}
 
 			GunConfigRegistry.register(PlusFront.res(id), result.result().orElseThrow().getFirst());
-			PlusFront.LOGGER.info("Registered gun config for '{}'", id);
+			PlusFront.LOGGER.info("Registered custom gun config for '{}'", id);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
